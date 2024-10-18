@@ -1,0 +1,106 @@
+.image {
+    object-fit: cover;
+    height: 100%;
+    width: 100%;
+    user-select: none;
+    border-radius: 1rem ;
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+}
+
+.swiperSlide{
+    border-radius: 12px;
+    position: relative;
+    aspect-ratio: 3/4;
+    width: 320px;
+}
+
+.swiperContainer {
+    border: 2px solid var(--lightGrayColor);
+    border-radius: 12px;
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+}
+
+.butt {
+    color: var(--grayColor);
+    background-color: var(--lightGrayColor);
+    height: fit-content;
+    width: fit-content;
+    border-radius: 100%;
+    padding: 2px;
+    overflow-x: hidden;
+}
+
+.container {
+    width: 60%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    /* background: var(--searchBarColor); */
+    position: relative;
+    border-radius: 24px;
+}
+.imageContainer {
+    width: 100%;
+    padding: 2%;
+    display: flex; 
+    flex-direction: column;
+    justify-content: center;
+    align-items: center; 
+    border-radius: 1rem;
+    overflow: hidden;
+}
+
+
+@media screen and (min-width: 768px){
+    .imageContainer {
+        position: sticky;
+        /* top: 10vh; */
+        
+    }
+}
+.variantBox {
+    height: 80px;
+    width: 80px;
+    border-radius: 14px;
+    position: relative;
+}
+
+.selected {
+    border: 2px solid var(--darkBlue)
+}
+
+.mainContainer {
+    margin-top: 2%;
+}
+
+.detailsCard {
+    border-radius: 18px;
+    padding: 5%;
+    /* font-family: sans-serif; */
+    width: 50%;
+}
+
+.label {
+    padding: 1rem;
+    color: white;
+    background-color: var(--orange);
+    width: 100%;
+    font-size: medium;
+    font-weight: 600;
+    padding-top: 4%;
+    padding-bottom: 4%;
+    border-top-left-radius: 0.75rem;
+    border-top-right-radius: 0.75rem;
+}
+.link {
+    font-size: 18px;
+    /* font-weight: 600; */
+    color: black;
+}
+
+.float {
+    position: relative;
+    top: -50px;
+    left: 24px;
+}

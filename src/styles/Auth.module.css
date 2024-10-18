@@ -1,0 +1,30 @@
+.form {
+    background-color: white;
+    margin: 1rem;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    place-content: space-evenly;
+    align-items: flex-start;
+}
+
+.heading {
+    font-size: xx-large;
+    font-family: sans-serif;
+    font-weight: 600;
+    color: var(--darkBlue);
+}
+
+.mobileNumber {
+    display: flex;
+    justify-content: center;
+    padding: 10px;
+    margin: 2%;
+    margin-bottom: 5%;
+    border: 1.8px solid var(--grayColor);
+    border-radius: 5px;
+    width: fit-content;
+    font-size: larger;
+    font-family: sans-serif;
+}
+

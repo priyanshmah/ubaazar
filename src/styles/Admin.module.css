@@ -1,0 +1,44 @@
+.sideBar {
+    width: 15%;
+    background-color: white;
+    height: 100%;
+    margin-top: 2%;
+}
+
+.sideBarItem {
+    list-style-type: none;
+    font-family: sans-serif;
+    color: var(--grayColor);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background-color: white;
+    margin: 4%;
+    border-radius: 18px;
+    font-size: medium;
+}
+
+.sideBarItem :hover {
+    background-color: var(--searchBarColor);
+    /* color: var(--grayColor); */
+    /* color: var(--darkGrayColor); */
+    border-radius: 18px;
+    /* padding: 12%; */
+}
+.sideBarItem :focus {
+    background-color: var(--searchBarColor);
+    /* color: var(--grayColor); */
+    /* color: var(--darkGrayColor); */
+    border-radius: 18px;
+    /* padding: 12%; */
+}
+
+
+.sideBarItems {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    height: 100%;
+    padding: 5%;
+}

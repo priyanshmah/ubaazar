@@ -1,0 +1,96 @@
+.sideBarItem {
+    color: var(--grayColor);
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+    border-radius: 1rem;
+    font-size: medium;
+}
+
+.sideBarItem :hover {
+    /* background-color: var(--darkBlue); */
+    /* color: white; */
+    /* color: var(--grayColor); */
+    color: var(--darkBlue);
+    border-radius: 1rem;
+    /* padding: 12%; */
+}
+.sideBarItem :focus {
+    background-color: var(--darkBlue);
+    color: white;
+    /* color: var(--darkGrayColor); */
+    border-radius: 18px;
+    /* padding: 12%; */
+}
+
+
+.sideBarItems {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    height: fit-content;
+    padding: 3%;
+    padding-left: 10%;
+    padding-right: 10%;
+    font-size: large;
+    font-weight: 600;
+}
+
+.postContainer {
+    width: 100%;
+    /* border: 1px solid var(--grayColor);
+    border-top: 1px solid var(--grayColor);
+    border-bottom: 1px solid var(--grayColor); */
+    /* border-radius: 1rem; */
+    /* padding: 4%; */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.imgContainer {
+    max-width: 100%;
+    position: relative;
+    overflow: auto;
+    padding: 0;
+    margin: 0;
+}
+
+.storiesContainer {
+    height: 5rem;
+    width: 5rem;
+    position: relative;
+    border-radius: 1rem;
+    box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+}
+
+@media screen and (min-width: 768px) {
+    .storiesContainer {
+        height: 6rem;
+        width: 6rem;
+    }
+}
+@media screen and (min-width: 1024px) {
+    .storiesContainer {
+        height: 10rem;
+        width: 10rem;
+    }
+}
+
+
+.bottomBar {
+    position: sticky;
+    bottom: 0px;
+    width: 100%;
+    background-color: white;
+    display: flex;
+    flex-direction: row;
+    place-content: space-evenly;
+    color: var(--darkBlue);
+}
+
+
+
