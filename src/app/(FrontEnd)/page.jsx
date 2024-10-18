@@ -1,3 +1,4 @@
+
 import styles from "@/styles/Home.module.css";
 import "@/styles/globals.css";
 import Link from "next/link";
@@ -8,6 +9,7 @@ import Stories from "@/components/feed/stories";
 import Post from "@/components/feed/post";
 import MorePosts from "@/components/feed/more-post";
 import dbConnect from "@/lib/dbConnect";
+import axios from "axios";
 
 export const metadata = {
   title:
@@ -20,13 +22,12 @@ export const metadata = {
 };
 
 export default async function Home() {
-  await dbConnect();
 
   // const [feedData, setFeedData] = useState([])
 
   // useEffect(() => {
   //   const fetchPosts = async () => {
-  //     const posts = await fetch("http://localhost:3000/api/feed", {
+  //     const posts = await fetch(`${process.env.NEXT_PUBLIC_DOMAIN}/api/feed`, {
   //       method: "GET",
   //     });
   //     const { feed } = await posts.json();
@@ -35,11 +36,12 @@ export default async function Home() {
   //   fetchPosts();
   // }, []);
 
-  const posts = await fetch(`${process.env.DOMAIN}/api/feed`, {
-    method: "GET",
-  });
-  const { feed } = await posts.json();
-  console.log(process.env.DOMAIN);
+
+
+  const posts = await axios.get(`${process.env.NEXT_PUBLIC_DOMAIN}/api/feed`);
+
+  const {feed} = posts.data; 
+  
   
 
   return (

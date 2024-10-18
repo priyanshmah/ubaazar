@@ -1,6 +1,6 @@
 "use client";
 import Post from './post.jsx'
-
+import axios from 'axios';
 import { useEffect, useState } from "react";
 
 export default function MorePosts({ feed }) {
@@ -26,10 +26,10 @@ export default function MorePosts({ feed }) {
   }, []);
 
   const getMorePosts = async() => {
-    const posts = await fetch(`${process.env.DOMAIN}/api/feed`, {
-        method: "GET",
-      });
-    const { feed } = await posts.json();
+    
+  const posts = await axios.get(`${process.env.NEXT_PUBLIC_DOMAIN}/api/feed`);
+  const {feed} = posts.data;
+
     feed && setFeedData(prev => [...prev, ...feed])
   }
 
