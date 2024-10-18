@@ -31,90 +31,90 @@ import toast, { Toaster } from "react-hot-toast";
 import { RotatingLines } from "react-loader-spinner";
 
 export default function UploadProductPage() {
-  const [productName, setProductName] = useState("");
-  const [description, setDescription] = useState("");
-  const [category, setCategory] = useState("");
-  const [price, setPrice] = useState("");
-  const [variants, setVariants] = useState({
-    colour: "",
-    images: [],
-    inventory: null,
-  });
+  // const [productName, setProductName] = useState("");
+  // const [description, setDescription] = useState("");
+  // const [category, setCategory] = useState("");
+  // const [price, setPrice] = useState("");
+  // const [variants, setVariants] = useState({
+  //   colour: "",
+  //   images: [],
+  //   inventory: null,
+  // });
 
-  const [loading, setLoading] = useState(false);
-  const dispatch = useDispatch();
-  const productVariants = useSelector((state) => state.productVariants);
-  const productCategoryData = useSelector((state) => state.productCategoryData);
+  // const [loading, setLoading] = useState(false);
+  // const dispatch = useDispatch();
+  // const productVariants = useSelector((state) => state.productVariants);
+  // const productCategoryData = useSelector((state) => state.productCategoryData);
 
-  const uploadVariant = () => {
-    dispatch(
-      addVariant({
-        newVariant: {
-          colour: variants.colour,
-          images: variants.images,
-          inventory: variants.inventory,
-        },
-      })
-    );
-    setVariants({
-      colour: "",
-      images: [],
-      inventory: "",
-    });
-  };
+  // const uploadVariant = () => {
+  //   dispatch(
+  //     addVariant({
+  //       newVariant: {
+  //         colour: variants.colour,
+  //         images: variants.images,
+  //         inventory: variants.inventory,
+  //       },
+  //     })
+  //   );
+  //   setVariants({
+  //     colour: "",
+  //     images: [],
+  //     inventory: "",
+  //   });
+  // };
 
-  const handleUpload = async () => {
-    setLoading(true);
-    try {
-      const data = {
-        productName,
-        description,
-        category,
-        price,
-        ...productCategoryData,
-        ...productVariants,
-      };
+  // const handleUpload = async () => {
+  //   setLoading(true);
+  //   try {
+  //     const data = {
+  //       productName,
+  //       description,
+  //       category,
+  //       price,
+  //       ...productCategoryData,
+  //       ...productVariants,
+  //     };
 
-      if (
-        !data.productName ||
-        !data.description ||
-        !data.category ||
-        !data.price ||
-        !productCategoryData ||
-        !productVariants
-      ) {
-        toast.error("Please fill all fields first...", { duration: 5000 });
-        return;
-      }
-      const response = await axios.post(
-        "/api/upload-product",
-        JSON.stringify(data)
-      );
+  //     if (
+  //       !data.productName ||
+  //       !data.description ||
+  //       !data.category ||
+  //       !data.price ||
+  //       !productCategoryData ||
+  //       !productVariants
+  //     ) {
+  //       toast.error("Please fill all fields first...", { duration: 5000 });
+  //       return;
+  //     }
+  //     const response = await axios.post(
+  //       "/api/upload-product",
+  //       JSON.stringify(data)
+  //     );
 
-      if (response.status === 200) {
-        toast.success("Product uploaded successfully", { duration: 5000 });
-        setProductName("");
-        setDescription("");
-        setCategory("");
-        setPrice("");
-        resetVariants();
-        resetCategoryData();
-      } else {
-        toast.error(`${response.statusText}`, { duration: 5000 });
-      }
-    } catch (error) {
-      console.log(error);
-      toast.error(`${error.response?.data?.error || error.message}`, {
-        duration: 5000,
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
+  //     if (response.status === 200) {
+  //       toast.success("Product uploaded successfully", { duration: 5000 });
+  //       setProductName("");
+  //       setDescription("");
+  //       setCategory("");
+  //       setPrice("");
+  //       resetVariants();
+  //       resetCategoryData();
+  //     } else {
+  //       toast.error(`${response.statusText}`, { duration: 5000 });
+  //     }
+  //   } catch (error) {
+  //     console.log(error);
+  //     toast.error(`${error.response?.data?.error || error.message}`, {
+  //       duration: 5000,
+  //     });
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
   return (
     <div className="w-full flex flex-col gap-8">
-      <div className="flex flex-row w-full relative ">
+      {/* <div className="flex flex-row w-full relative ">
         <p className="text-3xl font-semibold mt-4 px-4">Upload Product</p>
         <button
           className="button text-white bg-darkBlue"
@@ -230,7 +230,7 @@ export default function UploadProductPage() {
       </div>
 
       {/*  upload variant  */}
-      <div className="flex flex-row w-full shadow-md p-6 mr-3 mt-3 rounded-2xl gap-5 h-fit">
+      {/* <div className="flex flex-row w-full shadow-md p-6 mr-3 mt-3 rounded-2xl gap-5 h-fit">
         <div className="w-1/2">
           <div className="flex flex-row place-content-between items-center">
             <p className="text-2xl  font-semibold m-5">Upload Variants</p>
@@ -387,8 +387,8 @@ export default function UploadProductPage() {
             );
           })}
         </div>
-      </div>
-      <VideoUpload />
+      </div> */}
+      <VideoUpload /> 
       <Toaster />
     </div>
   );

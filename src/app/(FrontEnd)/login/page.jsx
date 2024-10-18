@@ -13,7 +13,6 @@ import {
   InputOTPSlot,
 } from "@/components/ui/input-otp";
 
-
 import AuthContext from "@/context/authContext.js";
 import toast, { Toaster } from "react-hot-toast";
 import { useRouter } from "next/navigation.js";
@@ -30,7 +29,6 @@ export default function UserAuth() {
   const [isButtonDisabled, setIsButtonDisabled] = useState(true);
   const [newUser, setNewUser] = useState(false);
   const router = useRouter();
-  
 
   useEffect(() => {
     if (timer > 0) {
@@ -46,11 +44,10 @@ export default function UserAuth() {
 
   const { isLoggedIn, setIsLoggedIn } = useContext(AuthContext);
   console.log("Login status: ", isLoggedIn);
-    
 
-  useEffect(() => {    
-    isLoggedIn && router.replace('/')
-  }, [])  
+  useEffect(() => {
+    isLoggedIn && router.replace("/");
+  }, []);
 
   const handleOtpVerification = async () => {
     setLoading(true);
@@ -74,7 +71,7 @@ export default function UserAuth() {
 
       toast.success(message, { duration: 5000 });
       if (!newUser) {
-        router.push('/');
+        router.push("/");
       }
     } else {
       const errorData = await res.json();
@@ -87,7 +84,7 @@ export default function UserAuth() {
 
   const handleSendOtp = async () => {
     setLoading(true);
-    setIsButtonDisabled(true)
+    setIsButtonDisabled(true);
 
     let res = await fetch("/api/auth/send-otp", {
       method: "POST",
@@ -103,7 +100,7 @@ export default function UserAuth() {
       setLoading(false);
       toast.success(message, { duration: 5000 });
       setProgress(1);
-      setTimer(30)
+      setTimer(30);
     } else {
       const errorData = await res.json();
       const errorMessage = errorData.error;
@@ -145,10 +142,10 @@ export default function UserAuth() {
 
     let res = await fetch("/api/profile/update", {
       method: "POST",
-      body:  JSON.stringify({
-        username: name
-      })
-    })
+      body: JSON.stringify({
+        username: name,
+      }),
+    });
 
     if (res.ok) {
       const data = await res.json();
@@ -156,7 +153,7 @@ export default function UserAuth() {
 
       setLoading(false);
       toast.success(message, { duration: 5000 });
-      router.push('/');
+      router.push("/");
     } else {
       const errorData = await res.json();
       const errorMessage = errorData.error;
@@ -164,13 +161,11 @@ export default function UserAuth() {
       setLoading(false);
       toast.error(errorMessage, { duration: 5000 });
     }
-  }
+  };
 
   return (
     <div className="flex flex-col justify-center items-center">
-      {loading && (
-        <Loading />
-      )}
+      {loading && <Loading />}
       {progress == 0 && (
         <div className={styles.form} style={{ minHeight: "50vh" }}>
           <div className="flex flex-row gap-4 justify-center items-center text-darkGrayColor">
@@ -245,7 +240,7 @@ export default function UserAuth() {
           </InputOTP>
 
           <div className="text-grayColor text-sm flex flex-row gap-2">
-            <p>Didn't get a code ? </p>
+            <p>Didn&apos;t get a code ?</p>
             <button
               // className={`${isButtonDisabled ? "text-grayColor" : "text-brightOrange"} font-semibold`}
               className="text-brightOrange font-semibold"
@@ -284,9 +279,10 @@ export default function UserAuth() {
             className="bg-searchBarColor p-2 px-4 rounded-md w-full"
           />
 
-          <button 
-          onClick={handleUsername}
-          className="rounded-md w-full py-2 font-semibold bg-darkBlue text-white">
+          <button
+            onClick={handleUsername}
+            className="rounded-md w-full py-2 font-semibold bg-darkBlue text-white"
+          >
             Continue
           </button>
         </div>

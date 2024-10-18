@@ -10,7 +10,7 @@ export default function StoriesSection() {
       <div className="inline-flex gap-4">
         {stories.map((value, index) => {
           return (
-            <div className='flex flex-col text-center gap-4'>
+            <div className='flex flex-col text-center gap-4' key={index}>
               <div className={styles.storiesContainer}>
                 <Image
                   src={value.img}
