@@ -7,8 +7,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import styles from "../../../../../../styles/admin/Upload-Product.module.css";
-import "../../../../../../styles/globals.css";
+import styles from "@/styles/admin/Upload-Product.module.css";
+import "@/styles/globals.css";
 import { useEffect, useState } from "react";
 import { IoIosAddCircleOutline } from "react-icons/io";
 import { FiInfo, FiTrash2 } from "react-icons/fi";

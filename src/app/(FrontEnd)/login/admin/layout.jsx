@@ -1,4 +1,5 @@
-import styles from "../../../../../styles/Admin.module.css";
+"use client"
+import styles from "@/styles/Admin.module.css";
 import { RxDashboard } from "react-icons/rx";
 import { LuUpload } from "react-icons/lu";
 import { FiBox } from "react-icons/fi";
