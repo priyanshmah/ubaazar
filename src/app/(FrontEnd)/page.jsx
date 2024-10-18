@@ -35,7 +35,7 @@ export default async function Home() {
   //   fetchPosts();
   // }, []);
 
-  const posts = await fetch(`http://192.168.29.100:3000/api/feed`, {
+  const posts = await fetch(`${process.env.DOMAIN}/api/feed`, {
     method: "GET",
   });
   const { feed } = await posts.json();
