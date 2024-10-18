@@ -37,13 +37,12 @@ export default async function Home() {
   // }, []);
 
 
-
-  const posts = await axios.get(`${process.env.NEXT_PUBLIC_DOMAIN}/api/feed`);
-
-  const {feed} = posts.data; 
+  // const domain = process.env.NODE_ENV === 'production'
+  //               ?"http"
+  //               :""
+  // const posts = await axios.get(`/api/feed`);
+  // const {feed} = posts.data; 
   
-  
-
   return (
     <div className="lg:flex lg:flex-row ">
       <div
@@ -54,7 +53,7 @@ export default async function Home() {
       </div>
       <div className="md:flex md:flex-col w-full md:w-3/4 md:justify-center md:items-center">
         <Stories />
-        <MorePosts feed={feed} />
+        <MorePosts  />
       </div>
     </div>
   );

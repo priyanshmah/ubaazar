@@ -27,7 +27,7 @@ export default function MorePosts({ feed }) {
 
   const getMorePosts = async() => {
     
-  const posts = await axios.get(`${process.env.NEXT_PUBLIC_DOMAIN}/api/feed`);
+  const posts = await axios.get(`/api/feed`);
   const {feed} = posts.data;
 
     feed && setFeedData(prev => [...prev, ...feed])

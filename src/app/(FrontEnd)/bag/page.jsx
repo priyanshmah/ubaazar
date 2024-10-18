@@ -31,9 +31,12 @@ import { CgRadioCheck, CgRadioChecked } from "react-icons/cg";
 import { FiTrash2 } from "react-icons/fi";
 
 export default function Bag() {
-  const [bag, setBag] = useState(JSON.parse(localStorage.getItem("bag")) || []);
+  const [bag, setBag] = useState([]);
 
-  console.log(bag);
+  useEffect(() => {
+    const storedBag = JSON.parse(localStorage.getItem("bag")) || [];
+    setBag(storedBag);
+  }, []);
 
   const router = useRouter();
   const [quantity, setQuantity] = useState(1);
