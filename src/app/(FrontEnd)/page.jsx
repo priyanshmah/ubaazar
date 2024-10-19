@@ -36,7 +36,7 @@ export default async function Home() {
   //   fetchPosts();
   // }, []);
 
-  const posts = await axios.get(`${process.env.NEXT_PUBLIC_DOMAIN}/api/feed`);
+  const posts = await axios.get(`https://www.ubaazar.com/api/feed`);
   const {feed} = posts.data; 
   
   return (
