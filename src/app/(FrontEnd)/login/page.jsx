@@ -352,7 +352,7 @@ const PrivacyPolicy = ({ open, setOpen }) => {
             Use can be modified at any time without assigning any reason. It is
             your responsibility to periodically review these Terms of Use to
             stay informed of updates.For the purpose of these Terms of Use,
-            wherever the context so requires "you", “your” or "user" shall mean
+            wherever the context so requires you, your or user shall mean
             any natural or legal person who has agreed to become a user/buyer on
             the Platform.ACCESSING, BROWSING OR OTHERWISE USING THE PLATFORM
             INDICATES YOUR AGREEMENT TO ALL THE TERMS AND CONDITIONS UNDER THESE
