@@ -243,7 +243,14 @@ export default function Legal(){
             changes. Changes to this Privacy Policy are effective when they are
             posted on this page.
           </div>
+
         </div>
+          <div className="lg:w-9/12 p-4">
+                <h1 className="font-semibold text-brightOrange">Contact Information</h1>
+                <p className="text-grayColor text-xs">Name : Priyansh Maheshwari</p>
+                <p className="text-grayColor text-xs">Email : priyanshmah17@gmail.com</p>
+                <p className="text-grayColor text-xs">Physical Address : Azad Nagar, Mathura, Uttar Pradesh - 281004</p>
+          </div>
         </div>
     )
 }
