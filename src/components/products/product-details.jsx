@@ -34,7 +34,7 @@ export default function ProductDetails({ productData }) {
     
   
     return (
-      <div className="flex flex-col w-2/5">
+      <div className="flex flex-col w-full lg:w-2/5">
         <div className='p-4 rounded-2xl flex flex-col gap-6'>
           <p className="text-xl text-darkGrayColor">
             {productData.productName}

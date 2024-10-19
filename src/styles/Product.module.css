@@ -51,12 +51,13 @@
     overflow: hidden;
 }
 
+.imageCrousel {
+    height: 60vh;
+}
 
 @media screen and (min-width: 768px){
-    .imageContainer {
-        position: sticky;
-        /* top: 10vh; */
-        
+    .imageCrousel {
+        height: 80vh;
     }
 }
 .variantBox {

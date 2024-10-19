@@ -60,7 +60,7 @@ export default async function ProductPage({ params }) {
   
   return (
     <div>
-      <div className={`flex flex-col ${styles.mainContainer} gap-8 lg:flex-row`}>
+      <div className={`flex flex-col gap-8 lg:flex-row`}>
         <ImagesCrousel variants={product?.variants}/>
         <ProductDetails productData={product} />
       </div> 

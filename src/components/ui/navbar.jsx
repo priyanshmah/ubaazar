@@ -33,21 +33,23 @@ import { PiCompassDuotone } from "react-icons/pi";
 import { BsFlower1 } from "react-icons/bs";
 import { CiShoppingTag } from "react-icons/ci";
 import SideBar from "../feed/sidebar";
+import { useRouter } from "next/navigation";
 
 export default function Navbar() {
   const [clickedState, setClickedState] = useState(1);
+  const router = useRouter();
 
   return (
     <div className="shadow-sm flex flex-row place-content-between w-full p-3">
       <div className="flex flex-row gap-2 justify-center items-center">
         <Drawer />
-        <Link
-          href={"http://192.168.29.100:3000/"}
+        <button
+          onClick={() => router.push('/')}
           className="flex flex-row font-serif text-2xl items-center md:text-4xl"
         >
           <p className="text-orange">U</p>
           <p className="text-darkBlue">Baazar</p>
-        </Link>
+        </button>
       </div>
 
       <div className="hidden w-1/3 text-xs font-semibold text-center md:flex md:flex-row md:justify-center md:text-xs  md:gap-6 ">
@@ -113,13 +115,13 @@ export default function Navbar() {
           </div> */}
       <div className="flex flex-row place-content-end w-2/5 xl:w-2/3 gap-4">
         <SearchBar />
-        <Link
-          href={"http://192.168.29.100:3000/bag"}
+        <button
+          onClick={() => router.push('/bag')}
           className="colourChangeOnHover"
         >
           <FiShoppingBag size="1.5rem" />
           <p className="hidden md:block md:navbarItemText">Bag</p>
-        </Link>
+        </button>
       </div>
 
       {/* </div> */}

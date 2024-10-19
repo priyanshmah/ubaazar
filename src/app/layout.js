@@ -6,6 +6,7 @@ import store from "@/redux/store";
 import { ABeeZee, Pacifico, Roboto } from "@next/font/google"
 import BottomBar from "@/components/ui/bottom-bar";
 import { AuthProvider } from "@/context/authContext";
+import { Analytics } from '@vercel/analytics/react'
 
 const aBeeZee = Roboto({
   subsets: ['latin'],
@@ -21,6 +22,7 @@ export default function RootLayout({ children }) {
             <Navbar />
             {children}
             <BottomBar />
+            <Analytics />
           </Provider>
         </AuthProvider>
       </body>

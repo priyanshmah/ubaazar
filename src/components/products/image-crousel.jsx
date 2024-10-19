@@ -26,15 +26,12 @@ export default function ImagesCrousel({ variants }) {
     setSelectedVariant(variants[index]);
   };
 
-  const [height, setHeight] = useState(500);
-  const [width, setWidth] = useState(500);
 
   return (
     <div
-      className={`lg:w-3/5 lg:sticky lg:top-10`}
-      style={{ height: "80vh" }}
+      className={`lg:w-3/5 lg:sticky lg:top-10 mb-10 ${styles.imageCrousel}`}
     >
-      <div className="h-full w-full flex flex-row justify-center items-center">
+      <div className="h-full w-full">
         <Swiper
           effect={"cards"}
           grabCursor={true}
@@ -53,20 +50,16 @@ export default function ImagesCrousel({ variants }) {
             width: "100%",
             paddingBottom: "2rem",
           }}
-          className="flex flex-row justify-center items-center"
           spaceBetween={25}
           loop={true}
         >
           {selectedVariant?.images?.map((image, index) => (
             <SwiperSlide
               key={index}
-              style={{
-                borderRadius: "14px",
-              }}
               className="flex flex-row justify-center items-center"
             >
               <div
-                className={` lg:h-full lg:w-1/2 rounded-xl relative`}
+                className={`h-full w-full lg:h-full lg:w-1/2 rounded-xl relative`}
                 key={index}
               >
                 <Image
