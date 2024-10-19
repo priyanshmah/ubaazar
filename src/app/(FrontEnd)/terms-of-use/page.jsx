@@ -1,324 +1,7 @@
-"use client";
-import { useContext, useState, useEffect } from "react";
-import styles from "@/styles/Auth.module.css";
-import "@/styles/globals.css";
-import { auth } from "../../../../firebase.config.js";
-import { signInWithPhoneNumber, RecaptchaVerifier } from "firebase/auth";
-import axios from "axios";
-
-import {
-  InputOTP,
-  InputOTPGroup,
-  InputOTPSeparator,
-  InputOTPSlot,
-} from "@/components/ui/input-otp";
-
-import AuthContext from "@/context/authContext.js";
-import toast, { Toaster } from "react-hot-toast";
-import { useRouter } from "next/navigation.js";
-import Loading from "@/components/ui/loading.jsx";
-import { Dialog, DialogClose, DialogContent } from "@/components/ui/dialog";
-import { FiX } from "react-icons/fi";
-
-export default function UserAuth() {
-  const [mobileNumber, setMobileNumber] = useState("");
-  const [name, setName] = useState("");
-  const [otp, setOtp] = useState("");
-  const [progress, setProgress] = useState(0);
-  const [loading, setLoading] = useState(false);
-
-  const [timer, setTimer] = useState(0);
-  const [isButtonDisabled, setIsButtonDisabled] = useState(true);
-  const [dialogOpen, setDialogOpen] = useState(false);
-  const [newUser, setNewUser] = useState(false);
-  const router = useRouter();
-
-  useEffect(() => {
-    if (timer > 0) {
-      const intervalId = setInterval(() => {
-        setTimer((prevTimer) => prevTimer - 1);
-      }, 1000);
-
-      return () => clearInterval(intervalId);
-    } else {
-      setIsButtonDisabled(false);
-    }
-  }, [timer]);
-
-  const { isLoggedIn, setIsLoggedIn } = useContext(AuthContext);
-  console.log("Login status: ", isLoggedIn);
-
-  useEffect(() => {
-    isLoggedIn && router.replace("/");
-  }, []);
-
-  const handleOtpVerification = async () => {
-    setLoading(true);
-
-    const res = await fetch("/api/auth/verify-otp", {
-      method: "POST",
-      body: JSON.stringify({
-        mobileNumber,
-        enteredOTP: otp,
-      }),
-    });
-
-    if (res.ok) {
-      const data = await res.json();
-      const message = data.message;
-
-      setNewUser(data.newUser);
-      setLoading(false);
-      setTimer(0);
-      setIsLoggedIn(true);
-
-      toast.success(message, { duration: 5000 });
-      if (!newUser) {
-        router.push("/");
-      }
-    } else {
-      const errorData = await res.json();
-      const errorMessage = errorData.error;
-
-      setLoading(false);
-      toast.error(errorMessage, { duration: 5000 });
-    }
-  };
-
-  const handleSendOtp = async () => {
-    setLoading(true);
-    setIsButtonDisabled(true);
-
-    let res = await fetch("/api/auth/send-otp", {
-      method: "POST",
-      body: JSON.stringify({
-        mobileNumber,
-      }),
-    });
-
-    if (res.ok) {
-      const data = await res.json();
-      const message = data.message;
-
-      setLoading(false);
-      toast.success(message, { duration: 5000 });
-      setProgress(1);
-      setTimer(30);
-    } else {
-      const errorData = await res.json();
-      const errorMessage = errorData.error;
-
-      setLoading(false);
-      toast.error(errorMessage, { duration: 5000 });
-    }
-  };
-
-  const handleResendOtp = async () => {
-    setIsButtonDisabled(true);
-    setLoading(true);
-
-    let res = await fetch("/api/auth/send-otp", {
-      method: "POST",
-      body: JSON.stringify({
-        mobileNumber,
-      }),
-    });
-
-    if (res.ok) {
-      const data = await res.json();
-      const message = data.message;
-
-      setLoading(false);
-      toast.success(message, { duration: 5000 });
-      setTimer(30);
-    } else {
-      const errorData = await res.json();
-      const errorMessage = errorData.error;
-
-      setLoading(false);
-      toast.error(errorMessage, { duration: 5000 });
-    }
-  };
-
-  const handleUsername = async () => {
-    setLoading(true);
-
-    let res = await fetch("/api/profile/update", {
-      method: "POST",
-      body: JSON.stringify({
-        username: name,
-      }),
-    });
-
-    if (res.ok) {
-      const data = await res.json();
-      const message = data.message;
-
-      setLoading(false);
-      toast.success(message, { duration: 5000 });
-      router.push("/");
-    } else {
-      const errorData = await res.json();
-      const errorMessage = errorData.error;
-
-      setLoading(false);
-      toast.error(errorMessage, { duration: 5000 });
-    }
-  };
-
-  return (
-    <div className="flex flex-col justify-center items-center">
-      {loading && <Loading />}
-      {progress == 0 && (
-        <div className={styles.form} style={{ minHeight: "50vh" }}>
-          <div className="flex flex-row gap-4 justify-center items-center text-darkGrayColor">
-            <h1 className="text-2xl">Login</h1>
-            <div className="text-xl text-orange">or</div>
-            <h1 className="text-2xl">Signup</h1>
-          </div>
-
-          <div className="flex flex-col gap-4">
-            <div className="flex flex-row items-center justify-start gap-4 border border-grayColor p-2 w-full">
-              <p className="border-r border-grayColor px-2 text-grayColor">
-                +91
-              </p>
-              <input
-                placeholder="Mobile Number"
-                inputMode="tel"
-                maxLength={10}
-                value={mobileNumber}
-                onChange={(e) => {
-                  e.preventDefault();
-                  setMobileNumber(e.target.value);
-                }}
-                className="text-sm focus:outline-none"
-              />
-            </div>
-            <div className="flex flex-row flex-wrap text-xs text-grayColor font-semibold gap-1">
-              <p>By continuing , I agreed to </p>
-              <button
-                onClick={() => router.push('/terms-of-use')}
-                className="text-orange"
-              >
-                Terms of use
-              </button>
-              <p>&</p>
-              <button
-                onClick={() => router.push('terms-of-use')}
-                className="text-orange"
-              >
-                Privacy policy
-              </button>
-            </div>
-          </div>
-
-          <button
-            className="bg-darkBlue text-white text-base rounded-md w-full py-2"
-            onClick={handleSendOtp}
-          >
-            Continue
-          </button>
-        </div>
-      )}
-
-      {progress == 1 && (
-        <div className={styles.form} style={{ minHeight: "60vh" }}>
-          <p className="text-xl font-semibold text-darkBlue ">
-            One Time Password
-          </p>
-
-          <p className="text-md">
-            Enter the 4-digit code sent to +91{mobileNumber}
-          </p>
-
-          <InputOTP maxLength={4} onChange={(value) => setOtp(value)}>
-            <InputOTPGroup>
-              <InputOTPSlot
-                className="h-12 w-12 border-grayColor text-3xl"
-                index={0}
-              />
-              <InputOTPSlot
-                className="h-12 w-12 border-grayColor text-3xl"
-                index={1}
-              />
-              <InputOTPSlot
-                className="h-12 w-12 border-grayColor text-3xl"
-                index={2}
-              />
-              <InputOTPSlot
-                className="h-12 w-12 border-grayColor text-3xl"
-                index={3}
-              />
-            </InputOTPGroup>
-          </InputOTP>
-
-          <div className="text-grayColor text-sm flex flex-row gap-2">
-            <p>Didn&apos;t get a code ?</p>
-            <button
-              // className={`${isButtonDisabled ? "text-grayColor" : "text-brightOrange"} font-semibold`}
-              className="text-brightOrange font-semibold"
-              onClick={handleResendOtp}
-              disabled={isButtonDisabled}
-            >
-              {isButtonDisabled ? `00:${timer}` : "Resend Code"}
-            </button>
-          </div>
-
-          <button
-            className="rounded-md w-full py-2 font-semibold bg-darkBlue text-white"
-            onClick={handleOtpVerification}
-          >
-            Submit
-          </button>
-        </div>
-      )}
-
-      {newUser && (
-        <div className={styles.form} style={{ minHeight: "40vh" }}>
-          <div>
-            <p className="text-xl text-darkBlue font-semibold">
-              Enter your name
-            </p>
-            <p className="text-grayColor text-sm">
-              Please let us know what we call the new member of our family
-            </p>
-          </div>
-
-          <input
-            placeholder="Enter your name"
-            inputMode="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            className="bg-searchBarColor p-2 px-4 rounded-md w-full"
-          />
-
-          <button
-            onClick={handleUsername}
-            className="rounded-md w-full py-2 font-semibold bg-darkBlue text-white"
-          >
-            Continue
-          </button>
-        </div>
-      )}
-      <Toaster />
-    </div>
-  );
-}
-
-const PrivacyPolicy = ({ open, setOpen }) => {
-  return (
-    <Dialog open={open}>
-      <DialogContent className="h-4/5">
-        <div className="p-4 overflow-y-auto">
-          <div
-            onClick={() => setOpen(false)}
-            className="flex flex-row-reverse hover:cursor-pointer"
-          >
-            <FiX
-              className="bg-red text-white rounded-full p-1"
-              size={"1.5rem"}
-            />
-          </div>
+export default function Legal(){
+    return (
+        <div className="flex flex-col justify-center items-center mb-20">
+        <div className="p-4 lg:w-9/12 overflow-y-auto flex flex-col gap-4">
           <h1 className="text-darkBlue text-xl font-semibold">
             Terms and Conditions
           </h1>
@@ -468,19 +151,19 @@ const PrivacyPolicy = ({ open, setOpen }) => {
           </p>
           <h1 className="text-darkBlue text-xl font-semibold">
             Privacy Policy
-          </h1>{" "}
-          <p className="text-xs text-grayColor text-justify">
-            <h2 className="text-darkBlue text-sm mt-4 font-semibold">
+          </h1>
+          <div className="text-xs text-grayColor text-justify">
+            <p className="text-darkBlue text-sm mt-4 font-semibold">
               Introduction
-            </h2>
+            </p>
             At our website, we are committed to protecting your privacy. This
             Privacy Policy explains how we collect, use, disclose, and safeguard
             your information when you visit our website. Please read this
             privacy policy carefully. If you do not agree with the terms of this
             privacy policy, please do not access the site.
-            <h2 className="text-darkBlue text-sm mt-4 font-semibold">
+            <p className="text-darkBlue text-sm mt-4 font-semibold">
               Information
-            </h2>
+            </p>
             We Collect Personal Data While using our website, we may ask you to
             provide us with certain personally identifiable information that can
             be used to contact or identify you. Personally identifiable
@@ -491,9 +174,9 @@ const PrivacyPolicy = ({ open, setOpen }) => {
             website. Non-personally identifiable information may include your
             browser type, the type of device you are using, your IP address, the
             pages you visit on our site, and other similar information.
-            <h2 className="text-darkBlue text-sm mt-4 font-semibold">
+            <p className="text-darkBlue text-sm mt-4 font-semibold">
               How we use your information
-            </h2>
+            </p>
             We use the information we collect in the following ways: To provide,
             operate, and maintain our website. To improve, personalize, and
             expand our website. To understand and analyze how you use our
@@ -503,9 +186,9 @@ const PrivacyPolicy = ({ open, setOpen }) => {
             with updates and other information relating to the website, and for
             marketing and promotional purposes. To process your transactions and
             manage your orders. To send you emails. To find and prevent fraud.
-            <h2 className="text-darkBlue text-sm mt-4 font-semibold">
+            <p className="text-darkBlue text-sm mt-4 font-semibold">
               Sharing your information
-            </h2>
+            </p>
             We do not sell, trade, or otherwise transfer to outside parties your
             Personally Identifiable Information unless we provide users with
             advance notice. This does not include website hosting partners and
@@ -514,18 +197,18 @@ const PrivacyPolicy = ({ open, setOpen }) => {
             keep this information confidential. We may also release information
             when its release is appropriate to comply with the law, enforce our
             site policies, or protect ours or others rights, property or safety.
-            <h2 className="text-darkBlue text-sm mt-4 font-semibold">
+            <p className="text-darkBlue text-sm mt-4 font-semibold">
               Security of your information
-            </h2>
+            </p>
             We use administrative, technical, and physical security measures to
             help protect your personal information. While we have taken
             reasonable steps to secure the personal information you provide to
             us, please be aware that despite our efforts, no security measures
             are perfect or impenetrable, and no method of data transmission can
             be guaranteed against any interception or other type of misuse.
-            <h2 className="text-darkBlue text-sm mt-4 font-semibold">
+            <p className="text-darkBlue text-sm mt-4 font-semibold">
               Cookies and Tracking Technologies
-            </h2>
+            </p>
             We use cookies and similar tracking technologies to track the
             activity on our website and hold certain information. Cookies are
             files with a small amount of data which may include an anonymous
@@ -534,40 +217,33 @@ const PrivacyPolicy = ({ open, setOpen }) => {
             all cookies or to indicate when a cookie is being sent. However, if
             you do not accept cookies, you may not be able to use some portions
             of our website.
-            <h2 className="text-darkBlue text-sm mt-4 font-semibold">
+            <p className="text-darkBlue text-sm mt-4 font-semibold">
               Third Party Services
-            </h2>
+            </p>
             Our website may contain links to third-party websites, products, and
             services. We do not control these third-party websites and are not
             responsible for their privacy policies or practices. We encourage
             you to review the privacy policies of any third-party websites you
             visit.
-            <h2 className="text-darkBlue text-sm mt-4 font-semibold">
+            <p className="text-darkBlue text-sm mt-4 font-semibold">
               Childrens Privacy
-            </h2>
+            </p>
             Our website does not address anyone under the age of 13. We do not
             knowingly collect personally identifiable information from children
             under 13. If we become aware that we have collected personal
             information from a child under age 13 without verification of
             parental consent, we take steps to remove that information from our
             servers.
-            <h2 className="text-darkBlue text-sm mt-4 font-semibold">
+            <p className="text-darkBlue text-sm mt-4 font-semibold">
               Changes to this Privacy Policy
-            </h2>
+            </p>
             We may update our Privacy Policy from time to time. We will notify
             you of any changes by posting the new Privacy Policy on this page.
             You are advised to review this Privacy Policy periodically for any
             changes. Changes to this Privacy Policy are effective when they are
             posted on this page.
-          </p>
-          <div
-            onClick={() => setOpen(false)}
-            className="bg-red rounded-md px-2 py-1 text-white w-fit mt-4"
-          >
-            Close
           </div>
         </div>
-      </DialogContent>
-    </Dialog>
-  );
-};
+        </div>
+    )
+}
