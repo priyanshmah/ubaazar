@@ -6,21 +6,28 @@ import img from "@/public/images/1.jpg";
 
 import AuthContext from "@/context/authContext.js";
 import { useContext, useState } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { FiLogOut } from "react-icons/fi";
 import Cookies from "js-cookie";
+import toast from "react-hot-toast";
+import { Dialog, DialogContent, DialogTrigger } from "@radix-ui/react-dialog";
 
 export default function SideBar({closeDrawer}) {
 
   const { isLoggedIn, setIsLoggedIn } = useContext(AuthContext);
   const currentPath = usePathname();
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
   const handleLogOut = () => {
 
     Cookies.remove('token');
     setIsLoggedIn(false);
+  }
+
+  const handleClick = () => {
+    router.push('/login');
     closeDrawer();
-    
   }
 
 
@@ -43,11 +50,11 @@ export default function SideBar({closeDrawer}) {
             <p className="text-sm  text-darkBlue">
               To interact and shop please
             </p>
-            <Link href={"/login"} onClick={closeDrawer}>
-              <button className="rounded-xl font-semibold w-full py-2 shadow-lg my-4 border-2 border-darkBlue text-darkBlue">
+              <button
+              onClick={handleClick}
+              className="rounded-xl font-semibold w-full py-2 shadow-lg my-4 border-2 border-darkBlue text-darkBlue">
                 Login / Signup
               </button>
-            </Link>
           </div>
         )}
         <div onClick={closeDrawer}>
@@ -79,12 +86,14 @@ export default function SideBar({closeDrawer}) {
         </div>
       </div>
 
-      <div className="flex flex-row gap-4 text-grayColor">
+      { isLoggedIn &&  <div className="flex flex-row gap-4 text-grayColor">
       <FiLogOut size={"1.5rem"}/>
         <button 
         onClick={handleLogOut}
         className="font-semibold text-grayColor">Log out</button>
-      </div>
+      </div>}
     </div>
   );
 }
+
+
