@@ -1,6 +1,6 @@
 export const getProductById = async(productId) => {
     try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_DOMAIN}/api/product`, {
+        const response = await fetch("https://www.ubaazar.com/api/product", {
             method: "POST",
             body: JSON.stringify({ productId }),
           });
