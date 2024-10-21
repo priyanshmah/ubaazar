@@ -11,8 +11,8 @@ export default function AddressForm() {
   const [pinCode, setPinCode] = useState("");
   const [address, setAddress] = useState("");
   const [area, setArea] = useState("");
-  const [city, setCity] = useState("mathura");
-  const [state, setState] = useState("Uttar Pradesh");
+  const [city, setCity] = useState("");
+  const [state, setState] = useState("");
 
   const router = useRouter();
 
@@ -33,6 +33,8 @@ export default function AddressForm() {
     setMobileNumber('');
     setPinCode('');
     setArea('');
+    setCity('');
+    setState('');
     router.replace('/bag?drawerOpen=true');
   };
 
@@ -144,10 +146,16 @@ export default function AddressForm() {
                 City / District
               </label>
               <input
-                readOnly
+                maxLength={20}
+                min={3}
+                placeholder="City"
                 type="text"
                 className={styles.input}
                 value={city}
+                onChange={(e) => {
+                  e.preventDefault();
+                  setCity(e.target.value);
+                }}
               />
             </div>
             <div className="flex flex-col">
@@ -155,10 +163,16 @@ export default function AddressForm() {
                 State
               </label>
               <input
-                readOnly
+                maxLength={20}
+                min={3}
+                placeholder="State"
                 type="text"
                 className={styles.input}
                 value={state}
+                onChange={(e) => {
+                  e.preventDefault();
+                  setState(e.target.value);
+                }}
               />
             </div>
           </div>
