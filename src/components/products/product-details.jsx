@@ -81,10 +81,10 @@ export default function ProductDetails({ productData }) {
               <FiShoppingBag size={"1.5rem"}/>
               Add to Bag
             </button>
-            <button className="flex flex-row font-semibold rounded-xl justify-center items-center text-darkBlue border-2 border-darkBlue gap-1 py-2 w-2/5">
+            {/* <button className="flex flex-row font-semibold rounded-xl justify-center items-center text-darkBlue border-2 border-darkBlue gap-1 py-2 w-2/5">
               <IoHeartCircle className="text-red" size={"1.5rem"} />
               <p>Favourite</p>
-            </button>
+            </button> */}
           </div>
         </div>
         <div className="border-2 text-darkGrayColor border-lightGrayColor text-sm rounded-2xl my-14 mx-2 py-6">

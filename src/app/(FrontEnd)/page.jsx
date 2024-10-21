@@ -48,7 +48,7 @@ export default async function Home() {
         <Sidebar />
       </div>
       <div className="md:flex md:flex-col w-full md:w-3/4 md:justify-center md:items-center">
-        <Stories />
+        {/* <Stories /> */}
         <MorePosts  feed={feed}/>
       </div>
     </div>

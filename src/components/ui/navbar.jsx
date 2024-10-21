@@ -52,7 +52,7 @@ export default function Navbar() {
         </button>
       </div>
 
-      <div className="hidden w-1/3 text-xs font-semibold text-center md:flex md:flex-row md:justify-center md:text-xs  md:gap-6 ">
+      {/* <div className="hidden w-1/3 text-xs font-semibold text-center md:flex md:flex-row md:justify-center md:text-xs  md:gap-6 ">
         <div
           className={`flex flex-col justify-center items-center gap-2 ${
             clickedState === 1 ? "text-brightOrange" : ""
@@ -72,7 +72,6 @@ export default function Navbar() {
           onClick={() => setClickedState(4)}
         >
           <LuClapperboard size={30} strokeWidth={1.5} />
-          {/* <Image src={reels} height="1rem" width="1rem"/> */}
           <p className={` ${clickedState === 4 ? "text-brightOrange" : ""}`}>
             Watch & Buy
           </p>
@@ -101,7 +100,7 @@ export default function Navbar() {
             Best Seller
           </p>
         </div>
-      </div>
+      </div> */}
 
       {/* <div className="flex flex-row mx-5 gap-4 "> */}
       {/* <div className="outline-none border-none">
@@ -114,7 +113,7 @@ export default function Navbar() {
           <p className="navbarItemText">Favourites</p>
           </div> */}
       <div className="flex flex-row place-content-end w-2/5 xl:w-2/3 gap-4">
-        <SearchBar />
+        {/* <SearchBar /> */}
         <button
           onClick={() => router.push('/bag')}
           className="colourChangeOnHover"

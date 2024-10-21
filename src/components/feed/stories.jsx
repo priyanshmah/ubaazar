@@ -2,6 +2,7 @@ import Image from "next/image";
 import { stories } from "@/public/images/categories/stories";
 
 import styles from "@/styles/Home.module.css";
+import Link from "next/link";
 
 export default function StoriesSection() {
   
@@ -11,7 +12,7 @@ export default function StoriesSection() {
         {stories.map((value, index) => {
           return (
             <div className='flex flex-col text-center gap-4' key={index}>
-              <div className={styles.storiesContainer}>
+              <Link href={"/"} className={styles.storiesContainer}>
                 <Image
                   src={value.img}
                   key={index}
@@ -19,7 +20,7 @@ export default function StoriesSection() {
                   fill
                   style={{ borderRadius: "1rem", objectFit: "cover" }}
                 />
-                </div>
+                </Link>
               <p className="text-xs lg:text-base  font-semibold text-darkGrayColor">
                 {value.description}
               </p>

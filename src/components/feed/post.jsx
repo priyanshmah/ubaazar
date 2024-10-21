@@ -68,7 +68,11 @@ export default function ProductFeed({ feed }) {
                   <p className="text-orange">U</p>
                   <p className="text-darkBlue">Baazar</p>
                 </div>
-                <div className={`${styles.imgContainer}`}>
+                <div 
+                onClick={() => handleBuyNow({ category: value.category, 
+                  slug, id: value._id
+                })}
+                className={`${styles.imgContainer} hover:cursor-pointer`}>
                   <Image
                     src={value.images[0]}
                     height={height}

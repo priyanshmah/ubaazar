@@ -64,7 +64,7 @@ export default function SideBar({closeDrawer}) {
             </p>
           </Link>
         </div>
-        <div onClick={closeDrawer}>
+        {/* <div onClick={closeDrawer}>
           <Link href={"/user/favourites"}>
             <p className={`px-4 ${currentPath === '/user/favourites' && 'bg-darkBlue text-white rounded-xl py-2 font-semibold'}`}>Favourites</p>
           </Link>
@@ -83,7 +83,7 @@ export default function SideBar({closeDrawer}) {
           <Link href={"/user/notifications"}>
             <p className={`px-4 ${currentPath === '/user/notifications' && 'bg-darkBlue text-white rounded-xl py-2 font-semibold'}`}>Notifications</p>
           </Link>
-        </div>
+        </div> */}
       </div>
 
       { isLoggedIn &&  <div className="flex flex-row gap-4 text-grayColor">
