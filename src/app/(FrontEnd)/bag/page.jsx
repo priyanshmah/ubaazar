@@ -29,6 +29,7 @@ import {
 import { useRouter } from "next/navigation";
 import { CgRadioCheck, CgRadioChecked } from "react-icons/cg";
 import { FiTrash2 } from "react-icons/fi";
+import axios from "axios";
 
 export default function Bag() {
   const [bag, setBag] = useState([]);
@@ -67,6 +68,17 @@ export default function Bag() {
 
   const handleDelete = (indexToRemove) => {
     setBag(bag.filter((value) => value.index !== indexToRemove))
+  }
+
+  const handleCheckout = async() => {
+    try {
+      const response = await axios.get('http://192.168.29.100:3000/api/checkout/pay');
+
+      console.log(response.data);
+      
+    } catch (error) {
+      console.error(error)
+    }
   }
 
   return (
@@ -147,19 +159,21 @@ export default function Bag() {
                   </DrawerTrigger>
                   <DrawerContent className="flex flex-col">
                     <div className="p-4 ">
-                      <div
+                      <button
                         onClick={() => router.push("/bag/add-address")}
                         className="m-2 p-2 font-semibold text-brightOrange rounded-xl border border-dashed border-brightOrange text-center"
                       >
                         + Add New Address
-                      </div>
+                      </button>
                       <SavedAddresses />
                     </div>
                     <DrawerFooter>
                       <DrawerClose>
-                        <div className="bg-darkBlue text-white flex flex-row justify-center items-center rounded-lg font-semibold text-lg px-8 py-2">
+                        <button 
+                        onClick={handleCheckout}
+                        className="bg-darkBlue text-white flex flex-row justify-center items-center rounded-lg font-semibold text-lg px-8 py-2">
                           Continue
-                        </div>
+                        </button>
                       </DrawerClose>
                     </DrawerFooter>
                   </DrawerContent>
