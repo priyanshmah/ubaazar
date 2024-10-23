@@ -48,7 +48,8 @@
     "tailwindcss-animate": "^1.0.7",
     "uniqid": "^5.4.0",
     "unirest": "^0.6.0",
-    "vaul": "^1.0.0"
+    "vaul": "^1.0.0",
+    "winston": "^3.15.0"
   },
   "devDependencies": {
     "eslint": "^8",
