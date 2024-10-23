@@ -74,7 +74,7 @@ export default function Bag() {
     try {
       console.log("request send");
       
-      const response = await axios.get('/api/checkout/pay');
+      const response = await axios.get(`${process.env.NEXT_PUBLIC_DOMAIN}/api/checkout/pay`);
     
       console.log(response.data);
       
