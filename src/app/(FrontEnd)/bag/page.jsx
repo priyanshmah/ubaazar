@@ -72,8 +72,10 @@ export default function Bag() {
 
   const handleCheckout = async() => {
     try {
-      const response = await axios.get('http://192.168.29.100:3000/api/checkout/pay');
-
+      console.log("request send");
+      
+      const response = await axios.get('/api/checkout/pay');
+    
       console.log(response.data);
       
     } catch (error) {

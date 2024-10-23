@@ -18,6 +18,8 @@ export async function GET(request) {
 
         const redirectUrl = `${process.env.NEXT_PUBLIC_DOMAIN}/api/checkout/pay/validate?transactionId=${merchantTransactionId}`
 
+        
+
         const payload = {
             "merchantId": process.env.NEXT_PUBLIC_PHONEPE_MERCHANT_ID,
             "merchantTransactionId": merchantTransactionId,
@@ -30,6 +32,8 @@ export async function GET(request) {
             }
         }
 
+        
+
         const bufferObj = Buffer.from(JSON.stringify(payload), "utf-8");
         const base64EncodedPayload = bufferObj.toString('base64');
 
@@ -40,16 +44,18 @@ export async function GET(request) {
 
         const options = {
             method: 'post',
-            url: `${process.env.process.env.NEXT_PUBLIC_PHONEPE_HOST_URL}${payEndPoint}`,
+            url: `${process.env.NEXT_PUBLIC_PHONEPE_HOST_URL}${payEndPoint}`,
             headers: {
                 accept: "application/json",
                 "Content-Type": "application/json",
-                "X-VERIFY": xVerify
+                "X-VERIFY": xVerify,
             },
             data: {
                 request: base64EncodedPayload
             }
         }
+
+        
 
         const response = await axios.request(options);
         console.log(response.data);
