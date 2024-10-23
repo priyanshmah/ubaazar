@@ -6,14 +6,20 @@ import axios from "axios";
 export async function GET(request) {
     try {
 
+        console.log("in the server");
+        
+
         const payEndPoint = "/pg/v1/pay"
         const merchantTransactionId = uniqid();
         const merchantUserId = uniqid();
 
+        console.log("merchant id : ", process.env.NEXT_PUBLIC_PHONEPE_MERCHANT_ID);
+        
+
         const redirectUrl = `${process.env.NEXT_PUBLIC_DOMAIN}/api/checkout/pay/validate?transactionId=${merchantTransactionId}`
 
         const payload = {
-            "merchantId": process.env.PHONEPE_MERCHANT_ID,
+            "merchantId": process.env.NEXT_PUBLIC_PHONEPE_MERCHANT_ID,
             "merchantTransactionId": merchantTransactionId,
             "merchantUserId": merchantUserId,
             "amount": 2 * 100,
@@ -28,13 +34,13 @@ export async function GET(request) {
         const base64EncodedPayload = bufferObj.toString('base64');
 
         const xVerify = sha256(
-            base64EncodedPayload + payEndPoint + process.env.PHONEPE_API_KEY
-        ) + '###' + process.env.PHONEPE_API_INDEX;
+            base64EncodedPayload + payEndPoint + process.env.NEXT_PUBLIC_PHONEPE_API_KEY
+        ) + '###' + 1;
 
 
         const options = {
             method: 'post',
-            url: `${process.env.PHONEPE_HOST_URL}${payEndPoint}`,
+            url: `${process.env.process.env.NEXT_PUBLIC_PHONEPE_HOST_URL}${payEndPoint}`,
             headers: {
                 accept: "application/json",
                 "Content-Type": "application/json",
@@ -48,9 +54,12 @@ export async function GET(request) {
         const response = await axios.request(options);
         console.log(response.data);
         const paymentUrl = (response.data.data?.instrumentResponse?.redirectInfo?.url);
+        console.log(paymentUrl);
+        
 
         if (paymentUrl) return NextResponse.redirect(paymentUrl)
         else {
+    
             return NextResponse.json({ error : response.data }, { status: 500})
         }
 
