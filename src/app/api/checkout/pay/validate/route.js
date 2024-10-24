@@ -34,7 +34,9 @@ export async function GET(request) {
 
             axios.request(config)
                 .then((response) => {
+                    
                     console.log(JSON.stringify(response.data));
+                    return NextResponse.json({ data: response.data})
                 })
                 .catch((error) => {
                     console.log(error);
