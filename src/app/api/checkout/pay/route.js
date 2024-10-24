@@ -24,7 +24,7 @@ export async function GET(request) {
         logger.info("merchant id : ", process.env.NEXT_PUBLIC_PHONEPE_MERCHANT_ID);
         
 
-        const redirectUrl = `www.ubaazar.com/api/checkout/pay/validate?transactionId=${merchantTransactionId}`
+        const redirectUrl = `https://www.ubaazar.com/api/checkout/pay/validate?transactionId=${merchantTransactionId}`
 
         
 
