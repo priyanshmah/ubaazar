@@ -24,7 +24,7 @@ export async function GET(request) {
                     accept: 'text/plain',
                     'Content-Type': 'application/json',
                     'X-VERIFY': xVerify,
-                    'X-MERCHANT-ID': transactionId,
+                    'X-MERCHANT-ID': process.env.NEXT_PUBLIC_PHONEPE_MERCHANT_ID,
                 }
             }
 
