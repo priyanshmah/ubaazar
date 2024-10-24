@@ -24,7 +24,7 @@ export async function GET(request) {
         logger.info("merchant id : ", process.env.NEXT_PUBLIC_PHONEPE_MERCHANT_ID);
         
 
-        const redirectUrl = `${process.env.NEXT_PUBLIC_DOMAIN}/api/checkout/pay/validate?transactionId=${merchantTransactionId}`
+        const redirectUrl = `/api/checkout/pay/validate?transactionId=${merchantTransactionId}`
 
         
 
