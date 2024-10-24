@@ -11,7 +11,7 @@ export async function GET(request) {
         
         if (transactionId) {
             
-            let statusUrl = `https://api-preprod.phonepe.com/apis/pg-sandbox/pg/v1/status/${process.env.NEXT_PUBLIC_PHONEPE_MERCHANT_ID}/${transactionId}`;
+            let statusUrl = `https://api.phonepe.com/apis/hermes/pg/v1/status/${process.env.NEXT_PUBLIC_PHONEPE_MERCHANT_ID}/${transactionId}`;
 
             let string = `/pg/v1/status/${process.env.NEXT_PUBLIC_PHONEPE_MERCHANT_ID}/${transactionId}` + process.env.NEXT_PUBLIC_PHONEPE_API_KEY ;
             const shaString = sha256(string);
