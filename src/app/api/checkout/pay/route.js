@@ -71,8 +71,7 @@ export async function GET(request) {
         const paymentUrl = (response.data.data?.instrumentResponse?.redirectInfo?.url);
         logger.info("Payment Url: ", paymentUrl)
 
-        const payResponse = await axios.get(paymentUrl)
-        return NextResponse.json({ data: payResponse.data})
+        return NextResponse.json({ url: paymentUrl})
         
 
         // if (paymentUrl) return NextResponse.redirect(paymentUrl)
