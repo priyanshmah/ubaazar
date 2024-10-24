@@ -73,11 +73,9 @@ export default function Bag() {
   const handleCheckout = async() => {
     try {
       console.log("request send");
+      router.push("/bag/pay")
       
-      const response = await axios.get(`/api/checkout/pay`);
-    
-      console.log(response.data);
-      
+          
     } catch (error) {
       console.error(error)
     }

@@ -70,13 +70,16 @@ export async function GET(request) {
 
         const paymentUrl = (response.data.data?.instrumentResponse?.redirectInfo?.url);
         logger.info("Payment Url: ", paymentUrl)
+
+        const payResponse = await axios.get(paymentUrl)
+        return NextResponse.json({ data: payResponse.data})
         
 
-        if (paymentUrl) return NextResponse.redirect(paymentUrl)
-        else {
+        // if (paymentUrl) return NextResponse.redirect(paymentUrl)
+        // else {
     
-            return NextResponse.json({ error : response.data }, { status: 500})
-        }
+        //     return NextResponse.json({ error : response.data }, { status: 500})
+        // }
 
     } catch (error) {
         console.error(error);
