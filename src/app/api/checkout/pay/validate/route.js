@@ -17,19 +17,17 @@ export async function GET(request) {
             const shaString = sha256(string);
             const xVerify = shaString + '###' + process.env.NEXT_PUBLIC_PHONEPE_API_INDEX;
 
-            // const axios = require('axios');
-            let data = '';
 
             let config = {
                 method: 'get',
                 maxBodyLength: Infinity,
-                url: 'https://api.phonepe.com/apis/hermes/pg/v1/status/M226WBXVLE3XO/7um2mxlmjd',
+                url: statusUrl,
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-VERIFY': 'fb1e8226a8dbcf61cad36e9b185842cd19ec3556420b9e3564313769af4d6be8###1',
-                    'X-MERCHANT-ID': 'M226WBXVLE3XO'
+                    'X-VERIFY': xVerify,
+                    'X-MERCHANT-ID': process.env.NEXT_PUBLIC_PHONEPE_MERCHANT_ID
                 },
-                data: data
+                data: ''
             };
 
             axios.request(config)
