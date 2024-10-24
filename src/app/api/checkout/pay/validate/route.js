@@ -30,15 +30,8 @@ export async function GET(request) {
                 data: ''
             };
 
-            axios.request(config)
-                .then((response) => {
-                    
-                    console.log(JSON.stringify(response.data));
-                    return NextResponse.json({ data: response.data})
-                })
-                .catch((error) => {
-                    console.log(error);
-                });
+            const response = await axios.request(config)
+        
 
 
             // const response = await axios.request(options)
@@ -50,7 +43,7 @@ export async function GET(request) {
 
             // }
 
-            // return NextResponse.json({ response: response.data })
+            return NextResponse.json({ response: response.data })
 
         }
 
