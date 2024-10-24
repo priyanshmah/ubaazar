@@ -24,7 +24,7 @@ export async function GET(request) {
                     accept: 'text/plain',
                     'Content-Type': 'application/json',
                     'X-VERIFY': xVerify,
-                    'X-MERCHANT_ID': transactionId,
+                    'X-MERCHANT-ID': transactionId,
                 }
             }
 
