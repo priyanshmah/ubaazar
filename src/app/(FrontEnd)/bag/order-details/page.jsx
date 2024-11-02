@@ -33,7 +33,7 @@ function OrderDetails() {
   });
 
   return (
-    <Suspense>
+    <Suspense fallback={<div>Loading...</div>}>
     <div className="p-4 flex flex-col gap-4">
       <div className="flex flex-col gap-4 justify-center items-center rounded-xl shadow-md p-4">
         <div
