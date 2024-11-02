@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import uniqid from 'uniqid';
 import sha256 from "sha256";
 import axios from "axios";
+import Order from "@/models/Order.models";
+import Jwt from 'jsonwebtoken'
 
 export async function GET(request) {
     try {
@@ -30,24 +32,54 @@ export async function GET(request) {
                 data: ''
             };
 
-            const response = await axios.request(config)
-        
+            const response = await axios.request(config);
+            const newOrder = await Order.findOne({ transactionId });
 
+            if (!newOrder) {
+                const token = Jwt.sign({
+                    success: false,
+                    amount: response.data?.data?.amount,
+                    transactionId: response.data?.data?.transactionId
+                },
+                    process.env.PAYMENT_STATUS_TOKEN_SECRET,
+                    { expiresIn: '5m' }
+                )
 
-            // const response = await axios.request(options)
+                return NextResponse.redirect(`${process.env.NEXT_PUBLIC_DOMAIN}/bag/order-details?token=${token}`)
+            }
+            else if (
+                response?.data?.success &&
+                response?.data?.code === "PAYMENT_SUCCESS") {
 
-            // if (response.data && response.data.code === "PAYMENT_SUCCESS") {
+                const token = Jwt.sign({
+                    success: true,
+                    amount: response.data?.data?.amount,
+                    transactionId: response.data?.data?.transactionId
+                },
+                    process.env.PAYMENT_STATUS_TOKEN_SECRET,
+                    { expiresIn: '5m' }
+                )
 
-            // }
-            // else if (response.data && response.data.code === "PAYMENT_ERROR") {
+                return NextResponse.redirect(`${process.env.NEXT_PUBLIC_DOMAIN}/bag/order-details?token=${token}`)
+            }
+            else if (
+                !(response?.data?.success) ||
+                response?.data?.code === "PAYMENT_ERROR" ||
+                response?.data?.code === "INTERNAL_SERVER_ERROR") {
 
-            // }
+                const token = Jwt.sign({
+                    success: false, 
+                    amount: response.data?.data?.amount,
+                    transactionId: response.data?.data?.transactionId
+                },
+                    process.env.PAYMENT_STATUS_TOKEN_SECRET,
+                    { expiresIn: '5m' }
+                )
 
-            return NextResponse.json({ response: response.data })
+                return NextResponse.redirect(`${process.env.NEXT_PUBLIC_DOMAIN}/bag/order-details?token=${token}`)
+            }
 
         }
-
-
 
     } catch (error) {
         console.error(error);

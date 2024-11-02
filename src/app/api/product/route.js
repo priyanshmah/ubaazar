@@ -15,6 +15,8 @@ export async function POST(req, res){
                 error: 'Product not found'
             }, {status: 404})
         }
+        console.log("product is: ", product);
+        
         return NextResponse.json({
             message: "Product data fetched successfully...",
             success: true,

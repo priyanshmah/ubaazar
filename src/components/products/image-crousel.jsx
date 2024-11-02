@@ -19,17 +19,11 @@ import SwiperCore from "swiper";
 import { Carousel } from "react-responsive-carousel";
 SwiperCore.use([Navigation, Pagination]);
 
-export default function ImagesCrousel({ variants }) {
-  const [selectedVariant, setSelectedVariant] = useState(variants?.at(0));
-
-  const handleClick = (index) => {
-    setSelectedVariant(variants[index]);
-  };
-
+export default function ImagesCrousel({ images }) {
 
   return (
     <div
-      className={`lg:w-3/5 lg:sticky lg:top-10 mb-10 ${styles.imageCrousel}`}
+      className={`lg:w-3/5 lg:sticky lg:top-10 ${styles.imageCrousel}`}
     >
       <div className="h-full w-full">
         <Swiper
@@ -53,14 +47,18 @@ export default function ImagesCrousel({ variants }) {
           spaceBetween={25}
           loop={true}
         >
-          {selectedVariant?.images?.map((image, index) => (
+          {images?.map((image, index) => (
             <SwiperSlide
               key={index}
               className="flex flex-row justify-center items-center"
             >
               <div
-                className={`h-full w-full lg:h-full lg:w-1/2 rounded-xl relative`}
+                className={`lg:h-full lg:w-full rounded-xl relative`}
                 key={index}
+                style={{
+                  height: '60vh',
+                  width: '100vw'
+                }}
               >
                 <Image
                   src={image}
@@ -82,7 +80,7 @@ export default function ImagesCrousel({ variants }) {
         />
       </div>
 
-      <div className="flex flex-row justify-center items-center gap-4">
+      {/* <div className="flex flex-row justify-center items-center gap-4">
         {variants?.map((value, index) => {
           return (
             <div
@@ -101,7 +99,7 @@ export default function ImagesCrousel({ variants }) {
             </div>
           );
         })}
-      </div>
+      </div> */}
     </div>
   );
 }

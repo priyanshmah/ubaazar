@@ -6,22 +6,18 @@
     padding-bottom: 2%;
 }
 
-.SareesCard {
-    width: 30%;
-    border: 2px solid var(--searchBarColor);
-    padding-top: 2%;
-    padding-bottom: 2%;
-    box-shadow: inset 0 -3em 3em rgba(0,0,0,0.1),
-             0 0  0 2px rgb(190, 190, 190),
-             0.3em 0.3em 1em rgba(0,0,0,0.3);
+
+.Card {
+    border: 1px solid var(--lightGrayColor);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
 }
 
 .input {
-    font-family: sans-serif;
     background-color: var(--searchBarColor);
-    padding-left: 6%;
-    padding: 4%;
-    border-radius: 14px;
+    padding: 0.875rem;
+    border-radius: 1rem;
     resize: none;
     width: 100%;
 }

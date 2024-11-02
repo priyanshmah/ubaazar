@@ -22,7 +22,7 @@ export default function SuitDetails({ productData }) {
       <div className="flex flex-col gap-6 font-semibold text-xs">
         <div className="rounded-xl shadow-md">
           <p className={styles.label}>Top Details</p>
-          <div className="flex flex-col place-content-evenly p-4 border-2 border-orange rounded-b-xl">
+          <div className="flex flex-col place-content-evenly p-4 border-2 border-brightOrange rounded-b-xl">
             <div className="flex flex-row place-content-between">
               <div className="flex flex-row gap-4 items-center justify-center">
                 <Image src={fabric} height={30} width={30} />
@@ -74,7 +74,7 @@ export default function SuitDetails({ productData }) {
         {productData.bottom && (
           <div className="rounded-xl shadow-md">
             <p className={styles.label}>Bottom Details</p>
-            <div className="flex flex-col place-content-evenly p-4 border-2 border-orange rounded-b-xl">
+            <div className="flex flex-col place-content-evenly p-4 border-2 border-brightOrange rounded-b-xl">
               <div className="flex flex-row place-content-between">
                 <div className="flex flex-row gap-4 items-center justify-center">
                   <Image src={fabric} height={30} width={30} />
@@ -109,7 +109,7 @@ export default function SuitDetails({ productData }) {
         {productData.dupatta && (
           <div className="rounded-xl shadow-md">
             <p className={styles.label}>Dupatta Details</p>
-            <div className="flex flex-col place-content-evenly p-4 border-2 border-orange rounded-b-xl">
+            <div className="flex flex-col place-content-evenly p-4 border-2 border-brightOrange rounded-b-xl">
               <div className="flex flex-row gap-8 place-content-between">
                 <div className="flex flex-row gap-4 justify-center items-center">
                   <Image src={dupatta} height={30} width={30} />
@@ -134,7 +134,7 @@ export default function SuitDetails({ productData }) {
   
         <div className="rounded-xl shadow-md font-semibold">
           <p className={styles.label}>Basic Details</p>
-          <div className="flex flex-col place-content-evenly p-4 border-2 border-orange rounded-b-xl">
+          <div className="flex flex-col place-content-evenly p-4 border-2 border-brightOrange rounded-b-xl">
             <div className="flex flex-row place-content-between">
               <div className="flex flex-row gap-4 items-center justify-center">
                 <Image src={floral} height={30} width={30} />

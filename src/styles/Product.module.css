@@ -85,7 +85,7 @@
 .label {
     padding: 1rem;
     color: white;
-    background-color: var(--orange);
+    background-color: var(--brightOrange);
     width: 100%;
     font-size: medium;
     font-weight: 600;

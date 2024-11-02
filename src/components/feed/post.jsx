@@ -48,8 +48,6 @@ export default function ProductFeed({ feed }) {
       <div className="flex flex-col justify-center items-center gap-6">
         {feed.map((value, index) => {
           const slug = stringToSlug(value.productName);
-          console.log(value.description);
-
           const words = value.description?.split(" ");
 
           const handleToggle = () => {
@@ -74,9 +72,9 @@ export default function ProductFeed({ feed }) {
                 })}
                 className={`${styles.imgContainer} hover:cursor-pointer`}>
                   <Image
-                    src={value.images[0]}
-                    height={height}
-                    width={width}
+                    src={value.images?.[0]}
+                    height={300}
+                    width={450}
                     style={{
                       objectFit: "contain",
                     }}

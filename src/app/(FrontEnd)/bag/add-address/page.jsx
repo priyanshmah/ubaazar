@@ -39,9 +39,9 @@ export default function AddressForm() {
   };
 
   return (
-    <>
+    <div className="flex flex-col justify-center items-center">
       <div
-        className="flex flex-col gap-4 m-4 border-2 border-grayColor rounded-3xl "
+        className="flex flex-col gap-4 m-4 border-2 border-grayColor rounded-3xl lg:w-1/3 "
         style={{ marginBottom: "10vh" }}
       >
         <p className="border-b-2 border-grayColor p-4 font-semibold text-darkGrayColor flex items-center justify-center">
@@ -187,6 +187,6 @@ export default function AddressForm() {
           </Link>
         </div>
       </div>
-    </>
+    </div>
   );
 }

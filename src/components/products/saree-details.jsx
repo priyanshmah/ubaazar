@@ -17,7 +17,7 @@ export default function SareeDetails({ productData }) {
   
         <div className="rounded-2xl shadow-md">
           <p className={styles.label}>Saree Details</p>
-          <div className="flex flex-col place-content-evenly p-4 border-2 border-orange rounded-b-xl">
+          <div className="flex flex-col place-content-evenly p-4 border-2 border-brightOrange rounded-b-xl">
             <div className="flex flex-row place-content-between">
               <div className="flex flex-row gap-4 items-center justify-center">
                 <Image src={tape} height={30} width={30} />
@@ -50,7 +50,7 @@ export default function SareeDetails({ productData }) {
   
         <div className="rounded-2xl shadow-md">
           <p className={styles.label}>Blouse Details</p>
-          <div className="flex flex-col place-content-evenly p-4 border-2 border-orange rounded-b-xl">
+          <div className="flex flex-col place-content-evenly p-4 border-2 border-brightOrange rounded-b-xl">
             <div className="flex flex-row place-content-between">
               <div className="flex flex-row gap-4 items-center justify-center">
                 <Image src={blouse} height={30} width={30} />
@@ -83,7 +83,7 @@ export default function SareeDetails({ productData }) {
   
         <div className="rounded-2xl shadow-md">
           <p className={styles.label}>Basic Details</p>
-          <div className="flex flex-col place-content-evenly p-4 border-2 border-orange rounded-b-xl">
+          <div className="flex flex-col place-content-evenly p-4 border-2 border-brightOrange rounded-b-xl">
             <div className="flex flex-row gap-8 place-content-between">
               <div className="flex flex-row gap-4 justify-center items-center">
                 <Image src={floral} height={30} width={30} />

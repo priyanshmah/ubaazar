@@ -14,20 +14,10 @@ export async function GET(req, res){
                 productName: 1,
                 category: 1,
                 price: 1,
-                variantIndex: {
-                    $floor: { $multiply: [{ $rand: {} }, { $size: "$variants" }] } 
-                },
-                variants: 1,
-                description: 1
-            }},
-            { $project: {
-                _id: 1,
-                productName: 1,
-                category: 1,
-                price: 1,
                 description: 1,
-                randomVariant: { $arrayElemAt: ["$variants", "$variantIndex"] } 
+                images: 1
             }},
+            
         ]);
         const feed = newPost.map((value, _) => {
             return {
@@ -35,7 +25,7 @@ export async function GET(req, res){
                 productName: value.productName,
                 category: value.category,
                 price: value.price,
-                images: value.randomVariant?.images,
+                images: value.images,
                 description: value.description
             }
         })

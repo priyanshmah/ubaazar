@@ -30,19 +30,19 @@ const suitSchema = new mongoose.Schema({
     },
     bottomType: {
         type: String,
-        required: function (){
+        required: function () {
             return this.Bottom
         }
     },
     bottomPattern: {
         type: String,
-        required: function (){
+        required: function () {
             return this.Bottom
         }
     },
     bottomFabric: {
         type: String,
-        required: function (){
+        required: function () {
             return this.Bottom
         }
     },
@@ -52,13 +52,13 @@ const suitSchema = new mongoose.Schema({
     },
     dupattaFabric: {
         type: String,
-        required: function(){
+        required: function () {
             return this.Dupatta
         }
     },
     dupattaLength: {
         type: String,
-        required: function(){
+        required: function () {
             return this.Dupatta
         }
     },
@@ -76,13 +76,17 @@ const suitSchema = new mongoose.Schema({
         required: true,
         enum: ['Hand Wash', 'Dry Clean']
     },
+    colour: {
+        type: String,
+        required: true,
+    },
+    sizes: [{
+        size: String,
+        inventory: Number,
+    }],
     variants: [{
-        colour: { type: String, required: true },
-        images: [{ type: String, required: true }],
-        inventory: [{
-            size: { type: String, required: true },
-            quantity: { type: Number, required: true }
-        }]
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Suits"
     }]
 });
 

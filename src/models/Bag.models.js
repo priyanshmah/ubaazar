@@ -23,5 +23,5 @@ const bagSchema = new mongoose.Schema({
     }
 }, { timestamps: true })
 
-export default mongoose.models.bag || mongoose.model("bag", bagSchema)
+export default mongoose.models.Bag || mongoose.model("Bag", bagSchema)
 

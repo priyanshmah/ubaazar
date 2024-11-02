@@ -44,10 +44,17 @@ const sareeSchema = new mongoose.Schema({
     required: true,
     enum: ['Hand Wash', 'Dry Clean']
    },
+   colour: {
+      type: String,
+      required: true,
+   },
+   inventory: {
+      type: Number,
+      required: [true, "Product inventory is required"]
+  },
    variants: [{
-      colour: { type: String, required: true },
-      images: [{ type: String, required: true }],
-      inventory: { type: Number, required: true }
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Sarees"
    }]
 })
 

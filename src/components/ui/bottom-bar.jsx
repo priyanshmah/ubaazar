@@ -12,14 +12,26 @@ import { BsFlower1 } from "react-icons/bs";
 
 import reels from '@/public/icons/reels.svg'
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 
 
 
 export default function BottomBar() {
-  const [clickedState, setClickedState] = useState(1);
+
+  const pathName = usePathname();
 
   return (
-    <div className='fixed bottom-0 w-full left-0 z-50 flex flex-row bg-white text-darkBlue text-xs font-semibold place-content-evenly py-2 md:hidden'>
+    <div className='fixed bottom-0 w-full left-0 z-50 flex flex-row bg-white text-darkBlue text-xs font-bold place-content-evenly py-2 md:hidden'>
+      { pathName === '/' && <HomeBottomBar />}
+    </div>
+  );
+}
+
+const HomeBottomBar = () => {
+  const [clickedState, setClickedState] = useState(1);
+
+  return(
+    <div className="flex flex-row place-content-evenly w-full">
       <div
         className={`flex flex-col justify-center items-center gap-1 ${
             clickedState === 1 ? "text-brightOrange" : ""
@@ -69,6 +81,6 @@ export default function BottomBar() {
           clickedState === 2 ? "text-brightOrange" : ""
         }`}>Best Seller</p>
       </div>
-    </div>
-  );
+      </div>
+  )
 }

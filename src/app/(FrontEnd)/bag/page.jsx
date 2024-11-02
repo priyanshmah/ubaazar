@@ -4,7 +4,7 @@ import Image from "next/image";
 
 import img from "@/public/images/1.jpg";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { CiCircleMinus, CiCirclePlus } from "react-icons/ci";
 
 import {
@@ -30,107 +30,161 @@ import { useRouter } from "next/navigation";
 import { CgRadioCheck, CgRadioChecked } from "react-icons/cg";
 import { FiTrash2 } from "react-icons/fi";
 import axios from "axios";
+import { MdCheckBox, MdCheckBoxOutlineBlank } from "react-icons/md";
+import { IoIosClose } from "react-icons/io";
+import toast, { Toaster } from "react-hot-toast";
 
 export default function Bag() {
+
+  const [total, setTotal] = useState(0);
   const [bag, setBag] = useState([]);
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [selectedItems, setSelectedItems] = useState([]);
+  const [buttonClicked, setButtonClicked] = useState(false);
+  const [selectedAddress, setSelectedAddress] = useState('');
+  const router = useRouter();
+
+  console.log("bag: ", bag);
+
+  console.log("selected items: ", selectedItems);
 
   useEffect(() => {
-    const storedBag = JSON.parse(localStorage.getItem("bag")) || [];
-    setBag(storedBag);
+    const storedBag = localStorage.getItem("bag");
+    if (storedBag) {
+      setBag(JSON.parse(storedBag));
+      setSelectedItems(JSON.parse(storedBag));
+      if (selectedItems) {
+        const totalValue = selectedItems?.reduce(
+          (acc, value) => acc + value.price,
+          0
+        );
+        setTotal(totalValue);
+      }
+    }
   }, []);
 
-  const router = useRouter();
-  const [quantity, setQuantity] = useState(1);
-  const [total, setTotal] = useState(0);
-
+  console.log("total: ", total);
   useEffect(() => {
-    if (bag && bag.length > 0) {
-
-      const totalValue = bag.reduce((acc, value) => acc + value.price, 0);
+    if (selectedItems) {
+      const totalValue = selectedItems?.reduce(
+        (acc, value) => acc + value.price,
+        0
+      );
       setTotal(totalValue);
 
-    }
-  }, [bag]);
-
-  const qtyIncrement = () => {
-    setQuantity((prev) => prev + 1);
-  };
-
-  const qtyDecrement = () => {
-    setQuantity((prev) => {
-      if (prev === 1) {
-        return 1;
+      if (selectedItems.length >= 1) {
+        setDrawerOpen(true)
       } else {
-        return prev - 1;
+        setDrawerOpen(false)
       }
-    });
-  };
-
-  const handleDelete = (indexToRemove) => {
-    setBag(bag.filter((value) => value.index !== indexToRemove))
-  }
-
-  const handleCheckout = async() => {
-    try {
-      console.log("request send");
-      const response = await axios.get('/api/checkout/pay')
-      console.log(response.data);
-      
-      router.push(response.data.url)
-      
-          
-    } catch (error) {
-      console.error(error)
     }
+
+  }, [selectedItems]);
+
+  const handleDelete = (idToBeRemoved) => {
+    let updatedBag = bag.filter((value) => value.id !== idToBeRemoved);
+
+    if (updatedBag) {
+      localStorage.setItem("bag", JSON.stringify(updatedBag));
+      setBag(updatedBag);
+    }
+
+    setSelectedItems(
+      selectedItems.filter((value) => value.id !== idToBeRemoved)
+    );
+  };
+  const removeItem = (idToBeRemoved) => {
+    let updatedItems = selectedItems.filter(
+      (value) => value.id !== idToBeRemoved
+    );
+    if (updatedItems) setSelectedItems(updatedItems);
+  };
+  const addItem = (idToBeAdded) => {
+    let updatedItems = bag.filter((value) => value.id === idToBeAdded);
+    if (updatedItems) setSelectedItems((prev) => [...prev, ...updatedItems]);
+  };
+  const handleCheckout = () => {
+    localStorage.setItem('address', JSON.stringify(selectedAddress));
+    localStorage.setItem('selectedItems', JSON.stringify(selectedItems));
+    router.push("/bag/pay");
   }
+
 
   return (
-    <>
-      <div className="py-4">
-        <h1 className="text-darkGrayColor text-2xl text-center">My Bag</h1>
-
-        <div className="flex flex-col">
-          {bag.length === 0 ? (
-            <div
-              className="flex flex-col justify-center items-center gap-8"
-              style={{ minHeight: "70vh" }}
-            >
-              <div className="h-40 w-40 relative">
-                <Image src={shoppingBags} fill className="object-contain" />
-              </div>
-              <p className="text-xl text-center font-semibold text-darkGrayColor">
-                Your Bag is too light !!! Add something yaar...❤️🌟
-              </p>
+    <div className="overflow-x-hidden bg-searchBarColor">
+      <div className="flex flex-col">
+        {bag?.length === 0 ? (
+          <div
+            className="flex flex-col justify-center items-center gap-8"
+            style={{ minHeight: "70vh" }}
+          >
+            <div className="h-40 w-40 relative">
+              <Image
+                src={shoppingBags}
+                fill
+                className="object-contain"
+                alt="empty shopping bag showing image"
+              />
             </div>
-          ) : (
-            <div
-              className="flex flex-col gap-4 p-4 place-content-between"
-              style={{ minHeight: "70vh", marginBottom: "5vh" }}
+            <p className="text-lg text-center font-medium text-darkGrayColor">
+              Your Bag is too light !!! Add something yaar...❤️🌟
+            </p>
+
+            <button
+              className="py-2 px-6 text-white rounded-lg font-medium bg-darkBlue"
+              onClick={() => router.replace("/")}
             >
-              {bag.map((value, index) => {
-                return (
+              Shop now
+            </button>
+          </div>
+        ) : (
+          <div
+            className="flex flex-col gap-4 py-4"
+            style={{ minHeight: "75vh" }}
+          >
+            {bag?.map((value, index) => {
+              return (
+                <div
+                  key={index}
+                  className="flex flex-col bg-white border-y gap-2"
+                >
+                  <div className="flex flex-row items-center place-content-between">
+                    {selectedItems.find((item) => item.id === value.id) ? (
+                      <MdCheckBox
+                        onClick={() => removeItem(value.id)}
+                        className="text-brightOrange"
+                        size={"1.5rem"}
+                      />
+                    ) : (
+                      <MdCheckBoxOutlineBlank
+                        onClick={() => addItem(value.id)}
+                        className="text-darkGrayColor"
+                        size={"1.5rem"}
+                      />
+                    )}
+                    <IoIosClose
+                      size={"1.5rem"}
+                      className="text-grayColor"
+                      onClick={() => handleDelete(value.id)}
+                    />
+                  </div>
                   <div
                     key={index}
-                    className="w-full flex flex-row items-center place-content-between border border-lightGrayColor p-4 rounded-xl shadow-md relative"
+                    className="w-full flex flex-row items-center justify-center gap-4 px-4 pb-6"
                   >
-                  <FiTrash2 
-                  onClick={() => handleDelete(index)}
-                  size={"1rem"} 
-                  className="absolute top-2 right-2 text-grayColor"
-                  />
-                    <div className="relative w-20 h-20">
+                    <div className="relative rounded-xl w-28 h-28 min-h-24">
                       <Image
                         src={value.image}
                         fill
-                        className="rounded-xl object-cover"
+                        className="object-cover rounded-md"
                       />
                     </div>
-                    <div className="w-2/3 flex flex-col gap-2 text-grayColor">
-                      <p className="text-sm font-semibold">{value.name}</p>
+                    <div className="flex flex-col text-xs text-grayColor">
+                      <p className="text-sm ">{value.productName}</p>
                       <p className="text-black text-lg">₹{value.price}</p>
-                      <div className="flex flex-row items-center place-content-between text-sm font-semibold gap-2 text-darkGrayColor">
-                        <div className="">Size: Free Size</div>
-                        <div className="flex flex-row items-center gap-2 text-brightOrange">
+                      <div className="flex flex-row items-center place-content-between text-sm font-medium gap-2 text-darkGrayColor">
+                        <div className="">Size: {value.selectedSize}</div>
+                        {/* <div className="flex flex-row items-center gap-2 text-brightOrange">
                           <CiCircleMinus
                             size={"1.5rem"}
                             strokeWidth={1}
@@ -142,57 +196,78 @@ export default function Bag() {
                             strokeWidth={1}
                             onClick={qtyIncrement}
                           />
-                        </div>
+                        </div> */}
                       </div>
                     </div>
                   </div>
-                );
-              })}
-              <div className="flex flex-row items-center place-content-between w-full bg-white py-2">
-                <div>
-                  <p className="text-grayColor">Total</p>
-                  <p className="font-semibold text-xl">₹{total}</p>
                 </div>
+              );
+            })}
+            <div className="flex flex-row items-end place-content-between w-full p-4 fixed bottom-0 left-0 bg-white">
+              <div>
+                <p className="text-grayColor">Total</p>
+                <p className="font-medium text-2xl">₹{total}</p>
+              </div>
 
-                <Drawer>
-                  <DrawerTrigger className="min-h-2 h-full">
-                    <div className="bg-darkBlue text-white flex flex-row justify-center items-center rounded-lg font-semibold text-lg px-6 h-full py-2">
-                      Checkout
-                    </div>
-                  </DrawerTrigger>
+              <Drawer>
+                <DrawerTrigger className="min-h-2 h-full">
+                  <div
+                    onClick={() => { 
+                      if (selectedItems.length >= 1) {
+                        setDrawerOpen(true)
+                        setButtonClicked(true)
+                      } else {
+                        setDrawerOpen(false)
+                        setButtonClicked(false)
+                        toast.error("Please select atleast one item")
+                      }
+                    }}
+                    className="bg-darkBlue text-white flex flex-row justify-center items-center rounded-lg font-medium text-lg px-6 h-full py-2"
+                  >
+                    Checkout
+                  </div>
+                </DrawerTrigger>
+                {drawerOpen && buttonClicked && (
                   <DrawerContent className="flex flex-col">
-                    <div className="p-4 ">
+                    <div className="p-4">
                       <button
                         onClick={() => router.push("/bag/add-address")}
                         className="m-2 p-2 font-semibold text-brightOrange rounded-xl border border-dashed border-brightOrange text-center"
                       >
                         + Add New Address
                       </button>
-                      <SavedAddresses />
+                      <SavedAddresses 
+                        selectedAddress={selectedAddress}
+                        setSelectedAddress={setSelectedAddress}  
+                      />
                     </div>
                     <DrawerFooter>
                       <DrawerClose>
-                        <button 
-                        onClick={handleCheckout}
-                        className="bg-darkBlue text-white flex flex-row justify-center items-center rounded-lg font-semibold text-lg px-8 py-2">
+                        <button
+                          onClick={handleCheckout}
+                          className="bg-darkBlue text-white flex flex-row justify-center items-center rounded-lg font-semibold text-lg px-8 py-2"
+                        >
                           Continue
                         </button>
                       </DrawerClose>
                     </DrawerFooter>
                   </DrawerContent>
-                </Drawer>
-              </div>
+                )}
+              </Drawer>
             </div>
-          )}
-        </div>
+          </div>
+        )}
       </div>
-    </>
+      <Toaster />
+    </div>
   );
 }
 
-function SavedAddresses() {
+function SavedAddresses({ selectedAddress, setSelectedAddress}) {
   let savedAddresses = JSON.parse(localStorage.getItem("addresses")) || [];
-  const [selectedAddress, setSelectedAddress] = useState(savedAddresses[0]);
+  useEffect(() => {
+    setSelectedAddress(savedAddresses[0]);
+  }, []);
 
   return (
     <div className="flex flex-col gap-4 text-grayColor text-sm">

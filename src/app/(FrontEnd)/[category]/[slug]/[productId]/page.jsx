@@ -19,6 +19,7 @@ import { notFound } from "next/navigation";
 import MorePosts from "@/components/feed/more-post";
 import { Toaster } from "react-hot-toast";
 import ProductDetails from "@/components/products/product-details";
+import Product from "@/components/products/product";
 
 
 export async function generateMetadata({ params }) {
@@ -57,12 +58,13 @@ export default async function ProductPage({ params }) {
   if (!product) {
     notFound();
   }
+
+
   
   return (
     <div>
       <div className={`flex flex-col gap-8 lg:flex-row`}>
-        <ImagesCrousel variants={product?.variants}/>
-        <ProductDetails productData={product} />
+       <Product productData={product}/>
       </div> 
       <Toaster />
       {/* <MorePosts /> */}
