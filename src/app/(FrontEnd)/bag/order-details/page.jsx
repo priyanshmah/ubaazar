@@ -1,25 +1,27 @@
 "use client";
 import { useSearchParams } from "next/navigation";
 import { FiCheck, FiX } from "react-icons/fi";
-import React, { Suspense } from "react";
+import React, { Suspense, useEffect } from "react";
 import Jwt from "jsonwebtoken";
 import Loading from "@/components/ui/loading";
 
 function OrderDetails() {
-  const searchParams = useSearchParams();
-  const token = searchParams.get("token");
   let amount = 0;
   let success = true;
   let transactionId = "null";
-
-  try {
-    const decoded = Jwt.verify(token, process.env.PAYMENT_STATUS_TOKEN_SECRET);
-    amount = decoded.amount;
-    success = decoded.success;
-    transactionId = decoded.transactionId;
-  } catch (error) {
-    success = false;
-  }
+  
+  useEffect(() => {
+    const searchParams = useSearchParams();
+    try {
+      const token = searchParams.get("token");
+      const decoded = Jwt.verify(token, process.env.PAYMENT_STATUS_TOKEN_SECRET);
+      amount = decoded.amount;
+      success = decoded.success;
+      transactionId = decoded.transactionId;
+    } catch (error) {
+      success = false;
+    }
+  }, [])
 
   const now = new Date();
   const date = now.toLocaleDateString("en-US", {
@@ -33,7 +35,6 @@ function OrderDetails() {
   });
 
   return (
-    <Suspense fallback={<div>Loading...</div>}>
     <div className="p-4 flex flex-col gap-4">
       <div className="flex flex-col gap-4 justify-center items-center rounded-xl shadow-md p-4">
         <div
@@ -101,7 +102,6 @@ function OrderDetails() {
         </div>
         </div> */}
     </div>
-    </Suspense>
   );
 }
 
