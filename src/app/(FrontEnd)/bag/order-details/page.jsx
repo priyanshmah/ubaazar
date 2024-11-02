@@ -1,8 +1,9 @@
 "use client";
 import { useSearchParams } from "next/navigation";
 import { FiCheck, FiX } from "react-icons/fi";
-import React from "react";
+import React, { Suspense } from "react";
 import Jwt from "jsonwebtoken";
+import Loading from "@/components/ui/loading";
 
 function OrderDetails() {
   const searchParams = useSearchParams();
@@ -32,6 +33,7 @@ function OrderDetails() {
   });
 
   return (
+    <Suspense fallback={Loading}>
     <div className="p-4 flex flex-col gap-4">
       <div className="flex flex-col gap-4 justify-center items-center rounded-xl shadow-md p-4">
         <div
@@ -99,6 +101,7 @@ function OrderDetails() {
         </div>
         </div> */}
     </div>
+    </Suspense>
   );
 }
 

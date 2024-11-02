@@ -11,13 +11,13 @@ export default function PaymentPage() {
   const [totalAmount, setTotalAmount] = useState("");
   const router = useRouter();
 
-  let items = JSON.parse(localStorage.getItem("selectedItems")) || [];
-  let address = JSON.parse(localStorage.getItem("address")) || {};
-
-  console.log("items: ", items);
-  console.log("address: ", address);
+  let items;
+  let address;
 
   useEffect(() => {
+    items = JSON.parse(localStorage.getItem("selectedItems")) || [];
+    address = JSON.parse(localStorage.getItem("address")) || {};
+    
     if (items) {
       if (items) {
         const amount = items?.reduce((acc, value) => acc + value.price, 0);
