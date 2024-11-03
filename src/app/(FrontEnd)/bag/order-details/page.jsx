@@ -1,27 +1,29 @@
 "use client";
 import { useSearchParams } from "next/navigation";
 import { FiCheck, FiX } from "react-icons/fi";
-import React, { Suspense, useEffect } from "react";
+import React, { Suspense, useEffect, useState } from "react";
 import Jwt from "jsonwebtoken";
 import Loading from "@/components/ui/loading";
 
-function OrderDetails() {
-  let amount = 0;
-  let success = true;
-  let transactionId = "null";
+function Details() {
+  const searchParams = useSearchParams();
+  const [amount, setAmount] = useState(0);
+  const [success, setSuccess] = useState(false);
+  const [transactionId, setTransactionId] = useState('');
   
   useEffect(() => {
-    const searchParams = useSearchParams();
     try {
       const token = searchParams.get("token");
       const decoded = Jwt.verify(token, process.env.PAYMENT_STATUS_TOKEN_SECRET);
-      amount = decoded.amount;
-      success = decoded.success;
-      transactionId = decoded.transactionId;
+
+      setAmount(decoded.amount);
+      setSuccess(decoded.success);
+      setTransactionId(decoded.transactionId);
+
     } catch (error) {
-      success = false;
+      setSuccess(false);
     }
-  }, [])
+  }, [searchParams])
 
   const now = new Date();
   const date = now.toLocaleDateString("en-US", {
@@ -105,4 +107,11 @@ function OrderDetails() {
   );
 }
 
-export default OrderDetails;
+export default function OrderDetails(){
+  return (
+    <Suspense>
+      <Details />
+    </Suspense>
+  )
+}
+
