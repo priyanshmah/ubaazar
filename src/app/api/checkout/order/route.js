@@ -6,16 +6,17 @@ import { NextResponse } from "next/server";
 import { v4 as uuid } from "uuid";
 import sha256 from "sha256";
 import axios from "axios";
+import crypto from 'crypto';
 
 export async function POST(request) {
     try {
 
-        await dbConnect();        
+        await dbConnect();
         const reqBody = await request.json();
         const { products, address, paymentMode } = reqBody;
-      
+
         if (!(Array.isArray(products)) || products.length <= 0 || !paymentMode)
-            return NextResponse.json({ message: "Products or payment mode not defined" }, { status: 404 })        
+            return NextResponse.json({ message: "Products or payment mode not defined" }, { status: 404 })
 
         if (!address.name ||
             !address.pinCode ||
@@ -25,7 +26,7 @@ export async function POST(request) {
             !address.city ||
             !address.state
         ) return NextResponse.json({ message: "Incomplete Address" }, { status: 404 })
-      
+
         const addressData = {
             name: address.name,
             pincode: address.pinCode,
@@ -37,7 +38,7 @@ export async function POST(request) {
         }
 
         const newAddress = await Address.create(addressData);
-               
+
 
         //please check the inventory left then process order and then calculate the total amount to be paid
         const productIds = products.map(item => item.product);
@@ -72,7 +73,7 @@ export async function POST(request) {
 
             totalAmount += product.price * item.quantity;
         }
-               
+
 
         if (paymentMode === 'cod') {
 
@@ -97,7 +98,7 @@ export async function POST(request) {
 
             const transactionId = uuid();
             const paymentUrl = await initializePayment(transactionId, totalAmount);
-            
+
             const orderData = {
                 products,
                 address: newAddress._id,
@@ -106,7 +107,7 @@ export async function POST(request) {
                 transactionId,
                 orderNumber: generateOrderNumber()
             }
-            const newOrder = await Order.create(orderData);            
+            const newOrder = await Order.create(orderData);
 
             if (paymentUrl) {
                 return NextResponse.json({ url: paymentUrl }, { status: 200 })
@@ -146,9 +147,13 @@ async function initializePayment(merchantTransactionId, amount) {
         const bufferObj = Buffer.from(JSON.stringify(payload), "utf-8");
         const base64EncodedPayload = bufferObj.toString('base64');
 
-        const xVerify = sha256(
-            base64EncodedPayload + payEndPoint + process.env.NEXT_PUBLIC_PHONEPE_API_KEY
-        ) + '###' + 1;
+        // const xVerify = sha256(
+        //     base64EncodedPayload + payEndPoint + process.env.NEXT_PUBLIC_PHONEPE_API_KEY
+        // ) + '###' + 1;
+
+        const xVerify = crypto.createHash('sha256')
+            .update(base64EncodedPayload + payEndPoint + process.env.NEXT_PUBLIC_PHONEPE_API_KEY)
+            .digest('hex') + '###' + 1;
 
 
         const options = {
@@ -181,7 +186,7 @@ async function initializePayment(merchantTransactionId, amount) {
 async function updateInventory(products, dbProducts) {
     const bulkOps = products.map(item => {
         const product = dbProducts.find(p => p._id.toString() === item.product);
-        
+
         if (product?.inventory) {
             return {
                 updateOne: {

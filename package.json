@@ -23,6 +23,7 @@
     "class-variance-authority": "^0.7.0",
     "cloudinary": "^2.4.0",
     "clsx": "^2.1.1",
+    "crypto": "^1.0.1",
     "firebase": "^10.13.0",
     "formidable": "^3.5.1",
     "input-otp": "^1.2.4",
