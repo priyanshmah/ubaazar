@@ -157,7 +157,7 @@ async function initializePayment(merchantTransactionId, amount) {
             "merchantId": process.env.NEXT_PUBLIC_PHONEPE_MERCHANT_ID,
             "merchantTransactionId": merchantTransactionId,
             "merchantUserId": merchantUserId,
-            "amount": amount * 100,
+            "amount": 5 * 100,
             "redirectUrl": redirectUrl,
             "redirectMode": "REDIRECT",
             "paymentInstrument": {
