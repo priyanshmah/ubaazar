@@ -6,40 +6,26 @@ import { NextResponse } from "next/server";
 import { v4 as uuid } from "uuid";
 import sha256 from "sha256";
 import axios from "axios";
-import { log } from "winston";
 
 export async function POST(request) {
     try {
 
-        await dbConnect();
-        console.log("in the method");
-        
+        await dbConnect();        
         const reqBody = await request.json();
         const { products, address, paymentMode } = reqBody;
-
-        console.log(products);
-        
-
+      
         if (!(Array.isArray(products)) || products.length <= 0 || !paymentMode)
-            return NextResponse.json({ message: "Products or payment mode not defined" }, { status: 404 })
+            return NextResponse.json({ message: "Products or payment mode not defined" }, { status: 404 })        
 
-        console.log("hello1");
-        console.log(address);
-        console.log(address.name);
-        
-
-        // if (!address.name ||
-        //     !address.pincode ||
-        //     !address.mobileNumber ||
-        //     !address.address ||
-        //     !address.area ||
-        //     !address.city ||
-        //     !address.state
-        // ) return NextResponse.json({ message: "Incomplete Address" }, { status: 404 })
-
-        console.log("hello 2");
-        
-
+        if (!address.name ||
+            !address.pinCode ||
+            !address.mobileNumber ||
+            !address.address ||
+            !address.area ||
+            !address.city ||
+            !address.state
+        ) return NextResponse.json({ message: "Incomplete Address" }, { status: 404 })
+      
         const addressData = {
             name: address.name,
             pincode: address.pinCode,
@@ -51,9 +37,7 @@ export async function POST(request) {
         }
 
         const newAddress = await Address.create(addressData);
-        
-        console.log("address created");
-        
+               
 
         //please check the inventory left then process order and then calculate the total amount to be paid
         const productIds = products.map(item => item.product);
@@ -88,9 +72,7 @@ export async function POST(request) {
 
             totalAmount += product.price * item.quantity;
         }
-       
-        console.log("total amount", totalAmount);
-        
+               
 
         if (paymentMode === 'cod') {
 
@@ -115,8 +97,6 @@ export async function POST(request) {
 
             const transactionId = uuid();
             const paymentUrl = await initializePayment(transactionId, totalAmount);
-
-            console.log("payment url: ", paymentUrl);
             
             const orderData = {
                 products,
@@ -126,9 +106,7 @@ export async function POST(request) {
                 transactionId,
                 orderNumber: generateOrderNumber()
             }
-            const newOrder = await Order.create(orderData);
-            console.log("new order: ", newOrder);
-            
+            const newOrder = await Order.create(orderData);            
 
             if (paymentUrl) {
                 return NextResponse.json({ url: paymentUrl }, { status: 200 })

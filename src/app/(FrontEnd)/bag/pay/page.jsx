@@ -11,23 +11,32 @@ export default function PaymentPage() {
   const [totalAmount, setTotalAmount] = useState("");
   const router = useRouter();
 
-  let items;
-  let address;
-
+  const [items, setItems] = useState([]);
+  const [address, setAddress] = useState({});
+  
   useEffect(() => {
-    items = JSON.parse(localStorage.getItem("selectedItems")) || [];
-    address = JSON.parse(localStorage.getItem("address")) || {};
     
-    if (items) {
-      if (items) {
-        const amount = items?.reduce((acc, value) => acc + value.price, 0);
-        setTotalAmount(amount);
-      }
-    }
+    const selectedItems = localStorage.getItem("selectedItems");
+    const savedAddress = localStorage.getItem("address");
+    
+    const parsedItems = JSON.parse(selectedItems) || [];
+    const parsedAddress = JSON.parse(savedAddress) || {};
+    
+    setItems(parsedItems);
+    setAddress(parsedAddress);
+    
   }, []);
 
+  useEffect(() => {
+    const amount = items?.reduce((acc, value) => acc + value.price, 0);
+        console.log(totalAmount);
+        
+        setTotalAmount(amount);
+  }, [items])
+
+
   const handlePlaceOrder = async () => {
-    try {
+    try {      
       const products = items?.map((value) => {
         if (value.selectedSize === "Free size") {
           return {
@@ -47,8 +56,9 @@ export default function PaymentPage() {
         address,
         paymentMode: "online",
       };
+      
       const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_DOMAIN}/api/checkout/order`,
+        `/api/checkout/order`,
         JSON.stringify(data)
       );
 
