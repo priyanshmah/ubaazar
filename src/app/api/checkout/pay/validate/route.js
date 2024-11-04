@@ -5,9 +5,12 @@ import axios from "axios";
 import Order from "@/models/Order.models";
 import Jwt from 'jsonwebtoken'
 import { log } from "winston";
+import dbConnect from "@/lib/dbConnect";
 
-export async function GET(request) {
+export async function POST(request) {
     try {
+
+        await dbConnect();
 
         const reqBody = await request.json();
         const { transactionId } = reqBody;
@@ -34,58 +37,20 @@ export async function GET(request) {
             };
 
             const response = await axios.request(config);
-            const newOrder = await Order.findOne({ transactionId });
-            console.log("response : ", response.data);
-            
-            return NextResponse.json({ 
-                amount: (response.data?.data?.amount) / 100,
-                success: response.data?.success
-            })
 
-            // if (!newOrder) {
-            //     const token = Jwt.sign({
-            //         success: false,
-            //         amount: 0,
-            //         transactionId: transactionId
-            //     },
-            //         process.env.PAYMENT_STATUS_TOKEN_SECRET,
-            //         { expiresIn: '5m' }
-            //     )
-
-            //     return NextResponse.redirect(`${process.env.NEXT_PUBLIC_DOMAIN}/bag/order-details?token=${token}`)
-            // }
             if (
                 response?.data?.success &&
                 response?.data?.code === "PAYMENT_SUCCESS") {
 
-                const token = Jwt.sign({
-                    success: true,
-                    amount: response.data?.data?.amount,
-                    transactionId: response.data?.data?.transactionId
-                },
-                    process.env.NEXT_PUBLIC_PAYMENT_STATUS_TOKEN_SECRET,
-                    { expiresIn: '5m' }
-                )
+                await Order.findOneAndUpdate({ transactionId },
+                    { paymentStatus: true }
+                );
 
-                return NextResponse.redirect(`${process.env.NEXT_PUBLIC_DOMAIN}/bag/order-details?token=${token}`)
             }
-            else if (
-                !(response?.data?.success) ||
-                response?.data?.code === "PAYMENT_ERROR" ||
-                response?.data?.code === "INTERNAL_SERVER_ERROR") {
-
-                const token = Jwt.sign({
-                    success: false,
-                    amount: response.data?.data?.amount,
-                    transactionId: response.data?.data?.transactionId
-                },
-                    process.env.NEXT_PUBLIC_PAYMENT_STATUS_TOKEN_SECRET,
-                    { expiresIn: '5m' }
-                )
-
-                return NextResponse.redirect(`${process.env.NEXT_PUBLIC_DOMAIN}/bag/order-details?token=${token}`)
-            }
-
+            return NextResponse.json({
+                amount: (response.data?.data?.amount) / 100,
+                success: response.data?.success
+            })
         }
 
     } catch (error) {

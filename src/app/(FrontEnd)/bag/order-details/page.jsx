@@ -15,17 +15,14 @@ import axios from "axios";
   useEffect(() => {
    
     async function checkPaymentStatus(token){
-      
-      console.log("request send");
-      
-      const response =  await axios.get(`${process.env.NEXT_PUBLIC_DOMAIN}/api/checkout/pay/validate`, JSON.stringify({transactionId: token}))
-      console.log("response is: ", response);
+            
+      const response =  await axios.post(`/api/checkout/pay/validate`, JSON.stringify({transactionId: token}))
       setAmount(response.data.amount);
       setSuccess(response.data.success);
       
     }
       const token = searchParams.get("transactionId");
-      setTransactionId(transactionId)
+      setTransactionId(token)
       console.log("token: ", token);
       checkPaymentStatus(token);
       
