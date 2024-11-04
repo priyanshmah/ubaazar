@@ -4,16 +4,29 @@ import { FiCheck, FiX } from "react-icons/fi";
 import React, { Suspense, useEffect, useState } from "react";
 import Jwt from "jsonwebtoken";
 import Loading from "@/components/ui/loading";
+import axios from "axios";
 
-function Details() {
+export default function Details() {
   const searchParams = useSearchParams();
   const [amount, setAmount] = useState(0);
   const [success, setSuccess] = useState(false);
   const [transactionId, setTransactionId] = useState('');
   
   useEffect(() => {
-    try {
+   
+    async function checkPaymentStatus(token){
+      
+      const response =  await axios.get(`${process.env.NEXT_PUBLIC_DOMAIN}/api/checkout/pay/validate`, JSON.stringify({transactionId: token}))
+      console.log("response is: ", response);
+      setAmount(response.data.amount);
+      setSuccess(response.data.success);
+      
+    }
       const token = searchParams.get("transactionId");
+      setTransactionId(transactionId)
+      console.log("token: ", token);
+      checkPaymentStatus(token);
+      
       // const decoded = Jwt.verify(token, process.env.NEXT_PUBLIC_PAYMENT_STATUS_TOKEN_SECRET);
 
       // console.log("decoded is: ", decoded);
@@ -22,9 +35,6 @@ function Details() {
       // setSuccess(decoded.success);
       // setTransactionId(decoded.transactionId);
 
-    } catch (error) {
-      setSuccess(false);
-    }
   }, [])
 
   const now = new Date();
@@ -109,11 +119,4 @@ function Details() {
   );
 }
 
-export default function OrderDetails(){
-  return (
-    <Suspense>
-      <Details />
-    </Suspense>
-  )
-}
 

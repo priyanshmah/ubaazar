@@ -8,8 +8,8 @@ import Jwt from 'jsonwebtoken'
 export async function GET(request) {
     try {
 
-        const { searchParams } = new URL(request.url);
-        const transactionId = searchParams.get('transactionId');
+        const reqBody = await request.json();
+        const { transactionId } = reqBody;
 
         if (transactionId) {
 
@@ -34,7 +34,10 @@ export async function GET(request) {
 
             const response = await axios.request(config);
             const newOrder = await Order.findOne({ transactionId });
-            // return NextResponse.json({ data: response.data})
+            return NextResponse.json({ 
+                amount: (response.data?.data?.amount) / 100,
+                success: response.data?.success
+            })
 
             // if (!newOrder) {
             //     const token = Jwt.sign({
@@ -69,7 +72,7 @@ export async function GET(request) {
                 response?.data?.code === "INTERNAL_SERVER_ERROR") {
 
                 const token = Jwt.sign({
-                    success: false, 
+                    success: false,
                     amount: response.data?.data?.amount,
                     transactionId: response.data?.data?.transactionId
                 },
