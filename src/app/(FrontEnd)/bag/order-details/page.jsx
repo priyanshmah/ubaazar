@@ -6,7 +6,7 @@ import Jwt from "jsonwebtoken";
 import Loading from "@/components/ui/loading";
 import axios from "axios";
 
-export default function Details() {
+ function Details() {
   const searchParams = useSearchParams();
   const [amount, setAmount] = useState(0);
   const [success, setSuccess] = useState(false);
@@ -119,4 +119,11 @@ export default function Details() {
   );
 }
 
+export default function orderDetails(){
+  return(
+    <Suspense>
+    <Details />
+    </Suspense>
+  )
+}
 
