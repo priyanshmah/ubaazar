@@ -62,9 +62,13 @@ export default function PaymentPage() {
         JSON.stringify(data)
       );
 
-      if (response.data) {
+      if (response.data.url) {
         router.push(response.data.url);
       }
+      else if (response.data.message) {
+        toast.error(response.data.message);
+      }
+      
     } catch (error) {
       console.log(error);
       toast.error("Something went wrong please try again");

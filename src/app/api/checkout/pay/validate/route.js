@@ -34,20 +34,21 @@ export async function GET(request) {
 
             const response = await axios.request(config);
             const newOrder = await Order.findOne({ transactionId });
+            // return NextResponse.json({ data: response.data})
 
-            if (!newOrder) {
-                const token = Jwt.sign({
-                    success: false,
-                    amount: response.data?.data?.amount,
-                    transactionId: response.data?.data?.transactionId
-                },
-                    process.env.PAYMENT_STATUS_TOKEN_SECRET,
-                    { expiresIn: '5m' }
-                )
+            // if (!newOrder) {
+            //     const token = Jwt.sign({
+            //         success: false,
+            //         amount: 0,
+            //         transactionId: transactionId
+            //     },
+            //         process.env.PAYMENT_STATUS_TOKEN_SECRET,
+            //         { expiresIn: '5m' }
+            //     )
 
-                return NextResponse.redirect(`${process.env.NEXT_PUBLIC_DOMAIN}/bag/order-details?token=${token}`)
-            }
-            else if (
+            //     return NextResponse.redirect(`${process.env.NEXT_PUBLIC_DOMAIN}/bag/order-details?token=${token}`)
+            // }
+            if (
                 response?.data?.success &&
                 response?.data?.code === "PAYMENT_SUCCESS") {
 
@@ -56,7 +57,7 @@ export async function GET(request) {
                     amount: response.data?.data?.amount,
                     transactionId: response.data?.data?.transactionId
                 },
-                    process.env.PAYMENT_STATUS_TOKEN_SECRET,
+                    process.env.NEXT_PUBLIC_PAYMENT_STATUS_TOKEN_SECRET,
                     { expiresIn: '5m' }
                 )
 
@@ -72,7 +73,7 @@ export async function GET(request) {
                     amount: response.data?.data?.amount,
                     transactionId: response.data?.data?.transactionId
                 },
-                    process.env.PAYMENT_STATUS_TOKEN_SECRET,
+                    process.env.NEXT_PUBLIC_PAYMENT_STATUS_TOKEN_SECRET,
                     { expiresIn: '5m' }
                 )
 

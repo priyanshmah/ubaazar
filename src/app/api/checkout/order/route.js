@@ -7,6 +7,7 @@ import { v4 as uuid } from "uuid";
 import sha256 from "sha256";
 import axios from "axios";
 import crypto from 'crypto';
+import { log } from "winston";
 
 export async function POST(request) {
     try {
@@ -108,6 +109,10 @@ export async function POST(request) {
                 orderNumber: generateOrderNumber()
             }
             const newOrder = await Order.create(orderData);
+            if (!newOrder) {
+                return NextResponse.json({ message: 'Order cancelled' }, { status: 404 })
+            }
+            
 
             if (paymentUrl) {
                 return NextResponse.json({ url: paymentUrl }, { status: 200 })
@@ -120,6 +125,7 @@ export async function POST(request) {
         console.error(error);
         return NextResponse.json({ error: error.message }, { status: 500 })
     }
+
 }
 
 async function initializePayment(merchantTransactionId, amount) {
@@ -127,10 +133,7 @@ async function initializePayment(merchantTransactionId, amount) {
 
         const payEndPoint = "/pg/v1/pay"
         const merchantUserId = uuid();
-
-        const redirectUrl = `https://www.ubaazar.com/api/checkout/pay/validate?transactionId=${merchantTransactionId}`
-
-
+        const redirectUrl = `https://www.ubaazar.com/bag/order-details?transactionId=${merchantTransactionId}`
 
         const payload = {
             "merchantId": process.env.NEXT_PUBLIC_PHONEPE_MERCHANT_ID,

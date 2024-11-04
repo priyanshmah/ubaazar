@@ -13,17 +13,19 @@ function Details() {
   
   useEffect(() => {
     try {
-      const token = searchParams.get("token");
-      const decoded = Jwt.verify(token, process.env.PAYMENT_STATUS_TOKEN_SECRET);
+      const token = searchParams.get("transactionId");
+      // const decoded = Jwt.verify(token, process.env.NEXT_PUBLIC_PAYMENT_STATUS_TOKEN_SECRET);
 
-      setAmount(decoded.amount);
-      setSuccess(decoded.success);
-      setTransactionId(decoded.transactionId);
+      // console.log("decoded is: ", decoded);
+      
+      // setAmount(decoded.amount);
+      // setSuccess(decoded.success);
+      // setTransactionId(decoded.transactionId);
 
     } catch (error) {
       setSuccess(false);
     }
-  }, [searchParams])
+  }, [])
 
   const now = new Date();
   const date = now.toLocaleDateString("en-US", {
