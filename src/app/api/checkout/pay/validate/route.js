@@ -4,6 +4,7 @@ import sha256 from "sha256";
 import axios from "axios";
 import Order from "@/models/Order.models";
 import Jwt from 'jsonwebtoken'
+import { log } from "winston";
 
 export async function GET(request) {
     try {
@@ -34,6 +35,8 @@ export async function GET(request) {
 
             const response = await axios.request(config);
             const newOrder = await Order.findOne({ transactionId });
+            console.log("response : ", response.data);
+            
             return NextResponse.json({ 
                 amount: (response.data?.data?.amount) / 100,
                 success: response.data?.success
