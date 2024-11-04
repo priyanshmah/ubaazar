@@ -7,22 +7,19 @@ import { ABeeZee, Arima, Baskervville, Crimson_Text, Lora, Merriweather, Montser
 import BottomBar from "@/components/ui/bottom-bar";
 import { AuthProvider } from "@/context/authContext";
 import { Analytics } from '@vercel/analytics/react'
+import Head from "next/head";
 
-const aBeeZee = Overlock({
-  subsets: ['latin'],
+const inter = Overlock({
+  subsets: ['latin', 'latin-ext'],
   // weight: ['400', '500', '600', '700']
-  weight: ['400']
+  weight: ['400', '700', '900']
 });
 
-const roboto = ABeeZee({
-  subsets: ['latin'],
-  weight: ['400']
-})
 
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body className={`${aBeeZee.className}`}>
+      <body className={`${inter.className}`}>
         <AuthProvider>
           <Provider store={store}>
             <header>

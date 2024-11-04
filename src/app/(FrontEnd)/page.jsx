@@ -10,6 +10,19 @@ import Post from "@/components/feed/post";
 import MorePosts from "@/components/feed/more-post";
 import dbConnect from "@/lib/dbConnect";
 import axios from "axios";
+import { Overlock, Roboto } from "next/font/google";
+
+const inter = Overlock({
+  subsets: ['latin', 'latin-ext'],
+  // weight: ['400', '500', '600', '700']
+  weight: ['400', '700', '900']
+});
+
+const roboto = Roboto({
+  subsets: ['cyrillic'],
+  weight: ['400', '500', '700', '900']
+})
+
 
 export const metadata = {
   title:

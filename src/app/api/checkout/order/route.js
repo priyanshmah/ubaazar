@@ -112,7 +112,7 @@ export async function POST(request) {
             if (!newOrder) {
                 return NextResponse.json({ message: 'Order cancelled' }, { status: 404 })
             }
-            
+
 
             if (paymentUrl) {
                 return NextResponse.json({ url: paymentUrl }, { status: 200 })
@@ -133,13 +133,13 @@ async function initializePayment(merchantTransactionId, amount) {
 
         const payEndPoint = "/pg/v1/pay"
         const merchantUserId = uuid();
-        const redirectUrl = `https://www.ubaazar.com/bag/order-details?transactionId=${merchantTransactionId}`
+        const redirectUrl = `https://www.ubaazar.com/bag/order-details/${merchantTransactionId}`
 
         const payload = {
             "merchantId": process.env.NEXT_PUBLIC_PHONEPE_MERCHANT_ID,
             "merchantTransactionId": merchantTransactionId,
             "merchantUserId": merchantUserId,
-            "amount": 5 * 100,
+            "amount": amount * 100,
             "redirectUrl": redirectUrl,
             "redirectMode": "REDIRECT",
             "paymentInstrument": {
@@ -149,10 +149,6 @@ async function initializePayment(merchantTransactionId, amount) {
 
         const bufferObj = Buffer.from(JSON.stringify(payload), "utf-8");
         const base64EncodedPayload = bufferObj.toString('base64');
-
-        // const xVerify = sha256(
-        //     base64EncodedPayload + payEndPoint + process.env.NEXT_PUBLIC_PHONEPE_API_KEY
-        // ) + '###' + 1;
 
         const xVerify = crypto.createHash('sha256')
             .update(base64EncodedPayload + payEndPoint + process.env.NEXT_PUBLIC_PHONEPE_API_KEY)
@@ -172,9 +168,7 @@ async function initializePayment(merchantTransactionId, amount) {
                 request: base64EncodedPayload
             }
         }
-
-
-
+        
         const response = await axios.request(options);
         const paymentUrl = (response.data.data?.instrumentResponse?.redirectInfo?.url);
 

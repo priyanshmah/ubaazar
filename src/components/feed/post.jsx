@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import styles from "@/styles/Home.module.css";
 import img from "@/public/images/1.jpg";
 
-import { Solway } from "@next/font/google";
+import { Roboto, Solway } from "@next/font/google";
 import {
   IoHeartOutline,
   IoHeart,
@@ -19,6 +19,11 @@ const solway = Solway({
   subsets: ["latin"],
   weight: ["500"],
 });
+
+const roboto = Roboto({
+  subsets: ['cyrillic'],
+  weight: ['400', '500', '700', '900']
+})
 
 export default function ProductFeed({ feed }) {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -45,7 +50,7 @@ export default function ProductFeed({ feed }) {
   return (
     <div className="w-full my-4 md:w-2/3 lg:w-1/2">
       {loading && <Loading />}
-      <div className="flex flex-col justify-center items-center gap-6">
+      <div className="flex flex-col justify-center items-center gap-6 ">
         {feed.map((value, index) => {
           const slug = stringToSlug(value.productName);
           const words = value.description?.split(" ");
@@ -56,7 +61,7 @@ export default function ProductFeed({ feed }) {
 
           return (
             <div
-              className={`${styles.postContainer} pb-4 border-y-1 `}
+              className={`flex flex-col gap-2 pb-4 border-y-1 `}
               key={index}
             >
               <div className="flex flex-col gap-1">
@@ -136,9 +141,9 @@ export default function ProductFeed({ feed }) {
                   Buy now
                 </button>
               </div>
-              {value.description && (
-                <div>
-                  <p className="whitespace-pre-line text-black px-2">
+              {/* {value.description && (
+                <div className="">
+                  <p className={`whitespace-pre-line ${roboto.className} px-2 text-sm text-darkGrayColor`}>
                     {isExpanded
                       ? value.description
                       : words?.slice(0, 10)?.join(" ") + "..."}
@@ -153,7 +158,7 @@ export default function ProductFeed({ feed }) {
                     )}
                   </p>
                 </div>
-              )}
+              )} */}
             </div>
           );
         })}

@@ -9,6 +9,12 @@ module.exports = {
   ],
   prefix: "",
   theme: {
+    extend: {
+      fontFamily: {
+        inter: ['Inter', 'sans-serif'],
+        roboto: ['Roboto', 'sans-serif']
+      }
+    },
     container: {
       center: true,
       padding: "2rem",

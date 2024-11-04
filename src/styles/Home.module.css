@@ -37,19 +37,6 @@
     font-weight: 600;
 }
 
-.postContainer {
-    width: 100%;
-    /* border: 1px solid var(--grayColor);
-    border-top: 1px solid var(--grayColor);
-    border-bottom: 1px solid var(--grayColor); */
-    /* border-radius: 1rem; */
-    /* padding: 4%; */
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    gap: 1.5rem;
-}
 
 .imgContainer {
     max-width: 100%;

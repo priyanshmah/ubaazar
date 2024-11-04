@@ -1,41 +1,7 @@
-"use client";
-import { useSearchParams } from "next/navigation";
+import React from "react";
 import { FiCheck, FiX } from "react-icons/fi";
-import React, { Suspense, useEffect, useState } from "react";
-import Jwt from "jsonwebtoken";
-import Loading from "@/components/ui/loading";
-import axios from "axios";
 
- function Details() {
-  const searchParams = useSearchParams();
-  const [amount, setAmount] = useState(0);
-  const [success, setSuccess] = useState(false);
-  const [transactionId, setTransactionId] = useState('');
-  
-  useEffect(() => {
-   
-    async function checkPaymentStatus(token){
-            
-      const response =  await axios.post(`/api/checkout/pay/validate`, JSON.stringify({transactionId: token}))
-      setAmount(response.data.amount);
-      setSuccess(response.data.success);
-      
-    }
-      const token = searchParams.get("transactionId");
-      setTransactionId(token)
-      console.log("token: ", token);
-      checkPaymentStatus(token);
-      
-      // const decoded = Jwt.verify(token, process.env.NEXT_PUBLIC_PAYMENT_STATUS_TOKEN_SECRET);
-
-      // console.log("decoded is: ", decoded);
-      
-      // setAmount(decoded.amount);
-      // setSuccess(decoded.success);
-      // setTransactionId(decoded.transactionId);
-
-  }, [])
-
+function OrderDetails({ response }) {
   const now = new Date();
   const date = now.toLocaleDateString("en-US", {
     month: "short",
@@ -46,16 +12,15 @@ import axios from "axios";
     minute: "2-digit",
     hour12: true,
   });
-
   return (
     <div className="p-4 flex flex-col gap-4">
       <div className="flex flex-col gap-4 justify-center items-center rounded-xl shadow-md p-4">
         <div
           className={`${
-            success ? "bg-lightGreen" : "bg-rose-50"
+            response.success ? "bg-lightGreen" : "bg-rose-50"
           } p-4 rounded-full`}
         >
-          {success ? (
+          {response.success ? (
             <FiCheck
               className="bg-green text-white rounded-full p-2"
               size={"3rem"}
@@ -64,14 +29,14 @@ import axios from "axios";
             <FiX className="bg-red text-white rounded-full p-2" size={"3rem"} />
           )}
         </div>
-        {success ? (
+        {response.success ? (
           <h1 className="text-lg text-green font-semibold">Order confirmed!</h1>
         ) : (
           <div className="flex flex-col justify-center items-center text-center gap-2">
             <h1 className="text-lg text-red font-semibold">Order cancelled</h1>
             <div className="text-grayColor text-xs">
               if any amount is debited from your account it will be credited
-              within 24 hours to 48 hours{" "}
+              within 24 hours to 48 hours
             </div>
           </div>
         )}
@@ -82,12 +47,14 @@ import axios from "axios";
         <div className="flex flex-col gap-2">
           <div className="flex flex-row items-center place-content-between">
             <div className="text-sm text-grayColor">Ref Number</div>
-            <div className="text-sm text-darkGrayColor">{transactionId}</div>
+            <div className="text-sm text-darkGrayColor">
+              {response.transactionId}
+            </div>
           </div>
           <div className="flex flex-row items-center place-content-between">
             <div className="text-sm text-grayColor">Payment Status</div>
 
-            {success ? (
+            {response.success ? (
               <div className="text-green font-semibold">success</div>
             ) : (
               <div className="text-red font-semibold">failed</div>
@@ -103,7 +70,7 @@ import axios from "axios";
         <div className="flex flex-row  place-content-between border-t-2 border-dotted border-silver pt-4">
           <div className="text-sm text-grayColor">Total Payment</div>
           <div className="text-sm font-semibold text-darkGrayColor">
-            ₹{amount}
+            ₹{response.amount || 0}
           </div>
         </div>
       </div>
@@ -118,11 +85,4 @@ import axios from "axios";
   );
 }
 
-export default function orderDetails(){
-  return(
-    <Suspense>
-    <Details />
-    </Suspense>
-  )
-}
-
+export default OrderDetails;
