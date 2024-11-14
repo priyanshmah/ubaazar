@@ -10,8 +10,6 @@ import { CiShoppingTag } from "react-icons/ci";
 import { PiCompassDuotone } from "react-icons/pi";
 import { BsFlower1 } from "react-icons/bs";
 
-import reels from '@/public/icons/reels.svg'
-import Image from "next/image";
 import { usePathname } from "next/navigation";
 
 

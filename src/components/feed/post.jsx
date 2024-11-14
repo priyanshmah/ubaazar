@@ -1,7 +1,6 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import styles from "@/styles/Home.module.css";
-import img from "@/public/images/1.jpg";
 
 import { Roboto, Solway } from "@next/font/google";
 import {
@@ -14,6 +13,11 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import Loading from "../ui/loading";
+import LayoutOne from "../layouts/one/layout_one";
+import LayoutTwo from "../layouts/two/layout_two";
+import LayoutThree from "../layouts/three/layout_three";
+import LayoutFour1 from "../layouts/four/layout_four_a";
+import LayoutFour2 from "../layouts/four/layout_four_b";
 
 const solway = Solway({
   subsets: ["latin"],
@@ -21,9 +25,9 @@ const solway = Solway({
 });
 
 const roboto = Roboto({
-  subsets: ['cyrillic'],
-  weight: ['400', '500', '700', '900']
-})
+  subsets: ["cyrillic"],
+  weight: ["400", "500", "700", "900"],
+});
 
 export default function ProductFeed({ feed }) {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -32,9 +36,6 @@ export default function ProductFeed({ feed }) {
   const [shareClicked, setShareClicked] = useState(false);
   const [loading, setLoading] = useState(false);
   const pathname = usePathname();
-
-  const [height, setHeight] = useState(500);
-  const [width, setWidth] = useState(500);
 
   const router = useRouter();
 
@@ -53,45 +54,28 @@ export default function ProductFeed({ feed }) {
       <div className="flex flex-col justify-center items-center gap-6 ">
         {feed.map((value, index) => {
           const slug = stringToSlug(value.productName);
-          const words = value.description?.split(" ");
-
-          const handleToggle = () => {
-            setIsExpanded(!isExpanded);
-          };
 
           return (
-            <div
-              className={`flex flex-col gap-2 pb-4 border-y-1 `}
-              key={index}
-            >
+            <div className={`flex flex-col border-t border-darkGrayColor w-full`} key={index}>
+              <div className={`flex flex-row gap-1 font-semibold px-2 text-lg ${solway.className}`}>
+                <p className="text-brightOrange">U</p>
+                <p className="text-darkBlue">Baazar</p>
+              </div>
               <div className="flex flex-col gap-1">
                 <div
-                  className={`flex flex-row text-xl px-2 w-full ${solway.className}`}
+                  onClick={() =>
+                    handleBuyNow({
+                      category: value.category,
+                      slug,
+                      id: value._id,
+                    })
+                  }
+                  className={`hover:cursor-pointer`}
                 >
-                  <p className="text-orange">U</p>
-                  <p className="text-darkBlue">Baazar</p>
-                </div>
-                <div 
-                onClick={() => handleBuyNow({ category: value.category, 
-                  slug, id: value._id
-                })}
-                className={`${styles.imgContainer} hover:cursor-pointer`}>
-                  <Image
-                    src={value.images?.[0]}
-                    height={300}
-                    width={450}
-                    style={{
-                      objectFit: "contain",
-                    }}
-                    key={index}
-                    onLoadingComplete={(img) => {
-                      setHeight(img.naturalHeight);
-                      setWidth(img.naturalWidth);
-                    }}
-                  />
+                  <ImageGrid images={value.images} />
                 </div>
 
-                <div className="flex flex-row w-full place-content-between px-2">
+                <div className="flex flex-row px-2 place-content-between w-[100vw]">
                   <p className="text-md font-semibold text-darkGrayColor w-4/5">
                     {value.productName}
                   </p>
@@ -102,7 +86,7 @@ export default function ProductFeed({ feed }) {
                 </div>
               </div>
 
-              <div className="flex flex-row w-full px-2 place-content-between">
+              <div className="flex flex-row px-2 w-full place-content-between">
                 <div className="flex flex-row text-darkGrayColor gap-2">
                   <div className="font-semibold">
                     {!likeClicked && (
@@ -141,24 +125,6 @@ export default function ProductFeed({ feed }) {
                   Buy now
                 </button>
               </div>
-              {/* {value.description && (
-                <div className="">
-                  <p className={`whitespace-pre-line ${roboto.className} px-2 text-sm text-darkGrayColor`}>
-                    {isExpanded
-                      ? value.description
-                      : words?.slice(0, 10)?.join(" ") + "..."}
-                    {"  "}
-                    {words?.length > 10 && (
-                      <button
-                        onClick={handleToggle}
-                        className="font-semibold text-grayColor"
-                      >
-                        {isExpanded ? "less" : "more"}
-                      </button>
-                    )}
-                  </p>
-                </div>
-              )} */}
             </div>
           );
         })}
@@ -174,4 +140,16 @@ function stringToSlug(str) {
     .replace(/[^a-z0-9\s-]/g, "")
     .replace(/\s+/g, "-")
     .replace(/-+/g, "-");
+}
+
+function ImageGrid({ images }) {
+  if (images.length === 1) return <LayoutOne images={images} />;
+  else if (images.length === 2) return <LayoutTwo images={images} />;
+  else if (images.length === 3) return <LayoutThree images={images} />;
+  else if (images.length === 4) {
+    let number = Math.random();
+
+    if (number > 0.5) return <LayoutFour1 images={images} />;
+    else return <LayoutFour2 images={images} />;
+  }
 }

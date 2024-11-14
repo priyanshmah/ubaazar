@@ -2,7 +2,6 @@
 import styles from "@/styles/Home.module.css";
 import Link from "next/link";
 import Image from "next/image";
-import img from "@/public/images/1.jpg";
 
 import AuthContext from "@/context/authContext.js";
 import { useContext, useState } from "react";

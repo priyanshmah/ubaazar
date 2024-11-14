@@ -9,12 +9,6 @@ module.exports = {
   ],
   prefix: "",
   theme: {
-    extend: {
-      fontFamily: {
-        inter: ['Inter', 'sans-serif'],
-        roboto: ['Roboto', 'sans-serif']
-      }
-    },
     container: {
       center: true,
       padding: "2rem",
@@ -96,6 +90,9 @@ module.exports = {
         "accordion-up": "accordion-up 0.2s ease-out",
         "caret-blink": "caret-blink 1.25s ease-out infinite",
       },
+      fontFamily: {
+        mona: ["var(--font-mona)"]
+      }
     },
   },
   plugins: [require("tailwindcss-animate")],

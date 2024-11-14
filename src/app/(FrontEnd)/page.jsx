@@ -12,6 +12,7 @@ import dbConnect from "@/lib/dbConnect";
 import axios from "axios";
 import { Overlock, Roboto } from "next/font/google";
 
+
 const inter = Overlock({
   subsets: ['latin', 'latin-ext'],
   // weight: ['400', '500', '600', '700']
@@ -53,7 +54,7 @@ export default async function Home() {
   const {feed} = posts.data; 
   
   return (
-    <div className="lg:flex lg:flex-row ">
+    <div className="lg:flex lg:flex-row  mb-28 overflow-x-hidden">
       <div
         className="hidden lg:flex lg:w-1/3 p-4 lg:sticky lg:top-0"
         style={{ height: "100vh" }}
@@ -61,7 +62,7 @@ export default async function Home() {
         <Sidebar />
       </div>
       <div className="md:flex md:flex-col w-full md:w-3/4 md:justify-center md:items-center">
-        {/* <Stories /> */}
+        <Stories />
         <MorePosts  feed={feed}/>
       </div>
     </div>

@@ -4,6 +4,16 @@ import styles from "@/styles/Bag.module.css";
 import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { addressSchema } from "@/schemas/addressSchema";
+import * as Yup from "yup";
+import { FiAlertCircle } from "react-icons/fi";
+import { Roboto } from "next/font/google";
+import toast, { Toaster } from "react-hot-toast";
+
+const roboto = Roboto({
+  subsets: ["cyrillic"],
+  weight: ["300", "400", "500", "700"],
+});
 
 export default function AddressForm() {
   const [name, setName] = useState("");
@@ -14,28 +24,69 @@ export default function AddressForm() {
   const [city, setCity] = useState("");
   const [state, setState] = useState("");
 
+  const [errors, setErrors] = useState({});
   const router = useRouter();
 
-  const handleAddAddress = () => {
-    let savedAddresses = JSON.parse(localStorage.getItem("addresses")) || [];
-    savedAddresses.push({
-      name,
-      mobileNumber,
-      pinCode,
-      address,
-      area,
-      city,
-      state,
-    });
-    localStorage.setItem("addresses", JSON.stringify(savedAddresses));
-    setName('');
-    setAddress('');
-    setMobileNumber('');
-    setPinCode('');
-    setArea('');
-    setCity('');
-    setState('');
-    router.replace('/bag?drawerOpen=true');
+  const handleAddAddress = async () => {
+    if (
+      !name ||
+      !mobileNumber ||
+      !pinCode ||
+      !address ||
+      !area ||
+      !city ||
+      !state
+    ) {
+      toast.error("Please fill all field first");
+      return;
+    }
+
+    try {
+      await addressSchema.validate(
+        {
+          name,
+          mobileNumber,
+          pinCode,
+          address,
+          area,
+          city,
+          state,
+        },
+        { abortEarly: false }
+      );
+
+      let savedAddresses = JSON.parse(localStorage.getItem("addresses")) || [];
+      savedAddresses.push({
+        name,
+        mobileNumber,
+        pinCode,
+        address,
+        area,
+        city,
+        state,
+      });
+      localStorage.setItem("addresses", JSON.stringify(savedAddresses));
+      setName("");
+      setAddress("");
+      setMobileNumber("");
+      setPinCode("");
+      setArea("");
+      setCity("");
+      setState("");
+      router.back();
+    } catch (error) {
+      if (error instanceof Yup.ValidationError) {
+        const errorMessages = error.errors.reduce((acc, errorMessage) => {
+          const fieldName = errorMessage.split(" ")[0].toLowerCase();
+          if (!acc[fieldName]) {
+            acc[fieldName] = errorMessage;
+          }
+
+          return acc;
+        }, {});
+        setErrors(errorMessages);
+      }
+    }
   };
 
   return (
@@ -58,13 +109,22 @@ export default function AddressForm() {
               min={3}
               type="text"
               placeholder="Your name"
-              className={styles.input}
+              className={`${styles.input}`}
               value={name}
               onChange={(e) => {
                 e.preventDefault();
                 setName(e.target.value);
               }}
             />
+            {errors.name && (
+              <div
+                className={`flex flex-row items-center justify-start gap-2 text-red font-medium ${roboto.className}`}
+                style={{ fontSize: "0.6rem" }}
+              >
+                <FiAlertCircle className="text-red" size={"0.85rem"} />
+                {errors.name}
+              </div>
+            )}
           </div>
           <div className="flex flex-col">
             <label htmlFor="mobileNumber" className={styles.label}>
@@ -84,6 +144,15 @@ export default function AddressForm() {
                 setMobileNumber(e.target.value);
               }}
             />
+            {errors.mobile && (
+              <div
+                className={`flex flex-row items-center justify-start gap-2 text-red font-medium ${roboto.className}`}
+                style={{ fontSize: "0.6rem" }}
+              >
+                <FiAlertCircle className="text-red" size={"0.85rem"} />
+                {errors.mobile}
+              </div>
+            )}
           </div>
         </div>
         <div className="flex flex-col gap-2 px-6">
@@ -105,7 +174,17 @@ export default function AddressForm() {
                 setPinCode(e.target.value);
               }}
             />
+            {errors.pincode && (
+              <div
+                className={`flex flex-row items-center justify-start gap-2 text-red font-medium ${roboto.className}`}
+                style={{ fontSize: "0.6rem" }}
+              >
+                <FiAlertCircle className="text-red" size={"0.85rem"} />
+                {errors.pincode}
+              </div>
+            )}
           </div>
+
           <div className="flex flex-col">
             <label htmlFor="name" className={styles.label}>
               Address
@@ -122,7 +201,17 @@ export default function AddressForm() {
                 setAddress(e.target.value);
               }}
             />
+            {errors.address && (
+              <div
+                className={`flex flex-row items-center justify-start gap-2 text-red font-medium ${roboto.className}`}
+                style={{ fontSize: "0.6rem" }}
+              >
+                <FiAlertCircle className="text-red" size={"0.85rem"} />
+                {errors.address}
+              </div>
+            )}
           </div>
+
           <div className="flex flex-col">
             <label htmlFor="name" className={styles.label}>
               Area / Colony
@@ -139,7 +228,17 @@ export default function AddressForm() {
                 setArea(e.target.value);
               }}
             />
+            {errors.area && (
+              <div
+                className={`flex flex-row items-center justify-start gap-2 text-red font-medium ${roboto.className}`}
+                style={{ fontSize: "0.6rem" }}
+              >
+                <FiAlertCircle className="text-red" size={"0.85rem"} />
+                {errors.area}
+              </div>
+            )}
           </div>
+
           <div className="flex flex-row place-content-between gap-4">
             <div className="flex flex-col">
               <label htmlFor="name" className={styles.label}>
@@ -157,6 +256,15 @@ export default function AddressForm() {
                   setCity(e.target.value);
                 }}
               />
+              {errors.city && (
+                <div
+                  className={`flex flex-row items-center justify-start gap-2 text-red font-medium ${roboto.className}`}
+                  style={{ fontSize: "0.6rem" }}
+                >
+                  <FiAlertCircle className="text-red" size={"0.85rem"} />
+                  {errors.city}
+                </div>
+              )}
             </div>
             <div className="flex flex-col">
               <label htmlFor="name" className={styles.label}>
@@ -174,19 +282,28 @@ export default function AddressForm() {
                   setState(e.target.value);
                 }}
               />
+              {errors.state && (
+                <div
+                  className={`flex flex-row items-center justify-start gap-2 text-red font-medium ${roboto.className}`}
+                  style={{ fontSize: "0.6rem" }}
+                >
+                  <FiAlertCircle className="text-red" size={"0.85rem"} />
+                  {errors.state}
+                </div>
+              )}
             </div>
           </div>
         </div>
         <div className="p-6">
-          <Link 
-          href={'/bag'}
-          className="bg-brightOrange text-white text-lg font-semibold rounded-xl flex flex-row justify-center items-center w-full py-2 shadow-lg"
-          onClick={handleAddAddress}
+          <button
+            className="bg-brightOrange text-white text-lg font-semibold rounded-xl flex flex-row justify-center items-center w-full py-2 shadow-lg"
+            onClick={handleAddAddress}
           >
             Add address
-          </Link>
+          </button>
         </div>
       </div>
+      <Toaster />
     </div>
   );
 }

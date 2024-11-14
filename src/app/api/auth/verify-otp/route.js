@@ -46,12 +46,22 @@ export async function POST(req) {
     const reqBody = await req.json();
     const { mobileNumber, enteredOTP } = reqBody;
 
+    if (!mobileNumber || !enteredOTP) {
+        return NextResponse.json(
+            { message: "Mobile number or OTP not found" },
+            { status: 404 }
+        )
+    }
+
     const session = await mongoose.startSession();
     session.startTransaction();
 
     try {
 
         const otpRecord = await OTPModels.findOne({ mobileNumber }).session(session);
+
+        console.log("OTP found...");
+        
 
         if (!otpRecord) {
             await session.abortTransaction();
@@ -78,20 +88,29 @@ export async function POST(req) {
         if (otpRecord.verificationCode == enteredOTP) {
             await OTPModels.deleteOne({ mobileNumber }).session(session);
 
+            console.log("otp verified");
+            
             let accessToken;
             let newUser = false;
             const existedUser = await User.findOne({ mobileNumber }).session(session);
 
+            console.log("existed user" , existedUser);
+            
             if (existedUser) {
                 ({ accessToken } = await generateAccessAndRefreshTokens(existedUser._id));
 
             } else {
-                await User.create({
+                const signupUser = await User.create([{
                     mobileNumber,
-                    username: mobileNumber
-                }, { session })
+                    username: mobileNumber,
+                    email: ''
+                }], { session })
 
-                ({ accessToken } = await generateAccessAndRefreshTokens(newUser._id));
+                if (!signupUser) {
+                    return NextResponse.json({ message: 'something went wrong'})
+                }
+
+                ({ accessToken } = await generateAccessAndRefreshTokens(signupUser._id));
 
                 newUser = true;
             }
