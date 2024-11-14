@@ -1,4 +1,3 @@
-
 import styles from "@/styles/Home.module.css";
 import "@/styles/globals.css";
 import Link from "next/link";
@@ -10,19 +9,9 @@ import Post from "@/components/feed/post";
 import MorePosts from "@/components/feed/more-post";
 import dbConnect from "@/lib/dbConnect";
 import axios from "axios";
-import { Overlock, Roboto } from "next/font/google";
+import Loading from "@/components/ui/loading";
+import { Suspense } from "react";
 
-
-const inter = Overlock({
-  subsets: ['latin', 'latin-ext'],
-  // weight: ['400', '500', '600', '700']
-  weight: ['400', '700', '900']
-});
-
-const roboto = Roboto({
-  subsets: ['cyrillic'],
-  weight: ['400', '500', '700', '900']
-})
 
 
 export const metadata = {
@@ -36,24 +25,11 @@ export const metadata = {
 };
 
 export default async function Home() {
-
-  // const [feedData, setFeedData] = useState([])
-
-  // useEffect(() => {
-  //   const fetchPosts = async () => {
-  //     const posts = await fetch(`${process.env.NEXT_PUBLIC_DOMAIN}/api/feed`, {
-  //       method: "GET",
-  //     });
-  //     const { feed } = await posts.json();
-  //     setFeedData(feed);
-  //   };
-  //   fetchPosts();
-  // }, []);
-
   const posts = await axios.get(`https://www.ubaazar.com/api/feed`);
-  const {feed} = posts.data; 
-  
+  const { feed } = posts.data;
+
   return (
+    <Suspense fallback={<Loading />}>
     <div className="lg:flex lg:flex-row  mb-28 overflow-x-hidden">
       <div
         className="hidden lg:flex lg:w-1/3 p-4 lg:sticky lg:top-0"
@@ -66,5 +42,8 @@ export default async function Home() {
         <MorePosts  feed={feed}/>
       </div>
     </div>
+    </Suspense>
   );
 }
+
+

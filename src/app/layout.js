@@ -9,6 +9,8 @@ import BottomBar from "@/components/ui/bottom-bar";
 import { AuthProvider } from "@/context/authContext";
 import { Analytics } from '@vercel/analytics/react'
 import Head from "next/head";
+import { Suspense } from "react";
+import Loading from "@/components/ui/loading";
 
 const overlock = Overlock({
   subsets: ['latin', 'latin-ext'],
@@ -26,6 +28,7 @@ const monaSans = localFont({
 })
 
 export default function RootLayout({ children }) {
+
   return (
     <html lang="en">
       <body className={`${monaSans.variable} ${overlock.className}`}>
@@ -34,7 +37,10 @@ export default function RootLayout({ children }) {
             <header>
               <Navbar />
             </header>
-            {children}
+            <Suspense fallback={<Loading />}>
+
+              {children}
+            </Suspense>
             <footer>
               <BottomBar />
             </footer>
