@@ -30,11 +30,11 @@ export default function Bag() {
   const [selectedItems, setSelectedItems] = useState([]);
   const [selectedAddress, setSelectedAddress] = useState({});
   const [allSelected, setAllSelected] = useState(true);
-  let savedAddresses = JSON.parse(localStorage.getItem("addresses")) || [];
   const router = useRouter();
-
+  
   
   useEffect(() => {
+    let savedAddresses = JSON.parse(localStorage.getItem("addresses")) || [];
     setSelectedAddress(savedAddresses?.at(-1));
 
     const storedBag = localStorage.getItem("bag");

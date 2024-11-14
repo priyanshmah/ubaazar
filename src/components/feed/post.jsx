@@ -56,7 +56,7 @@ export default function ProductFeed({ feed }) {
           const slug = stringToSlug(value.productName);
 
           return (
-            <div className={`flex flex-col border-t border-darkGrayColor w-full`} key={index}>
+            <div className={`flex flex-col border-t border-silver w-full`} key={index}>
               <div className={`flex flex-row gap-1 font-semibold px-2 text-lg ${solway.className}`}>
                 <p className="text-brightOrange">U</p>
                 <p className="text-darkBlue">Baazar</p>
