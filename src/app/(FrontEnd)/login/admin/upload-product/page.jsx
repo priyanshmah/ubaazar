@@ -1059,8 +1059,6 @@ function SelectSize({ setInventory }) {
     "4XL": { selected: false, quantity: "" },
     "5XL": { selected: false, quantity: "" },
   });
-
-  console.log("sizes", sizes);
   
   useEffect(() => {
     const selectedSizes = Object.keys(sizes)
