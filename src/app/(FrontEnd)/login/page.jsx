@@ -1,15 +1,9 @@
 "use client";
 import { useContext, useState, useEffect } from "react";
-import styles from "@/styles/Auth.module.css";
 import "@/styles/globals.css";
-import { auth } from "../../../../firebase.config.js";
-import { signInWithPhoneNumber, RecaptchaVerifier } from "firebase/auth";
-import axios from "axios";
-
 import {
   InputOTP,
   InputOTPGroup,
-  InputOTPSeparator,
   InputOTPSlot,
 } from "@/components/ui/input-otp";
 
@@ -17,8 +11,7 @@ import AuthContext from "@/context/authContext.js";
 import toast, { Toaster } from "react-hot-toast";
 import { useRouter } from "next/navigation.js";
 import Loading from "@/components/ui/loading.jsx";
-import { Dialog, DialogClose, DialogContent } from "@/components/ui/dialog";
-import { FiAlertCircle, FiX } from "react-icons/fi";
+import { FiAlertCircle } from "react-icons/fi";
 import { phoneNumberSchema } from "@/schemas/phoneNumberSchema.js";
 import { Roboto } from "next/font/google";
 

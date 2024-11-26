@@ -92,10 +92,10 @@ export default function AddressForm() {
   return (
     <div className="flex flex-col justify-center items-center">
       <div
-        className="flex flex-col gap-4 m-4 border-2 border-grayColor rounded-3xl lg:w-1/3 "
+        className="flex flex-col gap-4 m-4  border-brightOrange rounded-2xl lg:w-1/3 "
         style={{ marginBottom: "10vh" }}
       >
-        <p className="border-b-2 border-grayColor p-4 font-semibold text-darkGrayColor flex items-center justify-center">
+        <p className="border-b border-brightOrange p-2 text-lg font-semibold text-white bg-brightOrange flex items-center justify-center rounded-t-xl">
           Add new address
         </p>
         <div className="flex flex-col gap-2 px-6">

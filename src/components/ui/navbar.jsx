@@ -17,7 +17,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 
 // importing icons
@@ -36,15 +36,20 @@ import SideBar from "../feed/sidebar";
 import { usePathname, useRouter } from "next/navigation";
 
 export default function Navbar() {
-
   const pathName = usePathname();
-  const isDynamicRoute = pathName?.match(/^\/\w+\/\w+\/\w+$/);
-
   return (
-    <div className="shadow-sm flex flex-row place-content-between w-full p-3">
-      {pathName === '/bag' ? <BagNavbar />
-       : pathName === '/bag/pay' ? <PayNavbar />
-       : pathName === '/' && <HomeNavbar />}
+    <div className="shadow-sm flex flex-row place-content-between w-full py-2 px-3">
+      {pathName === "/bag" ? (
+        <CustomNavbar customText={"Shopping Bag"} />
+      ) : pathName === "/bag/pay" ? (
+        <CustomNavbar customText={"Payment"} />
+      ) : pathName === "/user/favourites" ? (
+        <CustomNavbar customText={"Favourites"} />
+      ) : pathName === "/user/orders" ? (
+        <CustomNavbar customText={"Orders"} />
+      ) : (
+        <HomeNavbar />
+      )}
     </div>
   );
 }
@@ -133,13 +138,23 @@ const Drawer = () => {
 };
 
 const HomeNavbar = () => {
+  const [bagQty, setBagQty] = useState(0);
   const router = useRouter();
+
+  useEffect(() => {
+    const storedBag = localStorage.getItem("bag") || [];
+    if (storedBag) {
+      let parsedBag = JSON.parse(storedBag);
+      setBagQty(parsedBag.length);
+    }
+  }, []);
+
   return (
     <div className="flex flex-row w-full place-content-between items-center">
       <div className="flex flex-row gap-2 justify-center items-center">
         <Drawer />
         <button
-          onClick={() => router.push('/')}
+          onClick={() => router.push("/")}
           className="flex flex-row font-serif text-2xl items-center md:text-4xl"
         >
           <p className="text-orange">U</p>
@@ -207,42 +222,31 @@ const HomeNavbar = () => {
           <IoHeartCircle className="text-pink" size={30} />
           <p className="navbarItemText">Favourites</p>
           </div> */}
-      <div className="flex flex-row place-content-end w-2/5 xl:w-2/3 gap-4">
+      <div className="flex flex-row place-content-end items-center w-2/5 lg:w-2/3 gap-4">
         <SearchBar />
-        <button
-          onClick={() => router.push('/bag')}
-          className="colourChangeOnHover"
-        >
-          <FiShoppingBag size="1.5rem" />
-          <p className="hidden md:block md:navbarItemText">Bag</p>
+        <button onClick={() => router.push("/bag")}>
+          <div className="flex flex-col relative">
+            <FiShoppingBag size="1.5rem" />
+            <p className="hidden md:block md:navbarItemText">Bag</p>
+            {bagQty > 0 && (
+              <p className="text-white font-sans bg-brightOrange rounded-full text-xs h-4 w-4 flex flex-row justify-center items-center font-semibold absolute -top-2 -right-2">
+                {bagQty}
+              </p>
+            )}
+          </div>
         </button>
       </div>
+    </div>
+  );
+};
 
-      </div>
-  )
-}
-
-const BagNavbar = () => {
-
+const CustomNavbar = ({ customText }) => {
   const router = useRouter();
 
   return (
     <div className="flex flex-row text-darkGrayColor gap-4 items-center text-lg">
-      <FiArrowLeft onClick={() => router.back()} size={'1.5rem'}/>
-      Shopping Bag
+      <FiArrowLeft onClick={() => router.back()} size={"1.5rem"} />
+      {customText}
     </div>
-  )
-}
-const PayNavbar = () => {
-
-  const router = useRouter();
-
-  return (
-    <div className="flex flex-row text-darkGrayColor gap-4 items-center text-lg">
-      <FiArrowLeft onClick={() => router.back()} size={'1.5rem'}/>
-      Payment
-    </div>
-  )
-}
-
- 
+  );
+};

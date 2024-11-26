@@ -4,15 +4,18 @@ import Order from "@/models/Order.models";
 import Product from "@/models/Product.models";
 import { NextResponse } from "next/server";
 import { v4 as uuid } from "uuid";
-import sha256 from "sha256";
 import axios from "axios";
-import crypto from 'crypto';
-import { log } from "winston";
+import crypto from 'crypto'
+import { AuthenticateUser } from "@/lib/authenticateUser";
+import User from "@/models/User.models";
+
 
 export async function POST(request) {
+    await dbConnect();
+    const user = await AuthenticateUser(request);
+   
     try {
 
-        await dbConnect();
         const reqBody = await request.json();
         const { products, address, paymentMode } = reqBody;
 
@@ -89,9 +92,21 @@ export async function POST(request) {
             const newOrder = await Order.create(orderData);
             await updateInventory(products, dbProducts);
 
+            let updatedUser;
+
+            if (user) {                
+                updatedUser = await User.findByIdAndUpdate(
+                    user._id, 
+                    { $push: { previousOrders: newOrder._id } },
+                    { new: true }
+                )
+                
+            }
+           
             return NextResponse.json({
                 message: "Order placed successfully",
-                orderId: newOrder._id
+                orderId: newOrder._id,
+                user: updatedUser
             }, { status: 200 })
 
         }
@@ -111,6 +126,16 @@ export async function POST(request) {
             const newOrder = await Order.create(orderData);
             if (!newOrder) {
                 return NextResponse.json({ message: 'Order cancelled' }, { status: 404 })
+            }
+
+            let updatedUser;
+
+            if (user) {                
+                updatedUser = await User.findByIdAndUpdate(
+                    user._id, 
+                    { $push: { previousOrders: newOrder._id } },
+                )
+                
             }
 
 

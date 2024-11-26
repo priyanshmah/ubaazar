@@ -20,13 +20,13 @@ export default function PaymentPage() {
 
   useEffect(() => {
     const selectedItems = localStorage.getItem("selectedItems");
-    const savedAddress = localStorage.getItem("address");
+    const savedAddress = localStorage.getItem("address");   
 
     let parsedItems;
     let parsedAddress;
 
     if (selectedItems) parsedItems = JSON.parse(selectedItems);
-    if (parsedAddress) parsedAddress = JSON.parse(savedAddress);
+    if (savedAddress) parsedAddress = JSON.parse(savedAddress);
 
     setItems(parsedItems || []);
     setAddress(parsedAddress || {});
@@ -60,6 +60,9 @@ export default function PaymentPage() {
         address,
         paymentMode: "online",
       };
+
+      console.log("data is: ", data);
+      
 
       const response = await axios.post(
         `/api/checkout/order`,

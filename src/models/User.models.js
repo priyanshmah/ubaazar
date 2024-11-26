@@ -28,11 +28,15 @@ const userSchema = new mongoose.Schema({
     },
     previousOrders: [{
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Product"
+        ref: "Order"
     }],
     favourites: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: "Product"
+    }],
+    savedAddresses: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Address"
     }],
     refreshToken: {
         type: String

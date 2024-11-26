@@ -10,7 +10,7 @@ const solway = Solway({
 export default function Loading() {
   return (
     <div
-      className={`fixed inset-0 flex flex-col gap-10 justify-center items-center font-norma px-2 text-5xl ${solway.className} bg-white`}
+      className={`absolute inset-0 flex flex-col opacity-70 gap-10 justify-center items-center font-normal px-2 text-5xl z-50 ${solway.className} bg-white`}
     >
       <div className="flex flex-row gap-1">
         <p className="text-brightOrange">U</p>

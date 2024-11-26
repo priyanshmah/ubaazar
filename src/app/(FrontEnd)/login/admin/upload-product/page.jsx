@@ -8,26 +8,17 @@ import {
 } from "@/components/ui/select";
 import styles from "@/styles/admin/Upload-Product.module.css";
 import "@/styles/globals.css";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { IoIosAddCircleOutline } from "react-icons/io";
 import { FiInfo, FiTrash2 } from "react-icons/fi";
 import { IoCloseCircle } from "react-icons/io5";
 import Image from "next/image";
-import { useDispatch, useSelector } from "react-redux";
-import {
-  resetCategoryData,
-  setCategoryData,
-} from "@/redux/slice/product-type/productCategorySlice";
-import { setDetails } from "@/redux/slice/productDetailSlice";
 import axios from "axios";
-import {
-  addVariant,
-  deleteVariant,
-  resetVariants,
-} from "@/redux/slice/product-type/productInventorySlice";
 import { CldUploadWidget } from "next-cloudinary";
 import toast, { Toaster } from "react-hot-toast";
 import { RotatingLines } from "react-loader-spinner";
+import AuthContext from "@/context/authContext";
+import { notFound } from "next/navigation";
 
 export default function UploadProductPage() {
   const [productName, setProductName] = useState("");
@@ -39,6 +30,9 @@ export default function UploadProductPage() {
   const [inventory, setInventory] = useState("");
   const [loading, setLoading] = useState(false);
   const [productCategoryData, setProductCategoryData] = useState({});
+
+  const { isAdmin } = useContext(AuthContext);
+
 
   const removeImage = (imageUrl) => {
     const updatedFiles = selectedImages.filter((img) => img !== imageUrl);
@@ -1066,6 +1060,8 @@ function SelectSize({ setInventory }) {
     "5XL": { selected: false, quantity: "" },
   });
 
+  console.log("sizes", sizes);
+  
   useEffect(() => {
     const selectedSizes = Object.keys(sizes)
       .filter((size) => sizes[size].selected)

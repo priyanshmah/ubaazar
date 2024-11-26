@@ -92,6 +92,11 @@ export default function Bag() {
     if (updatedItems) setSelectedItems((prev) => [...prev, ...updatedItems]);
   };
   const handleCheckout = () => {
+    if(!selectedAddress){
+      toast.error("Please select shipping address");
+      return ;
+    }
+
     localStorage.setItem("address", JSON.stringify(selectedAddress));
     localStorage.setItem("selectedItems", JSON.stringify(selectedItems));
     router.push("/bag/pay");

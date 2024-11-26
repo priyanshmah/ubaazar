@@ -26,10 +26,13 @@ const orderSchema = new mongoose.Schema({
         required: true,
         enum: ['cod', 'online']
     },
-    deliveryStatus: {
+    status: {
         type: String,
-        enum: ['pending', 'shipped', 'in-transit', 'delivered'],
-        default: 'pending'
+        enum: ['ready to ship', 'shipped', 'in-transit', 'delivered', 'cancelled'],
+        default: 'ready to ship'
+    },
+    statusMessage: {
+        type: String
     },
     transactionId: {
         type: String,

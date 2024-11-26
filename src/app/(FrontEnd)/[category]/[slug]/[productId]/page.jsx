@@ -67,7 +67,7 @@ export default async function ProductPage({ params }) {
        <Product productData={product}/>
       </div> 
       <Toaster />
-      {/* <MorePosts /> */}
+      <MorePosts />
     </div>
   );
 }

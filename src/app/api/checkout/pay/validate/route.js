@@ -1,10 +1,7 @@
 import { NextResponse } from "next/server";
-import uniqid from 'uniqid';
 import sha256 from "sha256";
 import axios from "axios";
 import Order from "@/models/Order.models";
-import Jwt from 'jsonwebtoken'
-import { log } from "winston";
 import dbConnect from "@/lib/dbConnect";
 
 export async function POST(request) {

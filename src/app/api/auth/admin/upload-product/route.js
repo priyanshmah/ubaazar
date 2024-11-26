@@ -1,20 +1,25 @@
-import multer from 'multer';
 import dbConnect from "@/lib/dbConnect";
 import Sarees from "@/models/products/Sarees.models";
 import { NextResponse } from "next/server";
-import { createRouter } from 'next-connect'
-import Cloudinary, { uploadImages } from '@/helpers/cloudinary';
 import Suits from '@/models/products/Suits&Kurtas.models';
+import { AuthenticateUser } from '@/lib/authenticateUser';
 
 
-export async function POST(req, res) {
+export async function POST(request) {
 
     dbConnect();
-    const body = await req.json();
-    console.log(body);
 
-
+    // const user = await AuthenticateUser(request);
+    // if (!user?.isSeller) {       
+    //     return NextResponse.redirect('https://www.ubaazar.com');
+    // }
+    
     try {
+        const body = await request.json();
+
+        console.log(body.productCategoryData);
+        
+
         if (body.category === 'sarees') {
             console.log("start");
 
@@ -34,7 +39,7 @@ export async function POST(req, res) {
         }
         else if (body.category === 'suits') {
 
-            const product = await Suits.create({ ...body });
+            const product = await Suits.create({ ...body, ...body?.productCategoryData });
             if (!product) {
                 return NextResponse.json({
                     error: 'Something went wrong while uploading your product'

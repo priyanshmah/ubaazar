@@ -81,8 +81,14 @@ const suitSchema = new mongoose.Schema({
         required: true,
     },
     sizes: [{
-        size: String,
-        inventory: Number,
+        size: {
+            type: String,
+            required: true
+        },
+        quantity: {
+            type: Number,
+            required: true
+        }
     }],
     variants: [{
         type: mongoose.Schema.Types.ObjectId,

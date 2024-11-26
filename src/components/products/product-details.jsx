@@ -24,10 +24,15 @@ export default function ProductDetails({
   const [addedToBag, setAddedToBag] = useState(false);
   const router = useRouter();
   let storedBag = localStorage.getItem("bag");
+  let storedFavourites = localStorage.getItem("favourites")
   let bag = [];
+  let favourites = [];
 
   if (storedBag) {
     bag = JSON.parse(storedBag);
+  }
+  if (storedFavourites) {
+    favourites = JSON.parse(storedFavourites);
   }
 
   const handleAddToBag = () => {
@@ -45,6 +50,17 @@ export default function ProductDetails({
     localStorage.setItem("bag", JSON.stringify(bag));
     toast.success("Added To Bag");
     setAddedToBag(true);
+  };
+
+  const handleAddToFavourites = () => {
+    favourites.push({
+      id: productData._id,
+      price: productData.price,
+      productName: productData.productName,
+      image: productData.images?.[0],
+    });
+    localStorage.setItem("favourites", JSON.stringify(favourites));
+    toast.success("Favourites added");
   };
 
   const goToBag = () => {
@@ -91,7 +107,7 @@ export default function ProductDetails({
           }
           {productData.category === "suits" && (
             <div className="flex flex-row overflow-y-auto gap-4">
-              {productData.inventory?.map((value, index) => {
+              {productData.sizes?.map((value, index) => {
                 if (value.quantity > 0) {
                   return (
                     <div
@@ -120,7 +136,9 @@ export default function ProductDetails({
             <FiShoppingBag size={"1.5rem"} />
             {addedToBag ? 'Go to Bag' :'Add to Bag'}
           </button>
-          <button className="flex flex-row font-bold rounded-xl justify-center items-center text-darkBlue border-2 border-darkBlue gap-1 py-2 w-2/5">
+          <button 
+          onClick={handleAddToFavourites}
+          className="flex flex-row font-bold rounded-xl justify-center items-center text-darkBlue border-2 border-darkBlue gap-1 py-2 w-2/5">
             <IoHeartCircle className="text-red" size={"1.5rem"} />
             <p>Favourite</p>
           </button>

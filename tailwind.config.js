@@ -19,12 +19,13 @@ module.exports = {
     extend: {
       colors: {
         orange: '#ff914d',
-        brightOrange: '#FF6100',
-        darkBlue: '#00224D',
+        brightOrange: '#ff6341',
+        darkBlue: '#152039',
         skyBlue: '#079EF6',
         grayColor: '#737373',
         silver: '#C0C0C0',
         teal: '#03a685',
+        yellowColor: '#FFA24C',
         green: '#23a26d',
         lightGreen: '#e5f4ed',
         pink: '#ff6678',

@@ -11,7 +11,7 @@ import Link from "next/link";
 export default function Admin({children}) {
   return (
     <div className="flex">
-      {/* <div className={styles.sideBar}>
+      <div className="hidden">
         <li className={styles.sideBarItem}>
           <Link href={"/auth/admin/dashboard"} className={styles.sideBarItems}>
             <RxDashboard size={30} />
@@ -48,7 +48,7 @@ export default function Admin({children}) {
             <p>Complains</p>
           </Link>
         </li>
-      </div> */}
+      </div>
     {children}
     </div>
   );

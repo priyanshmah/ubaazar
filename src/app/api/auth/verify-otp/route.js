@@ -12,7 +12,7 @@ const generateAccessAndRefreshTokens = async (userId) => {
         const user = await User.findById(userId);
 
         const accessToken = jwt.sign(
-            { _id: user._id },
+            { _id: user._id, isSeller: user.isSeller },
             process.env.ACCESS_TOKEN_SECRET,
             { expiresIn: process.env.ACCESS_TOKEN_EXPIRY }
         )
@@ -91,13 +91,14 @@ export async function POST(req) {
             console.log("otp verified");
             
             let accessToken;
+            let refreshToken;
             let newUser = false;
             const existedUser = await User.findOne({ mobileNumber }).session(session);
 
             console.log("existed user" , existedUser);
             
             if (existedUser) {
-                ({ accessToken } = await generateAccessAndRefreshTokens(existedUser._id));
+                ({ accessToken, refreshToken } = await generateAccessAndRefreshTokens(existedUser._id));
 
             } else {
                 const signupUser = await User.create([{
@@ -110,7 +111,7 @@ export async function POST(req) {
                     return NextResponse.json({ message: 'something went wrong'})
                 }
 
-                ({ accessToken } = await generateAccessAndRefreshTokens(signupUser._id));
+                ({ accessToken, refreshToken } = await generateAccessAndRefreshTokens(signupUser._id));
 
                 newUser = true;
             }
@@ -123,6 +124,12 @@ export async function POST(req) {
             )
 
             response.cookies.set("token", accessToken, {
+                secure: process.env.NODE_ENV === 'production',
+                sameSite: 'strict',
+                maxAge: 60 * 60 * 24 * 7,
+                path: '/'
+            })
+            response.cookies.set("refreshToken", refreshToken, {
                 secure: process.env.NODE_ENV === 'production',
                 sameSite: 'strict',
                 maxAge: 60 * 60 * 24 * 7,

@@ -6,10 +6,10 @@ import store from "@/redux/store";
 import localFont from '@next/font/local'
 import { ABeeZee, Arima, Baskervville, Crimson_Text, Lora, Merriweather, Montserrat, Nunito, Overlock, Pacifico, Poppins, Raleway, Roboto, Roboto_Serif, Roboto_Slab } from "@next/font/google"
 import BottomBar from "@/components/ui/bottom-bar";
-import { AuthProvider } from "@/context/authContext";
+import AuthContext, { AuthProvider } from "@/context/authContext";
 import { Analytics } from '@vercel/analytics/react'
 import Head from "next/head";
-import { Suspense } from "react";
+import { Suspense, useContext } from "react";
 import Loading from "@/components/ui/loading";
 
 const overlock = Overlock({
@@ -32,21 +32,21 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className={`${monaSans.variable} ${overlock.className}`}>
+            <Suspense fallback={<Loading />}>
         <AuthProvider>
           <Provider store={store}>
             <header>
               <Navbar />
             </header>
-            <Suspense fallback={<Loading />}>
 
               {children}
-            </Suspense>
             <footer>
               <BottomBar />
             </footer>
             <Analytics />
           </Provider>
         </AuthProvider>
+            </Suspense>
       </body>
     </html>
   );
