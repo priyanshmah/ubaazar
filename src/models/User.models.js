@@ -8,7 +8,6 @@ const userSchema = new mongoose.Schema({
     },
     email: {
         type: String,
-        unique: true
     },
     password: {
         type: String,
@@ -42,6 +41,8 @@ const userSchema = new mongoose.Schema({
         type: String
     },
 })
+
+userSchema.set("autoIndex", true);
 
 const User = mongoose.models.Users || mongoose.model("Users", userSchema);
 

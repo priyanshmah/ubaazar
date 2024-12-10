@@ -58,6 +58,8 @@ const sareeSchema = new mongoose.Schema({
    }]
 })
 
+sareeSchema.index({ "$**": "text" }); 
+
 const Sarees = mongoose.models.Product?.discriminators?.Sarees || 
                 Product.discriminator('Sarees', sareeSchema);
 

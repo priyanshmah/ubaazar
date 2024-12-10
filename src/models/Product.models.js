@@ -16,15 +16,24 @@ const productSchema = new mongoose.Schema({
         type: Number,
         required: [true, "Product price is required"]
     },
+    rating: {
+        type: Number,
+        default: 4.5
+    },
     images: [{
         type: String
     }],
     video: [{
         type: String,
     }]
-}, { discriminatorKey: 'productType', collection: 'products'})
+}, { discriminatorKey: 'category', collection: 'products'})
 
-const Product = mongoose.models.Product || 
+
+productSchema.index(
+    { productName: "text", description: "text", category: "text" },
+    { weights: { productName: 5, description: 2 } }
+); 
+const Product = mongoose.models?.Product || 
                 mongoose.model("Product", productSchema);
 
 

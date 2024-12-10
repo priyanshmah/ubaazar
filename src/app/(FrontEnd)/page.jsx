@@ -9,8 +9,9 @@ import Post from "@/components/feed/post";
 import MorePosts from "@/components/feed/more-post";
 import dbConnect from "@/lib/dbConnect";
 import axios from "axios";
-import Loading from "@/components/ui/loading";
+import Loading from "@/app/loading";
 import { Suspense } from "react";
+import Category from "@/components/feed/category";
 
 
 
@@ -25,22 +26,21 @@ export const metadata = {
 };
 
 export default async function Home() {
-  const posts = await axios.get(`https://www.ubaazar.com/api/feed`);
-  const { feed } = posts.data;
+  // const posts = await axios.post(`${process.env.NEXT_PUBLIC_DOMAIN}/api/feed`, JSON.stringify({
+  //   category: 'sarees'
+  // }));
+  // const { feed } = posts.data;
 
   return (
     <Suspense fallback={<Loading />}>
-    <div className="lg:flex lg:flex-row  mb-28 overflow-x-hidden">
+    <div className="overflow-x-clip">
       <div
         className="hidden lg:flex lg:w-1/3 p-4 lg:sticky lg:top-0"
         style={{ height: "100vh" }}
       >
         <Sidebar />
       </div>
-      <div className="md:flex md:flex-col w-full md:w-3/4 md:justify-center md:items-center">
-        <Stories />
-        <MorePosts  feed={feed}/>
-      </div>
+      {/* <Category feed={feed}/> */}
     </div>
     </Suspense>
   );

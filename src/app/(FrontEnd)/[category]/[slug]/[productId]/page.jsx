@@ -63,11 +63,10 @@ export default async function ProductPage({ params }) {
   
   return (
     <div>
-      <div className={`flex flex-col gap-8 lg:flex-row`}>
+      <div className={`flex flex-col gap-8 overflow-x-hidden lg:flex-row`}>
        <Product productData={product}/>
       </div> 
       <Toaster />
-      <MorePosts />
     </div>
   );
 }

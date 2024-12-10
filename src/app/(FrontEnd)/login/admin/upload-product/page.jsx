@@ -77,14 +77,14 @@ export default function UploadProductPage() {
 
       if (response.status === 200) {
         toast.success("Product uploaded successfully", { duration: 5000 });
-        setProductName("");
-        setDescription("");
-        setCategory("");
-        setPrice("");
-        setProductCategoryData("");
-        setColour("");
-        setInventory("");
-        setSelectedImages([]);
+        // setProductName("");
+        // setDescription("");
+        // setCategory("");
+        // setPrice("");
+        // setProductCategoryData("");
+        // setColour("");
+        // setInventory("");
+        // setSelectedImages([]);
       } else {
         toast.error(`${response.statusText}`, { duration: 5000 });
       }
@@ -198,6 +198,9 @@ export default function UploadProductPage() {
                     <SelectItem value="suits" className={styles.popperItem}>
                       Suits & Kurtas
                     </SelectItem>
+                    <SelectItem value="cordset" className={styles.popperItem}>
+                      Cord Sets
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -209,6 +212,9 @@ export default function UploadProductPage() {
         )}
         {category.toLowerCase() === "suits" && (
           <SuitsCard setCategoryData={setProductCategoryData} />
+        )}
+        {category.toLowerCase() === "cordset" && (
+          <CordsetCard setCategoryData={setProductCategoryData} />
         )}
       </div>
 
@@ -236,6 +242,9 @@ export default function UploadProductPage() {
                 />
               </div>
               {category === "suits" && (
+                <SelectSize setInventory={setInventory} />
+              )}
+              {category === "cordset" && (
                 <SelectSize setInventory={setInventory} />
               )}
               {category === "sarees" && (
@@ -607,21 +616,25 @@ function SareesCard({ setCategoryData}) {
 }
 
 function SuitsCard({ setCategoryData }) {
-  const [topFabric, setTopFabric] = useState("");
+
   const [topShape, setTopShape] = useState("");
-  const [topPattern, setTopPattern] = useState("");
   const [topLength, setTopLength] = useState("");
-  const [neck, setNeck] = useState("");
+  const [topFabric, setTopFabric] = useState("");
+  const [topPattern, setTopPattern] = useState("");
+
   const [bottom, setBottom] = useState("");
-  const [bottomFabric, setBottomFabric] = useState("");
   const [bottomType, setBottomType] = useState("");
+  const [bottomFabric, setBottomFabric] = useState("");
   const [bottomPattern, setBottomPattern] = useState("");
+  
+  const [neck, setNeck] = useState("");
   const [dupatta, setDupatta] = useState(false);
   const [dupattaLength, setDupattaLength] = useState("");
   const [dupattaFabric, setDupattaFabric] = useState("");
-  const [ornamentation, setOrnamentation] = useState("");
+
   const [occasion, setOcassion] = useState("");
   const [washCare, setWashCare] = useState("");
+  const [ornamentation, setOrnamentation] = useState("");
 
   useEffect(() => {
     const productCategoryData = {
@@ -966,6 +979,226 @@ function SuitsCard({ setCategoryData }) {
       </div>
     </div>
   );
+}
+
+function CordsetCard({ setCategoryData }){
+
+  const [topFabric, setTopFabric] = useState('');
+  const [topPattern, setTopPattern] = useState('');
+  const [topLength, setTopLength] = useState('');
+
+  const [bottomType, setBottomType] = useState('');
+  const [bottomFabric, setBottomFabric] = useState('');
+  const [bottomLength, setBottomLength] = useState('');
+
+  const [neck, setNeck] = useState('');
+  const [occasion, setOccasion] = useState('');
+  const [washCare, setWashCare] = useState('');
+
+  useEffect(() => {
+
+    const productCategoryData = {
+      topFabric,
+      topPattern,
+      topLength,
+      neck,
+      bottomFabric,
+      bottomType,
+      bottomLength,
+      occasion,
+      washCare
+    };
+    setCategoryData({ productCategoryData })
+
+  }, [
+    topFabric,
+    topLength,
+    topPattern,
+    bottomFabric,
+    bottomType,
+    bottomLength,
+    neck,
+    occasion,
+    washCare
+  ])
+
+  return(
+    <div className="flex flex-col lg:flex-row gap-4 text-sm">
+      <div className={`${styles.Card} flex flex-col gap-4`}>
+        <div className="text-darkBlue font-semibold text-base">Top Details</div>
+        <form className="flex flex-col gap-4">
+          <div className="flex flex-col">
+            <label htmlFor="name">Top Fabric</label>
+            <input
+              maxLength={50}
+              min={3}
+              type="text"
+              value={topFabric}
+              placeholder="Cotton or Rayon"
+              className={styles.input}
+              onChange={(e) => {
+                e.preventDefault();
+                setTopFabric(e.target.value);
+              }}
+            />
+          </div>
+          <div className="flex flex-col">
+            <label htmlFor="name" className={styles.label}>
+              Top Pattern
+            </label>
+            <input
+              maxLength={50}
+              min={3}
+              type="text"
+              value={topPattern}
+              placeholder="Floral or Solid"
+              className={styles.input}
+              onChange={(e) => {
+                e.preventDefault();
+                setTopPattern(e.target.value);
+              }}
+            />
+          </div>
+          <div className="flex flex-col">
+            <label htmlFor="name" className={styles.label}>
+              Top Length
+            </label>
+            <input
+              type="number"
+              value={topLength}
+              className={styles.input}
+              onChange={(e) => {
+                e.preventDefault();
+                setTopLength(e.target.value);
+              }}
+            />
+          </div>
+
+          <div className="flex flex-col">
+            <label htmlFor="name" className={styles.label}>
+              Neck
+            </label>
+            <Select value={neck} onValueChange={(value) => setNeck(value)}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select" />
+              </SelectTrigger>
+              <SelectContent className={styles.popper} position="popper">
+                <SelectItem value="V-Neck" className={styles.popperItem}>
+                  V-Neck
+                </SelectItem>
+                <SelectItem value="Round-Neck" className={styles.popperItem}>
+                  Round-Neck
+                </SelectItem>
+                <SelectItem value="Collar" className={styles.popperItem}>
+                  Collar Neck
+                </SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </form>
+      </div>
+
+      <div className={`${styles.Card} flex flex-col gap-4`}>
+        <div className="text-darkBlue font-semibold text-base">
+          Bottom Details
+        </div>
+        <form className="flex flex-col gap-4">
+          <div className="flex flex-col">
+            <label htmlFor="name">Bottom Fabric</label>
+            <input
+              maxLength={50}
+              min={3}
+              type="text"
+              placeholder="Cotton or Rayon"
+              value={bottomFabric}
+              className={styles.input}
+              onChange={(e) => {
+                e.preventDefault();
+                setBottomFabric(e.target.value);
+              }}
+            />
+          </div>
+          <div className="flex flex-col">
+            <label htmlFor="name">Bottom Type</label>
+            <input
+              maxLength={50}
+              min={3}
+              type="text"
+              value={bottomType}
+              placeholder="Pant or Plazzo"
+              className={styles.input}
+              onChange={(e) => {
+                e.preventDefault();
+                setBottomType(e.target.value);
+              }}
+            />
+          </div>
+          <div className="flex flex-col">
+            <label htmlFor="name" className={styles.label}>
+              Bottom Length
+            </label>
+            <input
+              type="number"
+              value={bottomLength}
+              className={styles.input}
+              onChange={(e) => {
+                e.preventDefault();
+                setBottomLength(e.target.value);
+              }}
+            />
+          </div>
+        </form>
+      </div>
+
+      <div className={`${styles.Card} flex flex-col gap-4`}>
+        <form className="flex flex-col gap-4">
+          <div className="flex flex-col">
+            <label htmlFor="name" className={styles.label}>
+              Ocassion
+            </label>
+            <Select
+              value={occasion}
+              onValueChange={(value) => setOccasion(value)}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select" />
+              </SelectTrigger>
+              <SelectContent className={styles.popper} position="popper">
+                <SelectItem value="Daily Wear" className={styles.popperItem}>
+                  Daily Wear
+                </SelectItem>
+                <SelectItem value="Party Wear" className={styles.popperItem}>
+                  Party Wear
+                </SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="flex flex-col">
+            <label htmlFor="name" className={styles.label}>
+              Wash Care
+            </label>
+            <Select
+              value={washCare}
+              onValueChange={(value) => setWashCare(value)}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select" />
+              </SelectTrigger>
+              <SelectContent className={styles.popper} position="popper">
+                <SelectItem value="Hand Wash" className={styles.popperItem}>
+                  Hand wash
+                </SelectItem>
+                <SelectItem value="Dry Clean" className={styles.popperItem}>
+                  Dry clean
+                </SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </form>
+      </div>
+    </div>
+  )
 }
 
 function VideoUpload() {

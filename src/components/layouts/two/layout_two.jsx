@@ -8,42 +8,26 @@ function LayoutTwo({ images }) {
   return (
     <div className="overflow-x-auto w-full scrollbar-hide">
       <div
-        className={`lg:w-[40vw] inline-flex min-w-[160vw] p-4 gap-2`}
+        className={`lg:w-[40vw] inline-flex pr-4 gap-2`}
       >
-        
+       {
+        images.map((value, index) => {
+          return (
             <div
               className="h-full rounded-xl"
-              style={{ width: "80vw" }}
+              style={{ width: "60vw", height: "75vw", borderRadius: "0.75rem" }}
+              key={index}
             >
               <Image
-                src={images[0]}
+                src={value}
                 height={300}
                 width={400}
-                style={{
-                  objectFit: "contain",
-                  height: "100%",
-                  width: "100%",
-                  borderRadius: "0.75rem",
-                }}
+                className="h-full w-full rounded-xl object-cover"
               />
             </div>
-            <div
-              className="h-full rounded-xl"
-              style={{ width: "80vw" }}
-            >
-              <Image
-                src={images[1]}
-                height={300}
-                width={400}
-                style={{
-                  objectFit: "contain",
-                  height: "100%",
-                  width: "100%",
-                  borderRadius: "0.75rem",
-                }}
-              />
-            </div>
-          
+          )
+        })
+       }     
       </div>
     </div>
   );

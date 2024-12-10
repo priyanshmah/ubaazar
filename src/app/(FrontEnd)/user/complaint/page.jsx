@@ -1,5 +1,5 @@
 "use client";
-import Loading from "@/components/ui/loading";
+import Loading from "@/app/loading";
 import { Roboto } from "@next/font/google";
 import axios from "axios";
 import React, { useState } from "react";

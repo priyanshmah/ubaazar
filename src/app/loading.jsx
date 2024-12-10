@@ -1,4 +1,5 @@
 "use client";
+import Navbar from '@/components/ui/navbar';
 import { Solway } from 'next/font/google';
 import { TailSpin } from 'react-loader-spinner'
 
@@ -10,7 +11,7 @@ const solway = Solway({
 export default function Loading() {
   return (
     <div
-      className={`absolute inset-0 flex flex-col opacity-70 gap-10 justify-center items-center font-normal px-2 text-5xl z-50 ${solway.className} bg-white`}
+      className={`fixed inset-0 bg-white flex flex-col gap-10 justify-center items-center font-normal px-2 text-5xl z-50 ${solway.className}`}
     >
       <div className="flex flex-row gap-1">
         <p className="text-brightOrange">U</p>

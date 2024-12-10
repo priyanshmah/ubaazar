@@ -2,31 +2,22 @@
 import { useEffect, useRef, useState } from "react";
 import styles from "@/styles/Home.module.css";
 
-import { Roboto, Solway } from "@next/font/google";
-import {
-  IoHeartOutline,
-  IoHeart,
-  IoChatboxOutline,
-  IoPaperPlaneOutline,
-} from "react-icons/io5";
+import { IoHeartOutline, IoHeart, IoPaperPlaneOutline } from "react-icons/io5";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import Loading from "../ui/loading";
+import Loading from "../../app/loading";
 import LayoutOne from "../layouts/one/layout_one";
 import LayoutTwo from "../layouts/two/layout_two";
 import LayoutThree from "../layouts/three/layout_three";
 import LayoutFour1 from "../layouts/four/layout_four_a";
 import LayoutFour2 from "../layouts/four/layout_four_b";
+import { Passion_One } from "next/font/google";
+import { FaStar, FaStarHalfAlt } from "react-icons/fa";
 
-const solway = Solway({
-  subsets: ["latin"],
-  weight: ["500"],
-});
-
-const roboto = Roboto({
-  subsets: ["cyrillic"],
-  weight: ["400", "500", "700", "900"],
+const passion = Passion_One({
+  subsets: ["latin", "latin-ext"],
+  weight: ["400", "700", "900"],
 });
 
 export default function ProductFeed({ feed }) {
@@ -49,17 +40,21 @@ export default function ProductFeed({ feed }) {
   }, [pathname]);
 
   return (
-    <div className="w-full my-4 md:w-2/3 lg:w-1/2">
+    <div className="w-[85vw] md:w-2/3 lg:w-1/2">
       {loading && <Loading />}
       <div className="flex flex-col justify-center items-center gap-6 ">
         {feed.map((value, index) => {
           const slug = stringToSlug(value.productName);
+          const fullStars = Math.floor(value.rating);
+          const halfStar = value.rating - fullStars;
 
           return (
-            <div className={`flex flex-col border-t border-silver w-full`} key={index}>
-              <div className={`flex flex-row gap-1 font-semibold px-2 text-lg ${solway.className}`}>
+            <div className={`flex flex-col w-full`} key={index}>
+              <div
+                className={`flex flex-row ${passion.className} text-lg items-center`}
+              >
                 <p className="text-brightOrange">U</p>
-                <p className="text-darkBlue">Baazar</p>
+                <p className="text-darkBlue">BAAZAR</p>
               </div>
               <div className="flex flex-col gap-1">
                 <div
@@ -75,7 +70,7 @@ export default function ProductFeed({ feed }) {
                   <ImageGrid images={value.images} />
                 </div>
 
-                <div className="flex flex-row px-2 place-content-between w-[100vw]">
+                <div className="flex flex-row px-2 place-content-between">
                   <p className="text-md font-semibold text-darkGrayColor w-4/5">
                     {value.productName}
                   </p>
@@ -86,31 +81,18 @@ export default function ProductFeed({ feed }) {
                 </div>
               </div>
 
-              <div className="flex flex-row px-2 w-full place-content-between">
-                <div className="flex flex-row text-darkGrayColor gap-2">
-                  <div className="font-semibold">
-                    {!likeClicked && (
-                      <IoHeartOutline
-                        className="font-semibold"
-                        size="1.8rem"
-                        strokeWidth={2}
-                        onClick={() => setLikeClicked((prev) => !prev)}
-                      />
-                    )}
-                    {likeClicked && (
-                      <IoHeart
-                        size="1.8rem"
-                        className="text-red"
-                        onClick={() => setLikeClicked((prev) => !prev)}
-                      />
-                    )}
-                  </div>
-                  <div className={styles.icon}>
-                    <IoPaperPlaneOutline
-                      size="1.8rem"
-                      className={styles.icon}
-                    />
-                  </div>
+              <div className="flex flex-row px-2 w-full items-center place-content-between">
+                <div className="flex flex-row text-gold gap-1">
+                  {Array.from({ length: fullStars }, (_, key) => (
+                    <FaStar key={key} size={"1.2rem"} className="text-gold" />
+                  ))}
+
+                  {halfStar < 1 && (
+                    <FaStarHalfAlt size={"1.2rem"} className="text-gold" />
+                  )}
+                  {halfStar == 1 && (
+                    <FaStar size={"1.2rem"} className="text-gold" />
+                  )}
                 </div>
                 <button
                   onClick={() =>
@@ -144,12 +126,8 @@ function stringToSlug(str) {
 
 function ImageGrid({ images }) {
   if (images.length === 1) return <LayoutOne images={images} />;
-  else if (images.length === 2) return <LayoutTwo images={images} />;
   else if (images.length === 3) return <LayoutThree images={images} />;
-  else if (images.length === 4) {
-    let number = Math.random();
-
-    if (number > 0.5) return <LayoutFour1 images={images} />;
-    else return <LayoutFour2 images={images} />;
-  }
+  else return <LayoutTwo images={images} />;
 }
+
+function FullStars({ fullStars }) {}

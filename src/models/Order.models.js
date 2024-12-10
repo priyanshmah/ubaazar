@@ -47,12 +47,8 @@ const orderSchema = new mongoose.Schema({
     orderNumber: {
         type: String,
         required: true
-    },
-    createdAt: {
-        type: Date,
-        default: Date.now
     }
-})
+}, { timestamps: true });
 
 const Order = mongoose.models.Order || mongoose.model("Order", orderSchema);
 

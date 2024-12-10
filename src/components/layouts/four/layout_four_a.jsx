@@ -9,11 +9,11 @@ function LayoutFour1({ images }) {
     <div
       className="w-full flex flex-col p-4 gap-2"
       style={{
-        width: "100vw",
+        width: "85vw",
       }}
     >
       <div className="w-full h-1/2 flex flex-row justify-center items-center gap-2">
-        <div className="h-full rounded-xl" style={{ width: "55%" }}>
+        <div className="h-full rounded-xl" style={{ width: "50%" }}>
         <Image 
         src={images[0]}
         height={100}
@@ -26,7 +26,7 @@ function LayoutFour1({ images }) {
         }}
         />
         </div>
-        <div className="h-full rounded-xl bg-red" style={{ width: "45%" }}>
+        <div className="h-full rounded-xl bg-red" style={{ width: "50%" }}>
         <Image 
         src={images[1]}
         height={100}
@@ -41,7 +41,7 @@ function LayoutFour1({ images }) {
         </div>
       </div>
       <div className="w-full h-1/2 flex flex-row items-center justify-center gap-2">
-        <div className="h-full rounded-xl bg-red" style={{ width: "45%" }}>
+        <div className="h-full rounded-xl bg-red" style={{ width: "50%" }}>
         <Image 
         src={images[2]}
         height={100}
@@ -54,7 +54,7 @@ function LayoutFour1({ images }) {
         }}
         />
         </div>
-        <div className="h-full rounded-xl bg-red" style={{ width: "55%" }}>
+        <div className="h-full rounded-xl bg-red" style={{ width: "50%" }}>
         <Image 
         src={images[3]}
         height={100}

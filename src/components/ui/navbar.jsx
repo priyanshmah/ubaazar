@@ -21,24 +21,26 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 
 // importing icons
-import { FaRegCompass } from "react-icons/fa6";
-import { FaTags } from "react-icons/fa6";
-import { LuClapperboard } from "react-icons/lu";
-import { MdOutlineFilterVintage } from "react-icons/md";
-import { IoSearch } from "react-icons/io5";
 import { LuUser2 } from "react-icons/lu";
-import { IoHeartCircle } from "react-icons/io5";
-import { FiArrowLeft, FiMenu, FiShoppingBag } from "react-icons/fi";
-import { PiCompassDuotone } from "react-icons/pi";
-import { BsFlower1 } from "react-icons/bs";
-import { CiShoppingTag } from "react-icons/ci";
+import { FiArrowLeft, FiGrid, FiMenu, FiShoppingBag } from "react-icons/fi";
 import SideBar from "../feed/sidebar";
 import { usePathname, useRouter } from "next/navigation";
+import ubaazarLogo from '@/public/icons/ubaazar.logo.svg'
+import { Passion_One } from "next/font/google";
+
+import { HiMenu } from "react-icons/hi";
+import { TbShoppingBag } from "react-icons/tb";
+
+
+const passion = Passion_One({
+  subsets: ['latin', 'latin-ext'],
+  weight: ['400', '700', '900']
+})
 
 export default function Navbar() {
   const pathName = usePathname();
   return (
-    <div className="shadow-sm flex flex-row place-content-between w-full py-2 px-3">
+    <div className="flex flex-row place-content-between w-full py-2 px-3">
       {pathName === "/bag" ? (
         <CustomNavbar customText={"Shopping Bag"} />
       ) : pathName === "/bag/pay" ? (
@@ -54,29 +56,6 @@ export default function Navbar() {
   );
 }
 
-const SearchBar = () => {
-  const [query, setQuery] = useState("");
-  const handleInputChange = (e) => {
-    setQuery(e.target.value);
-  };
-
-  const submitHandler = (e) => {
-    e.preventDefault();
-  };
-
-  return (
-    <>
-      <input
-        type="text"
-        placeholder="Search for brands, products and more"
-        value={query}
-        onChange={handleInputChange}
-        className="hidden md:py-2 min-h-10 pl-6 md:block searchBar text-sm w-full"
-      />
-      <IoSearch size="2rem" className="searchIcon" />
-    </>
-  );
-};
 
 const Profile = () => {
   return (
@@ -123,12 +102,14 @@ const Drawer = () => {
   return (
     <Sheet open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
       <SheetTrigger>
-        <FiMenu
+        <div className="flex flex-row justify-center items-center rounded-xl shadow">
+
+        <HiMenu
           onClick={openDrawer}
-          size="2rem"
-          className="md:hidden"
-          strokeWidth={1}
-        />
+          size="2.5rem"
+          className="md:hidden text-darkBlue p-2"
+          />
+          </div>
       </SheetTrigger>
       <SheetContent side="left">
         <SideBar closeDrawer={closeDrawer} />
@@ -142,92 +123,34 @@ const HomeNavbar = () => {
   const router = useRouter();
 
   useEffect(() => {
-    const storedBag = localStorage.getItem("bag") || [];
-    if (storedBag) {
-      let parsedBag = JSON.parse(storedBag);
-      setBagQty(parsedBag.length);
-    }
+    const storedBag = localStorage.getItem("bag");
+    // if (storedBag) {
+    //   let parsedBag = JSON.parse(storedBag) || [];
+    //   setBagQty(parsedBag.length);
+    // }
   }, []);
 
   return (
+    <div className="flex flex-col w-full gap-4">
     <div className="flex flex-row w-full place-content-between items-center">
-      <div className="flex flex-row gap-2 justify-center items-center">
         <Drawer />
+      <div className="flex flex-col justify-start items-start">
         <button
           onClick={() => router.push("/")}
-          className="flex flex-row font-serif text-2xl items-center md:text-4xl"
+          className={`flex flex-row ${passion.className} text-3xl items-center md:text-4xl`}
         >
-          <p className="text-orange">U</p>
-          <p className="text-darkBlue">Baazar</p>
+          <p className="text-brightOrange">U</p>
+          <p className="text-darkBlue">BAAZAR</p>
         </button>
       </div>
 
-      {/* <div className="hidden w-1/3 text-xs font-semibold text-center md:flex md:flex-row md:justify-center md:text-xs  md:gap-6 ">
-        <div
-          className={`flex flex-col justify-center items-center gap-2 ${
-            clickedState === 1 ? "text-brightOrange" : ""
-          }`}
-          onClick={() => setClickedState(1)}
-        >
-          <PiCompassDuotone size={30} strokeWidth={2} />
-          <p className={` ${clickedState === 1 ? "text-brightOrange" : ""}`}>
-            Explore
-          </p>
-        </div>
-
-        <div
-          className={`flex flex-col justify-center items-center gap-2 ${
-            clickedState === 4 ? "text-brightOrange" : ""
-          }`}
-          onClick={() => setClickedState(4)}
-        >
-          <LuClapperboard size={30} strokeWidth={1.5} />
-          <p className={` ${clickedState === 4 ? "text-brightOrange" : ""}`}>
-            Watch & Buy
-          </p>
-        </div>
-
-        <div
-          className={`flex flex-col justify-center items-center gap-2 ${
-            clickedState === 3 ? "text-brightOrange" : ""
-          }`}
-          onClick={() => setClickedState(3)}
-        >
-          <BsFlower1 size={30} />
-          <p className={` ${clickedState === 3 ? "text-brightOrange" : ""}`}>
-            New Arrival
-          </p>
-        </div>
-
-        <div
-          className={`flex flex-col justify-center items-center gap-2 ${
-            clickedState === 2 ? "text-brightOrange" : ""
-          }`}
-          onClick={() => setClickedState(2)}
-        >
-          <CiShoppingTag size={30} strokeWidth={0.5} />
-          <p className={`${clickedState === 2 ? "text-brightOrange" : ""}`}>
-            Best Seller
-          </p>
-        </div>
-      </div> */}
-
-      {/* <div className="flex flex-row mx-5 gap-4 "> */}
-      {/* <div className="outline-none border-none">
-          <Profile />
-          </div>
-          
-          
-          <div className="colourChangeOnHover">
-          <IoHeartCircle className="text-pink" size={30} />
-          <p className="navbarItemText">Favourites</p>
-          </div> */}
-      <div className="flex flex-row place-content-end items-center w-2/5 lg:w-2/3 gap-4">
-        <SearchBar />
+      
+      <div className="flex flex-row place-content-end items-center gap-4">
+        {/* <SearchBar /> */}
         <button onClick={() => router.push("/bag")}>
-          <div className="flex flex-col relative">
-            <FiShoppingBag size="1.5rem" />
-            <p className="hidden md:block md:navbarItemText">Bag</p>
+          <div className="flex flex-col relative items-center justify-center rounded-xl shadow">
+            <TbShoppingBag size="2.5rem" className="text-darkBlue p-2" />
+            {/* <p className="hidden md:block md:navbarItemText">Bag</p> */}
             {bagQty > 0 && (
               <p className="text-white font-sans bg-brightOrange rounded-full text-xs h-4 w-4 flex flex-row justify-center items-center font-semibold absolute -top-2 -right-2">
                 {bagQty}
@@ -236,6 +159,7 @@ const HomeNavbar = () => {
           </div>
         </button>
       </div>
+    </div>
     </div>
   );
 };

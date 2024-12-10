@@ -1,164 +1,111 @@
 import dbConnect from "@/lib/dbConnect";
 import OTPModels from "@/models/OTP.models";
 import User from "@/models/User.models";
-import axios from "axios";
-import mongoose from "mongoose";
 import { NextResponse } from "next/server";
-import jwt from 'jsonwebtoken'
+import generateTokens from "@/lib/generateTokens";
 
-const generateAccessAndRefreshTokens = async (userId) => {
-    try {
-
-        const user = await User.findById(userId);
-
-        const accessToken = jwt.sign(
-            { _id: user._id, isSeller: user.isSeller },
-            process.env.ACCESS_TOKEN_SECRET,
-            { expiresIn: process.env.ACCESS_TOKEN_EXPIRY }
-        )
-        const refreshToken = jwt.sign(
-            {
-                _id: user._id,
-                username: user.username,
-                mobileNumber: user.mobileNumber
-            },
-            process.env.REFRESH_TOKEN_SECRET,
-            {
-                expiresIn: process.env.REFRESH_TOKEN_EXPIRY
-            }
-        )
-
-        await User.findByIdAndUpdate(
-            userId,
-            { refreshToken }
-        )
-
-        return { accessToken, refreshToken }
-
-    } catch (error) {
-        return { accessToken: null, refreshToken: null }
-    }
-}
-
-export async function POST(req) {
+export async function POST(request) {
 
     await dbConnect();
-    const reqBody = await req.json();
+    const reqBody = await request.json();
     const { mobileNumber, enteredOTP } = reqBody;
 
-    if (!mobileNumber || !enteredOTP) {
-        return NextResponse.json(
-            { message: "Mobile number or OTP not found" },
-            { status: 404 }
-        )
-    }
-
-    const session = await mongoose.startSession();
-    session.startTransaction();
+    if (!mobileNumber || !enteredOTP)
+        return NextResponse.json({
+            message: "Mobile number or OTP not found",
+            success: false
+        }, { status: 400 })
 
     try {
 
-        const otpRecord = await OTPModels.findOne({ mobileNumber }).session(session);
-
-        console.log("OTP found...");
-        
+        const otpRecord = await OTPModels.findOne({ mobileNumber });
 
         if (!otpRecord) {
-            await session.abortTransaction();
-            session.endSession();
-
-            return NextResponse.json(
-                { error: "OTP expired" },
-                { status: 400 }
-            )
+            return NextResponse.json({
+                message: "OTP not sent !!!",
+                success: false
+            }, { status: 400 })
         }
 
-        
+
         const expiryDate = new Date(otpRecord.expiresIn).getTime();
-        
+
         if (Date.now() > expiryDate) {
-            await session.abortTransaction();
-            session.endSession();
-            return NextResponse.json(
-                { error: "OTP expired" },
-                { status: 400 }
-            )
+            return NextResponse.json({
+                message: "OTP expired",
+                success: false
+            }, { status: 400 })
         }
 
         if (otpRecord.verificationCode == enteredOTP) {
-            await OTPModels.deleteOne({ mobileNumber }).session(session);
 
-            console.log("otp verified");
-            
-            let accessToken;
-            let refreshToken;
-            let newUser = false;
-            const existedUser = await User.findOne({ mobileNumber }).session(session);
+            await OTPModels.deleteOne({ mobileNumber });
 
-            console.log("existed user" , existedUser);
-            
+            const existedUser = await User.findOne({ mobileNumber })
             if (existedUser) {
-                ({ accessToken, refreshToken } = await generateAccessAndRefreshTokens(existedUser._id));
 
-            } else {
-                const signupUser = await User.create([{
+                const { accessToken, refreshToken } =
+                    await generateTokens(existedUser._id);
+
+                if (!accessToken || !refreshToken)
+                    return NextResponse.json({
+                        message: "Failed to generate your tokens",
+                        success: false
+                    }, { status: 400 })
+
+
+                return NextResponse.json({
+                    message: "Logged in successfully....",
+                    success: true,
+                    accessToken,
+                    refreshToken
+                }, { status: 200 })
+
+            }
+            else {
+                const newUser = await User.create({
                     mobileNumber,
-                    username: mobileNumber,
-                    email: ''
-                }], { session })
+                    username: mobileNumber
+                })
 
-                if (!signupUser) {
-                    return NextResponse.json({ message: 'something went wrong'})
+                if (!newUser) {
+                    return NextResponse.json({
+                        message: "New User not created",
+                        success: true
+                    }, { status: 400 })
                 }
 
-                ({ accessToken, refreshToken } = await generateAccessAndRefreshTokens(signupUser._id));
+                const { accessToken, refreshToken } =
+                    await generateTokens(newUser._id);
 
-                newUser = true;
+                if (!accessToken || !refreshToken)
+                    return NextResponse.json({
+                        message: "Failed to generate your tokens",
+                        success: false
+                    }, { status: 400 })
+
+                return NextResponse.json({
+                    message: "OTP verified successfully....",
+                    success: true,
+                    user: newUser,
+                    accessToken,
+                    refreshToken
+                }, { status: 200 })
+
+
             }
 
-
-            const response = NextResponse.json(
-                {   message: "OTP verified successfully",
-                    newUser 
-                }, { status: 200 }
-            )
-
-            response.cookies.set("token", accessToken, {
-                secure: process.env.NODE_ENV === 'production',
-                sameSite: 'strict',
-                maxAge: 60 * 60 * 24 * 7,
-                path: '/'
-            })
-            response.cookies.set("refreshToken", refreshToken, {
-                secure: process.env.NODE_ENV === 'production',
-                sameSite: 'strict',
-                maxAge: 60 * 60 * 24 * 7,
-                path: '/'
-            })
-
-            await session.commitTransaction();
-            session.endSession();
-
-            return response;
-
         } else {
-
-            await session.abortTransaction();
-            session.endSession();
-
-            return NextResponse.json(
-                { error: "Incorrect OTP" },
-                { status: 400 }
-            )
+            return NextResponse.json({
+                message: "Incorrect OTP",
+                success: false
+            }, { status: 400 })
         }
 
     } catch (error) {
-        console.log(error);
-        await session.abortTransaction();
-        session.endSession();
-        return NextResponse.json(
-            { error: error.message },
-            { status: 500 }
-        )
+        return NextResponse.json({
+            message: error.message || "Internal server error",
+            success: false
+        }, { status: 400 })
     }
 }

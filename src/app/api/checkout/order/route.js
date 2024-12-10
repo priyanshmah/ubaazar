@@ -20,7 +20,10 @@ export async function POST(request) {
         const { products, address, paymentMode } = reqBody;
 
         if (!(Array.isArray(products)) || products.length <= 0 || !paymentMode)
-            return NextResponse.json({ message: "Products or payment mode not defined" }, { status: 404 })
+            return NextResponse.json({ 
+                message: "Products or payment mode not defined",
+                success: false
+            }, { status: 400 })
 
         if (!address.name ||
             !address.pinCode ||
@@ -29,7 +32,10 @@ export async function POST(request) {
             !address.area ||
             !address.city ||
             !address.state
-        ) return NextResponse.json({ message: "Incomplete Address" }, { status: 404 })
+        ) return NextResponse.json({ 
+            message: "Incomplete Address",
+            success: false
+        }, { status: 404 })
 
         const addressData = {
             name: address.name,
@@ -54,13 +60,15 @@ export async function POST(request) {
             const product = dbProducts.find(p => p._id.toString() === item.product);
             if (!product) {
                 return NextResponse.json({
-                    message: `Product with id ${item.product} not found`
+                    message: `Product with id ${item.product} not found`,
+                    success: false
                 }, { status: 404 });
             }
 
             if (product.inventory && (product.inventory < item.quantity)) {
                 return NextResponse.json({
-                    message: `${product.productName} is out of stock`
+                    message: `${product.productName} is out of stock`,
+                    success: false
                 }, { status: 400 });
             }
 
@@ -70,7 +78,8 @@ export async function POST(request) {
                 )
                 if (sizeToBeOrdered[0].inventory < item.quantity) {
                     return NextResponse.json({
-                        message: `${product.productName} is out of stock`
+                        message: `${product.productName} is out of stock`,
+                        success: false
                     }, { status: 400 });
                 }
             }
@@ -106,15 +115,15 @@ export async function POST(request) {
             return NextResponse.json({
                 message: "Order placed successfully",
                 orderId: newOrder._id,
-                user: updatedUser
+                user: updatedUser,
+                success: true
             }, { status: 200 })
 
         }
         else if (paymentMode === 'online') {
 
             const transactionId = uuid();
-            const paymentUrl = await initializePayment(transactionId, totalAmount);
-
+            
             const orderData = {
                 products,
                 address: newAddress._id,
@@ -127,22 +136,29 @@ export async function POST(request) {
             if (!newOrder) {
                 return NextResponse.json({ message: 'Order cancelled' }, { status: 404 })
             }
-
-            let updatedUser;
-
+            
+            
             if (user) {                
-                updatedUser = await User.findByIdAndUpdate(
+                await User.findByIdAndUpdate(
                     user._id, 
                     { $push: { previousOrders: newOrder._id } },
                 )
                 
             }
-
-
+            
+            const paymentUrl = await initializePayment(
+                transactionId, newOrder._id ,totalAmount
+            );
             if (paymentUrl) {
-                return NextResponse.json({ url: paymentUrl }, { status: 200 })
+                return NextResponse.json({ 
+                    url: paymentUrl,
+                    success: true
+             }, { status: 200 })
             } else {
-                return NextResponse.json({ message: 'Something went wrong' }, { status: 500 })
+                return NextResponse.json({ 
+                    message: 'Something went wrong',
+                    success: false
+            }, { status: 500 })
             }
         }
 
@@ -153,12 +169,12 @@ export async function POST(request) {
 
 }
 
-async function initializePayment(merchantTransactionId, amount) {
+async function initializePayment(merchantTransactionId, orderId, amount) {
     try {
 
         const payEndPoint = "/pg/v1/pay"
         const merchantUserId = uuid();
-        const redirectUrl = `https://www.ubaazar.com/bag/order-details/${merchantTransactionId}`
+        const redirectUrl = `https://www.ubaazar.com/bag/pay/payment-details/${orderId}`
 
         const payload = {
             "merchantId": process.env.NEXT_PUBLIC_PHONEPE_MERCHANT_ID,
@@ -183,7 +199,6 @@ async function initializePayment(merchantTransactionId, amount) {
         const options = {
             method: 'post',
             url: `${process.env.NEXT_PUBLIC_PHONEPE_HOST_URL}${payEndPoint}`,
-            // url: 'https://api-preprod.phonepe.com/apis/pg-sandbox/pg/v1/pay',
             headers: {
                 accept: "application/json",
                 "Content-Type": "application/json",

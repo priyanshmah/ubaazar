@@ -1,13 +1,13 @@
 import dbConnect from "@/lib/dbConnect";
-import Product from "@/models/Product.models";
+import Product from "@/models/Product.models.js";
 import { NextResponse } from "next/server";
 
-export async function POST(req, res){
+export async function POST(request){
     await dbConnect();
 
     try {
 
-        const { productId } = await req.json();
+        const { productId } = await request.json();
         const product = await Product.findOne({ _id: productId });
 
         if (!product) {

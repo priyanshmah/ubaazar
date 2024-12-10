@@ -37,10 +37,13 @@ export default function Bag() {
     let savedAddresses = JSON.parse(localStorage.getItem("addresses")) || [];
     setSelectedAddress(savedAddresses?.at(-1));
 
-    const storedBag = localStorage.getItem("bag");
+    let storedBag = localStorage.getItem("bag");    
     if (storedBag) {
-      setBag(JSON.parse(storedBag));
-      setSelectedItems(JSON.parse(storedBag));
+      let parsedBag = JSON.parse(storedBag);
+      
+      setBag(parsedBag);
+      setSelectedItems(parsedBag);
+
       if (selectedItems) {
         const totalValue = selectedItems?.reduce(
           (acc, value) => acc + value.price,

@@ -6,22 +6,26 @@ import { NextResponse } from "next/server";
 
 export async function POST(request) {
     await dbConnect();
-    const user = await AuthenticateUser(request);
+    // const user = await AuthenticateUser(request);
 
     try {
+        console.log("request received");
+        
 
         const reqBody = await request.json();
-        const { page, limit, category } = reqBody;
+        const { page, limit, category, filter = {} } = reqBody;
         const skip = (page - 1) * limit;
 
-        if (!page || !limit || !category) {
+        if (!page || !category) {
             return NextResponse.json({
                 message: 'Missing data',
                 success: false
             }, { status: 404 })
         }
 
-        const products = await Product.find({ category }).sort({ createdAt: -1 })
+        
+
+        const products = await Product.find({ category ,...filter }).sort({ createdAt: -1 })
             .skip(skip)
             .limit(limit);
 
@@ -31,11 +35,14 @@ export async function POST(request) {
                 success: false
             }, { status: 401 })
         }
+        const shuffledProducts = shuffleArray(products);
+        let totalProducts = await Product.countDocuments({ category })
 
         return NextResponse.json({
             message: 'Products data fetched successfully',
             success: true,
-            products
+            totalProducts,
+            products: shuffledProducts
         }, { status: 200 })
 
 
@@ -46,3 +53,12 @@ export async function POST(request) {
     }
 
 }
+
+function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]]; // Swap elements
+    }
+    return array;
+  }
+  

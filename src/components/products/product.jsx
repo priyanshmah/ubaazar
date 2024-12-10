@@ -5,8 +5,7 @@ import ProductDetails from "./product-details";
 
 function Product({ productData }) {
   const [selectedSize, setSelectedSize] = useState('');
-  console.log("product data: ", productData);
-  
+ 
 
   return (
     <div className="flex flex-col lg:flex-row w-full">

@@ -6,7 +6,7 @@ function LayoutThree({ images }) {
   if (images.length < 3) return;
 
   return (
-    <div className="w-[100vw] lg:w-[40vw] flex flex-row items-center justify-center p-4 gap-2">
+    <div className="w-[85vw] lg:w-[40vw] flex flex-row items-center justify-center p-4 gap-2">
       <div className="w-2/3 h-full rounded-xl">
         <Image
           src={images[0]}

@@ -44,7 +44,7 @@ export default function PaymentPage() {
       const products = items?.map((value) => {
         if (value.selectedSize === "Free size") {
           return {
-            product: value.id,
+            product: value._id,
             quantity: 1,
           };
         } else {
@@ -69,11 +69,14 @@ export default function PaymentPage() {
         JSON.stringify(data)
       );
 
-      if (response.data.url) {
-        router.push(response.data.url);
-      } else if (response.data.message) {
-        toast.error(response.data.message);
-      }
+      if (response?.data?.url) router.push(response?.data?.url);
+
+      else if (!(response?.data?.success)) toast.error(response?.data?.message);
+      
+      else if(response?.data?.orderId)
+        router.push(`/bag/pay/payment-details/${response?.data?.orderId}`)
+      
+
     } catch (error) {
       console.log(error);
       toast.error("Something went wrong please try again");

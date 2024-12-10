@@ -10,10 +10,12 @@ import {
 import AuthContext from "@/context/authContext.js";
 import toast, { Toaster } from "react-hot-toast";
 import { useRouter } from "next/navigation.js";
-import Loading from "@/components/ui/loading.jsx";
+import Loading from "@/app/loading.jsx";
 import { FiAlertCircle } from "react-icons/fi";
 import { phoneNumberSchema } from "@/schemas/phoneNumberSchema.js";
 import { Roboto } from "next/font/google";
+import axios from "axios";
+import Cookies from "js-cookie";
 
 const roboto = Roboto({
   subsets: ["cyrillic"],
@@ -21,10 +23,10 @@ const roboto = Roboto({
 });
 
 export default function UserAuth() {
-  const [mobileNumber, setMobileNumber] = useState("");
+  const [mobileNumber, setMobileNumber] = useState("236");
   const [name, setName] = useState("");
   const [otp, setOtp] = useState("");
-  const [progress, setProgress] = useState(0);
+  const [progress, setProgress] = useState(1);
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
 
@@ -56,24 +58,22 @@ export default function UserAuth() {
   const handleOtpVerification = async () => {
     setLoading(true);
 
-    const res = await fetch("/api/auth/verify-otp", {
-      method: "POST",
-      body: JSON.stringify({
-        mobileNumber,
-        enteredOTP: otp,
-      }),
-    });
+    const response = await axios.post("/api/auth/verify-otp", JSON.stringify({
+      mobileNumber,
+      enteredOTP: otp,
+    }));
 
-    if (res.ok) {
-      const data = await res.json();
-      const message = data.message;
+    if (response.data?.success) {
+      
+      Cookies.set("access-token", response.data?.accessToken);
+      Cookies.set("refresh-token", response.data?.refreshToken);
 
-      setNewUser(data.newUser);
+      setNewUser(response.data.newUser);
       setLoading(false);
       setTimer(0);
       setIsLoggedIn(true);
 
-      toast.success(message, { duration: 5000 });
+      toast.success("Logged in successfully", { duration: 5000 });
       if (!newUser) {
         router.push("/");
       }

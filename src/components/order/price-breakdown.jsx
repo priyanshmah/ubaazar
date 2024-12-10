@@ -1,13 +1,14 @@
 "use client";
 import React, { useState } from "react";
 
-function PriceDetails({ total, isCod }) {
+function PriceDetails({ total, isCod, showDiscount }) {
   const [discountCode, setDiscountCode] = useState("");
   const [discount, setDiscount] = useState(0);
 
   return (
     <div>
       <div className="flex flex-col gap-4">
+        { showDiscount && <div>
         <p className="font-sans font-normal text-lg text-darkGrayColor">
           Discount Code
         </p>
@@ -29,6 +30,7 @@ function PriceDetails({ total, isCod }) {
             Apply
           </button>
         </div>
+        </div>}
         <div className="">
           <div className="flex flex-row items-center place-content-between">
             <p className="font-medium text-sm">Subtotal</p>
@@ -48,13 +50,13 @@ function PriceDetails({ total, isCod }) {
           </div>
           <div className="flex flex-row items-center place-content-between">
             <p className="font-medium text-sm">Platform fee</p>
-            <p className="text-green font-medium font-sans">FREE</p>
+            <p className="text-green font-semibold font-sans">FREE</p>
           </div>
         </div>
         <div className="flex flex-row items-center place-content-between py-2 border-t border-dashed border-silver">
           <p className="font-medium text-lg text-darkGrayColor">Grand total</p>
           <p className="font-normal text-lg text-darkGrayColor font-sans">
-            ₹{total - discount}
+            ₹{total - discount + (isCod? 40 : 0)}
           </p>
         </div>
       </div>

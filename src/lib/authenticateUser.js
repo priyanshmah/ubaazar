@@ -1,10 +1,9 @@
 import User from "@/models/User.models";
-import dbConnect from "./dbConnect";
 import jwt from 'jsonwebtoken';
 
 export async function AuthenticateUser(request) {
 
-    const token = request?.cookies?.get("token")?.value || request.headers.get("authorization");
+    const token = request?.cookies?.get("access-token")?.value || request.headers.get("authorization");
     
     if (!token) return null;
 

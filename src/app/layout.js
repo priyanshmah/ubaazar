@@ -8,16 +8,15 @@ import { ABeeZee, Arima, Baskervville, Crimson_Text, Lora, Merriweather, Montser
 import BottomBar from "@/components/ui/bottom-bar";
 import AuthContext, { AuthProvider } from "@/context/authContext";
 import { Analytics } from '@vercel/analytics/react'
+import NextNProgress from 'nextjs-progressbar';
 import Head from "next/head";
-import { Suspense, useContext } from "react";
-import Loading from "@/components/ui/loading";
+import Link from "next/link";
+import UB from '@/public/UB.png'
 
 const overlock = Overlock({
   subsets: ['latin', 'latin-ext'],
-  // weight: ['400', '500', '600', '700']
   weight: ['400', '700', '900']
 });
-
 
 const monaSans = localFont({
   src: [{
@@ -29,16 +28,19 @@ const monaSans = localFont({
 
 export default function RootLayout({ children }) {
 
+
   return (
     <html lang="en">
+      <Head>
+        <Link rel="shortcut icon" href={UB}/>
+      </Head>
       <body className={`${monaSans.variable} ${overlock.className}`}>
-            <Suspense fallback={<Loading />}>
         <AuthProvider>
           <Provider store={store}>
             <header>
+            <NextNProgress height={3}/>
               <Navbar />
             </header>
-
               {children}
             <footer>
               <BottomBar />
@@ -46,7 +48,6 @@ export default function RootLayout({ children }) {
             <Analytics />
           </Provider>
         </AuthProvider>
-            </Suspense>
       </body>
     </html>
   );

@@ -9,7 +9,6 @@ const suitSchema = new mongoose.Schema({
     topShape: {
         type: String,
         required: true,
-        enum: ['Anarkali', 'Straight']
     },
     topPattern: {
         type: String,
@@ -22,7 +21,6 @@ const suitSchema = new mongoose.Schema({
     neck: {
         type: String,
         required: true,
-        enum: ['Round-Neck', 'V-Neck', 'Collar']
     },
     bottom: {
         type: Boolean,
@@ -69,12 +67,10 @@ const suitSchema = new mongoose.Schema({
     occasion: {
         type: String,
         required: true,
-        enum: ['Traditional', 'Daily Wear', 'Party Wear']
     },
     washCare: {
         type: String,
         required: true,
-        enum: ['Hand Wash', 'Dry Clean']
     },
     colour: {
         type: String,
@@ -96,7 +92,10 @@ const suitSchema = new mongoose.Schema({
     }]
 });
 
-const Suits = Product.discriminator('Suits', suitSchema);
+suitSchema.index({ "$**": "text" });
+
+const Suits = mongoose.models.Product?.discriminators?.Suits
+    || Product.discriminator('Suits', suitSchema);
 
 export default Suits;
 
