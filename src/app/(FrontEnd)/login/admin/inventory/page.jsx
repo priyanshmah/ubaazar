@@ -2,6 +2,7 @@
 
 import Loading from "@/app/loading";
 import axios from "axios";
+import { CldUploadWidget } from "next-cloudinary";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
@@ -227,9 +228,9 @@ export default function InventoryPage() {
                   )}
                 </div>
                 <div className="flex flex-row flex-wrap gap-2">
-                  {images?.map((img) => {
+                  {images?.map((img, key) => {
                     return (
-                      <div className="relative">
+                      <div key={key} className="relative">
                         <Image
                           src={img}
                           className="h-24 w-24 object-cover border border-grayColor rounded-xl"
