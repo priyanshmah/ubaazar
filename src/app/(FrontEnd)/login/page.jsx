@@ -23,10 +23,10 @@ const roboto = Roboto({
 });
 
 export default function UserAuth() {
-  const [mobileNumber, setMobileNumber] = useState("236");
+  const [mobileNumber, setMobileNumber] = useState("");
   const [name, setName] = useState("");
   const [otp, setOtp] = useState("");
-  const [progress, setProgress] = useState(1);
+  const [progress, setProgress] = useState(0);
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
 
@@ -34,7 +34,6 @@ export default function UserAuth() {
   const [isButtonDisabled, setIsButtonDisabled] = useState(true);
   const [newUser, setNewUser] = useState(false);
   const router = useRouter();
-  console.log("errors", errors);
 
   useEffect(() => {
     if (timer > 0) {
@@ -49,7 +48,6 @@ export default function UserAuth() {
   }, [timer]);
 
   const { isLoggedIn, setIsLoggedIn } = useContext(AuthContext);
-  console.log("Login status: ", isLoggedIn);
 
   useEffect(() => {
     isLoggedIn && router.replace("/");
