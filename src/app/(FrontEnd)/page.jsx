@@ -26,10 +26,10 @@ export const metadata = {
 };
 
 export default async function Home() {
-  // const posts = await axios.post(`${process.env.NEXT_PUBLIC_DOMAIN}/api/feed`, JSON.stringify({
-  //   category: 'sarees'
-  // }));
-  // const { feed } = posts.data;
+  const posts = await axios.post(`${process.env.NEXT_PUBLIC_DOMAIN}/api/feed`, JSON.stringify({
+    category: 'sarees'
+  }));
+  const { feed } = posts.data;
 
   return (
     <Suspense fallback={<Loading />}>
