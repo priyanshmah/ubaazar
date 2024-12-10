@@ -4,18 +4,21 @@ import StoriesSection from "./stories";
 import ProductFeed from "./post";
 import axiosInstance from "@/helpers/axios/axiosInstance";
 import SearchBar from "../ui/search-bar";
+import axios from "axios";
 
 function Category({ feed }) {
   const [selected, setSelected] = useState("sarees");
   const [productsArray, setProductsArray] = useState(feed || []);
 
-  useEffect(() => {
+  useEffect(() => {    
     const getProductsArray = async() => {
       try {
-        const response = await axiosInstance.post(
+        const response = await axios.post(
           '/api/feed', 
           JSON.stringify({ category: selected })
         )
+        console.log("product ", response.data);
+        
         if (response.data?.success && response.data?.feed) {
           setProductsArray(response.data?.feed)
         }
