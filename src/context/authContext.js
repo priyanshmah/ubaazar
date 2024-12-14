@@ -11,22 +11,39 @@ export const AuthProvider = ({ children }) => {
 
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [isAdmin, setIsAdmin] = useState(false);
+    const [bagItems, setBagItems] = useState('');
   
 
     useEffect(() => {
         const checkAdminStatus = async() => {
-            const response = await axiosInstance.get('/api/auth/user')
-            console.log("response is: ", response.data);
-            
-            setIsAdmin(response.data?.user?.isSeller)
+            const accessToken = Cookies.get('access-token');
+
+            if(accessToken){
+
+                const response = await axiosInstance.get('/api/auth/user')            
+                setIsAdmin(response.data?.user?.isSeller)
+
+            } else setIsAdmin(false)
         }
 
         checkAdminStatus();
 
+        const storedBag = localStorage.getItem('bag');
+        if (storedBag) {
+            const parsedBag = JSON.parse(storedBag) || [];
+            setBagItems(parsedBag?.length)
+        }
+
     }, []);
 
     return (
-        <AuthContext.Provider value={{ isLoggedIn, setIsLoggedIn, isAdmin }}>
+        <AuthContext.Provider value={{ 
+            isLoggedIn, 
+            setIsLoggedIn, 
+            isAdmin,
+            bagItems,
+            setBagItems
+        }}>
             {children}
         </AuthContext.Provider>
     );

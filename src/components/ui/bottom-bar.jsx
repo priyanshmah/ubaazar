@@ -19,7 +19,7 @@ export default function BottomBar() {
   const pathName = usePathname();
 
   return (
-    <div className='fixed bottom-0 w-full left-0 z-50 flex flex-row bg-white text-darkBlue text-xs font-bold place-content-evenly py-2 md:hidden'>
+    <div className='fixed bottom-0 w-full left-0 z-50 flex-row bg-white text-darkBlue text-xs font-bold place-content-evenly py-2 hidden'>
       { pathName === '/' && <HomeBottomBar />}
     </div>
   );

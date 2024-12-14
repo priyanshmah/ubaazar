@@ -8,19 +8,21 @@ import axios from "axios";
 import crypto from 'crypto'
 import { AuthenticateUser } from "@/lib/authenticateUser";
 import User from "@/models/User.models";
+import Suits from "@/models/products/Suits&Kurtas.models";
+import Sarees from "@/models/products/Sarees.models";
 
 
 export async function POST(request) {
+
     await dbConnect();
     const user = await AuthenticateUser(request);
-   
-    try {
 
+    try {
         const reqBody = await request.json();
         const { products, address, paymentMode } = reqBody;
 
         if (!(Array.isArray(products)) || products.length <= 0 || !paymentMode)
-            return NextResponse.json({ 
+            return NextResponse.json({
                 message: "Products or payment mode not defined",
                 success: false
             }, { status: 400 })
@@ -32,7 +34,7 @@ export async function POST(request) {
             !address.area ||
             !address.city ||
             !address.state
-        ) return NextResponse.json({ 
+        ) return NextResponse.json({
             message: "Incomplete Address",
             success: false
         }, { status: 404 })
@@ -50,9 +52,9 @@ export async function POST(request) {
         const newAddress = await Address.create(addressData);
 
 
-        //please check the inventory left then process order and then calculate the total amount to be paid
+        // please check the inventory left then process order and then calculate the total amount to be paid
         const productIds = products.map(item => item.product);
-        const dbProducts = await Product.find({ _id: { $in: productIds } });
+        const dbProducts = await Product.find({ _id: { $in: productIds } }).lean();
 
         let totalAmount = 0;
         for (const item of products) {
@@ -62,8 +64,9 @@ export async function POST(request) {
                 return NextResponse.json({
                     message: `Product with id ${item.product} not found`,
                     success: false
-                }, { status: 404 });
+                }, { status: 400 });
             }
+
 
             if (product.inventory && (product.inventory < item.quantity)) {
                 return NextResponse.json({
@@ -73,10 +76,11 @@ export async function POST(request) {
             }
 
             if (product.sizes) {
-                const sizeToBeOrdered = product.sizes?.filter(
+                const sizeToBeOrdered = product.sizes?.find(
                     (value) => value.size?.toString() === item.size
                 )
-                if (sizeToBeOrdered[0].inventory < item.quantity) {
+
+                if (sizeToBeOrdered.quantity < item.quantity) {
                     return NextResponse.json({
                         message: `${product.productName} is out of stock`,
                         success: false
@@ -93,25 +97,25 @@ export async function POST(request) {
             const orderData = {
                 products,
                 address: newAddress._id,
-                totalAmount: totalAmount,
+                totalAmount: totalAmount + 79,
                 paymentMode,
                 orderNumber: generateOrderNumber()
             }
 
             const newOrder = await Order.create(orderData);
-            await updateInventory(products, dbProducts);
-
             let updatedUser;
 
-            if (user) {                
+            await updateInventory(products);
+
+            if (user) {
                 updatedUser = await User.findByIdAndUpdate(
-                    user._id, 
+                    user._id,
                     { $push: { previousOrders: newOrder._id } },
                     { new: true }
                 )
-                
+
             }
-           
+
             return NextResponse.json({
                 message: "Order placed successfully",
                 orderId: newOrder._id,
@@ -123,7 +127,6 @@ export async function POST(request) {
         else if (paymentMode === 'online') {
 
             const transactionId = uuid();
-            
             const orderData = {
                 products,
                 address: newAddress._id,
@@ -136,29 +139,29 @@ export async function POST(request) {
             if (!newOrder) {
                 return NextResponse.json({ message: 'Order cancelled' }, { status: 404 })
             }
-            
-            
-            if (user) {                
+
+
+            if (user) {
                 await User.findByIdAndUpdate(
-                    user._id, 
+                    user._id,
                     { $push: { previousOrders: newOrder._id } },
                 )
-                
+
             }
-            
+
             const paymentUrl = await initializePayment(
-                transactionId, newOrder._id ,totalAmount
+                transactionId, newOrder._id, totalAmount
             );
             if (paymentUrl) {
-                return NextResponse.json({ 
+                return NextResponse.json({
                     url: paymentUrl,
                     success: true
-             }, { status: 200 })
+                }, { status: 200 })
             } else {
-                return NextResponse.json({ 
+                return NextResponse.json({
                     message: 'Something went wrong',
                     success: false
-            }, { status: 500 })
+                }, { status: 500 })
             }
         }
 
@@ -166,8 +169,8 @@ export async function POST(request) {
         console.error(error);
         return NextResponse.json({ error: error.message }, { status: 500 })
     }
-
 }
+
 
 async function initializePayment(merchantTransactionId, orderId, amount) {
     try {
@@ -208,7 +211,7 @@ async function initializePayment(merchantTransactionId, orderId, amount) {
                 request: base64EncodedPayload
             }
         }
-        
+
         const response = await axios.request(options);
         const paymentUrl = (response.data.data?.instrumentResponse?.redirectInfo?.url);
 
@@ -220,31 +223,42 @@ async function initializePayment(merchantTransactionId, orderId, amount) {
     }
 }
 
-async function updateInventory(products, dbProducts) {
-    const bulkOps = products.map(item => {
-        const product = dbProducts.find(p => p._id.toString() === item.product);
 
-        if (product?.inventory) {
-            return {
-                updateOne: {
-                    filter: { _id: product._id },
-                    update: { $inc: { inventory: -item.quantity } }
-                }
-            };
-        } else if (product?.sizes) {
-            return {
-                updateOne: {
-                    filter: { _id: product._id, "sizes.size": item.size },
-                    update: { $inc: { "sizes.$.inventory": -item.quantity } }
-                }
-            };
+async function updateInventory(products) {
+    for (const item of products) {
+        try {
+            const product = await Product.findById(item.product);
+            if (!product) return null;
+
+            if (product.category === 'suits') {
+
+                const updatedProduct = await Suits.hydrate(product);
+
+                updatedProduct?.sizes?.map(size => {
+                    if (size.size.toString() === item.size.toString()) {
+                        size.quantity -= item.quantity;
+                    }
+                    return size;
+                })
+                await updatedProduct.save();
+                return updatedProduct;
+            }
+            else if (product.category === 'sarees') {
+
+                const updatedProduct = await Sarees.hydrate(product);
+                updatedProduct.inventory -= item.quantity;
+
+                await updatedProduct.save();
+                return updatedProduct;
+            }
+
+        } catch (error) {
+            console.error('Inventory update error:', error);
+            return null;
         }
-    }).filter(Boolean);
-
-    if (bulkOps.length > 0) {
-        await Product.bulkWrite(bulkOps);
     }
 }
+
 
 function generateOrderNumber() {
     return Math.floor(10000000 + Math.random() * 90000000).toString();

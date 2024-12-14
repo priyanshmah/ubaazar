@@ -4,7 +4,7 @@ import Navbar from "@/components/ui/navbar";
 import { Provider } from "react-redux";
 import store from "@/redux/store";
 import localFont from '@next/font/local'
-import { ABeeZee, Arima, Baskervville, Crimson_Text, Lora, Merriweather, Montserrat, Nunito, Overlock, Pacifico, Poppins, Raleway, Roboto, Roboto_Serif, Roboto_Slab } from "@next/font/google"
+import { Overlock } from "next/font/google"
 import BottomBar from "@/components/ui/bottom-bar";
 import AuthContext, { AuthProvider } from "@/context/authContext";
 import { Analytics } from '@vercel/analytics/react'
@@ -12,6 +12,9 @@ import NextNProgress from 'nextjs-progressbar';
 import Head from "next/head";
 import Link from "next/link";
 import UB from '@/public/UB.png'
+import NextTopLoader from "nextjs-toploader";
+import  FacebookPixel  from "@/helpers/pixel/pixelComponent";
+
 
 const overlock = Overlock({
   subsets: ['latin', 'latin-ext'],
@@ -29,19 +32,26 @@ const monaSans = localFont({
 export default function RootLayout({ children }) {
 
 
+
+
   return (
     <html lang="en">
       <Head>
-        <Link rel="shortcut icon" href={UB}/>
+        <Link rel="shortcut icon" href={UB} />
       </Head>
       <body className={`${monaSans.variable} ${overlock.className}`}>
+        <NextTopLoader
+          showSpinner={false}
+          color="#ff6341"
+          height={4}
+        />
+        <FacebookPixel />
         <AuthProvider>
           <Provider store={store}>
             <header>
-            <NextNProgress height={3}/>
               <Navbar />
             </header>
-              {children}
+            {children}
             <footer>
               <BottomBar />
             </footer>

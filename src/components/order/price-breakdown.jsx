@@ -1,9 +1,14 @@
 "use client";
 import React, { useState } from "react";
+import toast, { Toaster } from "react-hot-toast";
 
 function PriceDetails({ total, isCod, showDiscount }) {
   const [discountCode, setDiscountCode] = useState("");
   const [discount, setDiscount] = useState(0);
+
+  const handleApplyDiscount = () => {
+    toast.error("Invalid Disount Code")
+  }
 
   return (
     <div>
@@ -12,7 +17,8 @@ function PriceDetails({ total, isCod, showDiscount }) {
         <p className="font-sans font-normal text-lg text-darkGrayColor">
           Discount Code
         </p>
-        <div className="flex flex-row items-center place-content-between gap-2">
+        <form 
+        className="flex flex-row items-center place-content-between gap-2">
           <input
             value={discountCode}
             onChange={(e) => {
@@ -26,26 +32,28 @@ function PriceDetails({ total, isCod, showDiscount }) {
             autoCorrect="off"
             spellCheck="false"
           />
-          <button className="p-2 border border-silver w-1/4 rounded-md">
+          <button 
+          onClick={handleApplyDiscount}
+          className="p-2 border border-silver shadow-sm w-1/4 rounded-md">
             Apply
           </button>
-        </div>
+        </form>
         </div>}
         <div className="">
           <div className="flex flex-row items-center place-content-between">
             <p className="font-medium text-sm">Subtotal</p>
-            <p className="font-normal text-darkGrayColor font-sans">₹{total}</p>
+            <p className="font-normal text-darkGrayColor">₹{total}</p>
           </div>
           <div className="flex flex-row items-center place-content-between">
             <p className="font-medium text-sm">Discount</p>
-            <p className="font-normal text-darkGrayColor font-sans">
+            <p className="font-normal text-darkGrayColor">
               ₹{discount}
             </p>
           </div>
           <div className="flex flex-row items-center place-content-between">
             <p className="font-medium text-sm">COD Charges</p>
-            <p className="font-normal text-darkGrayColor font-sans">
-              ₹{isCod ? 40 : 0}
+            <p className="font-normal text-darkGrayColor">
+              ₹{isCod ? 79 : 0}
             </p>
           </div>
           <div className="flex flex-row items-center place-content-between">
@@ -56,10 +64,11 @@ function PriceDetails({ total, isCod, showDiscount }) {
         <div className="flex flex-row items-center place-content-between py-2 border-t border-dashed border-silver">
           <p className="font-medium text-lg text-darkGrayColor">Grand total</p>
           <p className="font-normal text-lg text-darkGrayColor font-sans">
-            ₹{total - discount + (isCod? 40 : 0)}
+            ₹{total - discount + (isCod ? 79 : 0)}
           </p>
         </div>
       </div>
+      <Toaster />
     </div>
   );
 }

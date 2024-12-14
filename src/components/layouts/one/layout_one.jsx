@@ -1,7 +1,7 @@
 import React from "react";
 import Image from "next/image";
 
-function LayoutOne({ images }) {
+function LayoutOne({ images, alt }) {
   if (!images) return;
   if (images.length < 1) return;
 
@@ -17,6 +17,7 @@ function LayoutOne({ images }) {
           width: "100%",
           borderRadius: "0.75rem",
         }}
+        alt={alt}
       />
     </div>
   );

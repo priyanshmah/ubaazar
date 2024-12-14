@@ -17,19 +17,21 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import Link from "next/link";
 
 // importing icons
 import { LuUser2 } from "react-icons/lu";
 import { FiArrowLeft, FiGrid, FiMenu, FiShoppingBag } from "react-icons/fi";
 import SideBar from "../feed/sidebar";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
+import { useRouter } from "nextjs-toploader/app";
 import ubaazarLogo from '@/public/icons/ubaazar.logo.svg'
 import { Passion_One } from "next/font/google";
 
 import { HiMenu } from "react-icons/hi";
 import { TbShoppingBag } from "react-icons/tb";
+import AuthContext from "@/context/authContext";
 
 
 const passion = Passion_One({
@@ -119,16 +121,12 @@ const Drawer = () => {
 };
 
 const HomeNavbar = () => {
-  const [bagQty, setBagQty] = useState(0);
   const router = useRouter();
+  const { bagItems } = useContext(AuthContext);
 
-  useEffect(() => {
-    const storedBag = localStorage.getItem("bag");
-    // if (storedBag) {
-    //   let parsedBag = JSON.parse(storedBag) || [];
-    //   setBagQty(parsedBag.length);
-    // }
-  }, []);
+  console.log("bag items is: ", bagItems);
+  
+  
 
   return (
     <div className="flex flex-col w-full gap-4">
@@ -151,9 +149,9 @@ const HomeNavbar = () => {
           <div className="flex flex-col relative items-center justify-center rounded-xl shadow">
             <TbShoppingBag size="2.5rem" className="text-darkBlue p-2" />
             {/* <p className="hidden md:block md:navbarItemText">Bag</p> */}
-            {bagQty > 0 && (
-              <p className="text-white font-sans bg-brightOrange rounded-full text-xs h-4 w-4 flex flex-row justify-center items-center font-semibold absolute -top-2 -right-2">
-                {bagQty}
+            {bagItems > 0 && (
+              <p className="text-white font-sans bg-red rounded-full text-xs h-4 w-4 flex flex-row justify-center items-center font-semibold absolute top-0 right-0">
+                {bagItems}
               </p>
             )}
           </div>

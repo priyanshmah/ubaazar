@@ -4,10 +4,11 @@ import Image from "next/image";
 
 import AuthContext from "@/context/authContext.js";
 import { useContext, useState } from "react";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { FiLogOut } from "react-icons/fi";
 import Cookies from "js-cookie";
 import toast from "react-hot-toast";
+import { useRouter } from 'nextjs-toploader/app'
 
 import {
   Dialog,

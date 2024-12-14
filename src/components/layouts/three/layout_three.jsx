@@ -1,7 +1,7 @@
 import React from "react";
 import Image from "next/image";
 
-function LayoutThree({ images }) {
+function LayoutThree({ images, alt }) {
   if (!images) return;
   if (images.length < 3) return;
 
@@ -12,6 +12,7 @@ function LayoutThree({ images }) {
           src={images[0]}
           height={300}
           width={400}
+          alt={alt}
           style={{
             objectFit: "contain",
             height: "auto",
@@ -26,6 +27,7 @@ function LayoutThree({ images }) {
             src={images[1]}
             height={100}
             width={400}
+            alt={alt}
             style={{
               objectFit: "contain",
               height: "auto",
@@ -39,6 +41,7 @@ function LayoutThree({ images }) {
             src={images[2]}
             height={100}
             width={400}
+            alt={alt}
             style={{
               objectFit: "contain",
               height: "auto",

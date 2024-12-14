@@ -13,36 +13,42 @@ export async function POST(request) {
         const reqBody = await request.json();
         const { productId, data, category } = reqBody;
 
-        if(!productId || !data || !category){
+        if (!productId || !data || !category) {
             return NextResponse.json({
                 message: "Data not found",
                 success: false
-            }, { status: 404 })
+            }, { status: 400 })
         }
 
         let updatedProduct;
+        const product = await Product.findById(productId);
 
-        if (category === 'sarees') {
-            updatedProduct = await Sarees.findByIdAndUpdate(
-                productId,
-                data,
-                { new: true }
-            );
-
-        } 
-        else if (category === 'suits') {
-            updatedProduct = await Suits.findByIdAndUpdate(
-                productId,
-                data,
-                { new: true }
-            );
-        } 
-        else {
+        if(!product) {
             return NextResponse.json({
+                message: "Product not found",
+                success: false
+            }, { status: 400 })
+        }
+
+        if (category === 'sarees') 
+            updatedProduct = await Sarees.hydrate(product);
+
+        else if (category === 'suits') 
+            updatedProduct = await Suits.hydrate(product);  
+        
+        else return NextResponse.json({
                 message: "No category exist for this",
                 success: false
             }, { status: 404 })
-        }
+        
+
+        Object.keys(data).forEach(key => {
+            if (data[key] !== undefined) {
+                updatedProduct[key] = data[key];
+            }
+        });
+
+        await updatedProduct.save();
 
         if (!updatedProduct) {
             return NextResponse.json({
@@ -57,13 +63,13 @@ export async function POST(request) {
             product: updatedProduct
         }, { status: 200 })
 
-        
+
     } catch (error) {
         console.error(error)
         return NextResponse.json({
-            message: 'Somenthing went wrong while updating the product',
+            message: 'Something went wrong while updating the product',
             success: false
         }, { status: 500 })
     }
-    
+
 } 

@@ -1,7 +1,7 @@
 import React from "react";
 import Image from "next/image";
 
-function LayoutTwo({ images }) {
+function LayoutTwo({ images, alt }) {
   if (!images) return;
   else if (images.length < 1) return;
 
@@ -22,6 +22,7 @@ function LayoutTwo({ images }) {
                 src={value}
                 height={300}
                 width={400}
+                alt={`${alt} ${index}`}
                 className="h-full w-full rounded-xl object-cover"
               />
             </div>

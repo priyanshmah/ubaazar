@@ -77,20 +77,14 @@ const suitSchema = new mongoose.Schema({
         required: true,
     },
     sizes: [{
-        size: {
-            type: String,
-            required: true
-        },
-        quantity: {
-            type: Number,
-            required: true
-        }
+        size: { type: String, required: true },
+        quantity: { type: Number, default: 1, required: true }
     }],
     variants: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: "Suits"
     }]
-});
+}, { discriminatorKey: 'type'});
 
 suitSchema.index({ "$**": "text" });
 

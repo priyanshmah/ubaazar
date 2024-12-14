@@ -16,7 +16,7 @@ import {
   DrawerTrigger,
 } from "@/components/ui/drawer";
 
-import { useRouter } from "next/navigation";
+import { useRouter } from "nextjs-toploader/app";
 import { CgRadioCheck, CgRadioChecked } from "react-icons/cg";
 import { FiCheckSquare, FiSquare, FiTrash2 } from "react-icons/fi";
 import axios from "axios";

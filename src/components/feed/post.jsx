@@ -5,7 +5,8 @@ import styles from "@/styles/Home.module.css";
 import { IoHeartOutline, IoHeart, IoPaperPlaneOutline } from "react-icons/io5";
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
+import { useRouter } from "nextjs-toploader/app";
 import Loading from "../../app/loading";
 import LayoutOne from "../layouts/one/layout_one";
 import LayoutTwo from "../layouts/two/layout_two";
@@ -21,10 +22,6 @@ const passion = Passion_One({
 });
 
 export default function ProductFeed({ feed }) {
-  const [isExpanded, setIsExpanded] = useState(false);
-  const [likeClicked, setLikeClicked] = useState(false);
-  const [commentClicked, setCommentClicked] = useState(false);
-  const [shareClicked, setShareClicked] = useState(false);
   const [loading, setLoading] = useState(false);
   const pathname = usePathname();
 
@@ -67,7 +64,7 @@ export default function ProductFeed({ feed }) {
                   }
                   className={`hover:cursor-pointer`}
                 >
-                  <ImageGrid images={value.images} />
+                  <ImageGrid images={value.images}  alt={value.productName}/>
                 </div>
 
                 <div className="flex flex-row px-2 place-content-between">
@@ -124,10 +121,9 @@ function stringToSlug(str) {
     .replace(/-+/g, "-");
 }
 
-function ImageGrid({ images }) {
-  if (images.length === 1) return <LayoutOne images={images} />;
-  else if (images.length === 3) return <LayoutThree images={images} />;
-  else return <LayoutTwo images={images} />;
+function ImageGrid({ images, alt }) {
+  if (images.length === 1) return <LayoutOne images={images} alt={alt} />;
+  else if (images.length === 3) return <LayoutThree images={images} alt={alt}/>;
+  else return <LayoutTwo images={images} alt={alt}/>;
 }
 
-function FullStars({ fullStars }) {}

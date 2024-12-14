@@ -1,19 +1,35 @@
 "use client";
 import Image from "next/image";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { CiDeliveryTruck } from "react-icons/ci";
 import { FiCheck, FiX } from "react-icons/fi";
-import { useRouter } from "next/navigation";
+import { useRouter } from "nextjs-toploader/app";
+import AuthContext from "@/context/authContext";
 
 function OrderDetails({ response }) {
   const router = useRouter();
+  const { setBagItems } = useContext(AuthContext);
+  const [orders, setOrders] = useState([]);
+ 
 
   useEffect(() => {
    
     let productIds = response?.order?.products?.map((value) => {
       return value?.product?._id;
     });
+    const storedOrders = localStorage.getItem('orders');
+    let parsedOrders = [];
+
+    if (storedOrders) parsedOrders = JSON.parse(storedOrders) || [];    
+    if (response.order){
+      const alreadyAdded = parsedOrders.includes(response.order?._id);
+
+      if(alreadyAdded) setOrders(parsedOrders)
+      else setOrders([...parsedOrders, response.order?._id])
+
+    }
     
+    //remove products from cart which user ordered already
     if (productIds) {
       
       let bagItems = localStorage.getItem("bag");
@@ -23,9 +39,14 @@ function OrderDetails({ response }) {
         return !(productIds?.includes(value?._id))
       });
 
-      localStorage.setItem("bag", JSON.stringify(updatedBag))
+      localStorage.setItem("bag", JSON.stringify(updatedBag));
+      setBagItems(updatedBag?.length)
     }
   }, []);
+
+  useEffect(() => {
+    if (orders.length > 0) localStorage.setItem("orders", JSON.stringify(orders))
+  }, [orders])
 
   return (
     <div className="flex flex-col justify-center items-center mb-20">
@@ -126,7 +147,7 @@ function OrderDetails({ response }) {
               Payment method
             </p>
             <p>
-              {!response?.order?.paymentMode === "cod"
+              {response?.order?.paymentMode === "cod"
                 ? "Cash on Delivery"
                 : "Online Payment"}
             </p>

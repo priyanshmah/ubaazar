@@ -26,7 +26,7 @@ const productSchema = new mongoose.Schema({
     video: [{
         type: String,
     }]
-}, { discriminatorKey: 'category', collection: 'products'})
+}, { discriminatorKey: 'type', collection: 'products'})
 
 
 productSchema.index(

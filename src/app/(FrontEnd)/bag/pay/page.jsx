@@ -3,17 +3,20 @@
 import PriceDetails from "@/components/order/price-breakdown";
 import AuthContext from "@/context/authContext";
 import axios from "axios";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "nextjs-toploader/app";
 import { useState, useEffect, useContext } from "react";
 import toast, { Toaster } from "react-hot-toast";
 import { CgRadioCheck, CgRadioChecked } from "react-icons/cg";
 import { FiCheck, FiX } from "react-icons/fi";
+import { RotatingLines } from "react-loader-spinner";
 
 export default function PaymentPage() {
   const [paymentMode, setPaymentMode] = useState("online");
   const [totalAmount, setTotalAmount] = useState("");
-  const [isCodAvailable, setIsCodAvailable] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [isCodAvailable, setIsCodAvailable] = useState(true);
   const router = useRouter();
+
 
   const [items, setItems] = useState([]);
   const [address, setAddress] = useState({});
@@ -39,7 +42,13 @@ export default function PaymentPage() {
     setTotalAmount(amount);
   }, [items]);
 
+  useEffect(() => {
+    if (paymentMode === 'cod') setIsCodAvailable(true)
+    else setIsCodAvailable(false)
+  }, [paymentMode])
+
   const handlePlaceOrder = async () => {
+    setLoading(true)
     try {
       const products = items?.map((value) => {
         if (value.selectedSize === "Free size") {
@@ -49,7 +58,7 @@ export default function PaymentPage() {
           };
         } else {
           return {
-            product: value.id,
+            product: value._id,
             quantity: 1,
             size: value.selectedSize,
           };
@@ -58,11 +67,8 @@ export default function PaymentPage() {
       const data = {
         products,
         address,
-        paymentMode: "online",
-      };
-
-      console.log("data is: ", data);
-      
+        paymentMode,
+      };      
 
       const response = await axios.post(
         `/api/checkout/order`,
@@ -80,6 +86,9 @@ export default function PaymentPage() {
     } catch (error) {
       console.log(error);
       toast.error("Something went wrong please try again");
+    }
+    finally {
+      setLoading(false)
     }
   };
 
@@ -102,9 +111,7 @@ export default function PaymentPage() {
           Pay Online
         </button>
         <button
-          onClick={() => {
-            if (isCodAvailable) setPaymentMode("cod");
-          }}
+          onClick={() => setPaymentMode('cod')}
           className={`border ${
             paymentMode === "cod"
               ? "border-brightOrange"
@@ -119,10 +126,9 @@ export default function PaymentPage() {
             )}
             Cash On Delivery
           </div>
-          {!isCodAvailable && <CodCriteria />}
         </button>
       </div>
-      <PriceDetails total={totalAmount} isCod={isCodAvailable}/>
+      <PriceDetails total={totalAmount} showDiscount={true} isCod={isCodAvailable}/>
 
       <div className="flex flex-row items-end place-content-between w-full p-4 fixed bottom-0 left-0 bg-white">
         <div>
@@ -133,9 +139,19 @@ export default function PaymentPage() {
         </div>
         <div
           onClick={handlePlaceOrder}
-          className="bg-darkBlue text-white flex flex-row justify-center items-center rounded-lg font-medium text-lg w-3/5 h-full py-2"
+          className="bg-darkBlue text-white flex flex-row justify-center items-center rounded-lg font-medium text-lg w-3/5 h-12 py-2"
         >
-          Place Order
+          {loading ? 
+            <RotatingLines
+            visible={true}
+            height="30"
+            width="30"
+            strokeColor="#C0C0C0"
+            strokeWidth="5"
+            animationDuration="0.75"
+            ariaLabel="rotating-lines-loading"
+          />
+          : "Place Order"}
         </div>
       </div>
       <Toaster />
@@ -143,29 +159,3 @@ export default function PaymentPage() {
   );
 }
 
-function CodCriteria() {
-  const { isLoggedIn } = useContext(AuthContext);
-
-  return (
-    <div className="flex flex-col gap-2 text-darkGrayColor font-medium px-4">
-      <div className="flex flex-row gap-2">
-        <div className="text-red font-sans font-semibold">NOT ELIGIBLE </div>
-      </div>
-      <div className="flex flex-row items-center gap-2">
-        {isLoggedIn ? (
-          <FiCheck
-            className="bg-green text-white rounded-full p-1"
-            size={"1.5rem"}
-          />
-        ) : (
-          <FiX className="bg-red text-white rounded-full p-1" size={"1.5rem"} />
-        )}
-        Signup or Login to your account
-      </div>
-      <div className="flex flex-row items-center gap-2">
-        <FiX className="bg-red text-white rounded-full p-1" size={"1.5rem"} />
-        You have atleast 3 prepaid orders
-      </div>
-    </div>
-  );
-}

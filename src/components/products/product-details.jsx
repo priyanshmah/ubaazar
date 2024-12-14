@@ -12,11 +12,12 @@ import SuitDetails from "@/components/products/suit-details";
 import { TbRulerMeasure } from "react-icons/tb";
 
 import toast from "react-hot-toast";
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useContext, useEffect, useState } from "react";
+import { useRouter } from "nextjs-toploader/app";
 import { FaWhatsapp } from "react-icons/fa";
 import Link from "next/link";
 import CordsetDetails from "./cordset-details";
+import AuthContext from "@/context/authContext";
 
 export default function ProductDetails({
   productData,
@@ -27,10 +28,11 @@ export default function ProductDetails({
   const [bag, setBag] = useState([]);
   const [favourites, setFavourites] = useState([]);
   const [addedToBag, setAddedToBag] = useState(false);
+  const { setBagItems } = useContext(AuthContext);
 
-  console.log("product data is: ", productData);
+
+  console.log("product sizes", productData.sizes);
   
-  console.log("saved bag is: ", bag);
   useEffect(() => {
     if (productData.category === "sarees") setSelectedSize("Free size");
 
@@ -66,8 +68,6 @@ export default function ProductDetails({
       return;
     }
 
-    console.log("bag before push: ", bag);
-
     setBag([
       ...bag,
       {
@@ -79,6 +79,7 @@ export default function ProductDetails({
       },
     ]);
 
+    setBagItems(prev => prev + 1);
     toast.success("Added To Bag");
     setAddedToBag(true);
   };

@@ -46,11 +46,11 @@ const refreshAccessToken = async () => {
     try {
 
         const refreshToken = Cookies.get('refresh-token');
+        if(!refreshToken) return { accessToken: null , refreshToken: null };
+        
         const response = await axios.post(
             `${process.env.NEXT_PUBLIC_DOMAIN}/api/auth/refresh-token`,
             { refreshToken });
-
-        console.log("refreshed access token is: ", response.data?.refreshToken);
 
 
         return {
