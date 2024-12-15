@@ -6,7 +6,7 @@ import axiosInstance from "@/helpers/axios/axiosInstance";
 import SearchBar from "../ui/search-bar";
 import axios from "axios";
 
-function Category({ feed }) {
+function Category({ feed, searchBar, storiesSection }) {
   const [selected, setSelected] = useState("sarees");
   const [productsArray, setProductsArray] = useState(feed || []);
 
@@ -31,8 +31,8 @@ function Category({ feed }) {
 
   return (
     <div className="bg-white min-h-[100vh]">
-      <SearchBar />
-      <StoriesSection selected={selected} setSelected={setSelected}/>
+      {searchBar &&  <SearchBar />}
+      {storiesSection && <StoriesSection selected={selected} setSelected={setSelected}/>}
       <div className="flex flex-row">
     <div className="bg-white w-[15vw] h-[50vh] sticky left-0 top-[20vh] flex flex-col place-content-around">
       <div

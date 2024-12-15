@@ -1,25 +1,8 @@
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
-
-import styles from "@/styles/Product.module.css";
-import "@/styles/globals.css";
-
-
-import ImagesCrousel from "@/components/products/image-crousel";
-
-import Image from "next/image";
 import { getProductById } from "@/lib/api";
 import { notFound } from "next/navigation";
-import MorePosts from "@/components/feed/more-post";
 import { Toaster } from "react-hot-toast";
-import ProductDetails from "@/components/products/product-details";
 import Product from "@/components/products/product";
+import Category from "@/components/feed/category";
 
 
 export async function generateMetadata({ params }) {
@@ -53,9 +36,7 @@ export default async function ProductPage({ params }) {
 
   const productId = params.productId;
   const product = await getProductById(productId);
-  
-  console.log("product data is: ", product);
-  
+   
 
   if (!product) {
     notFound();
@@ -68,6 +49,7 @@ export default async function ProductPage({ params }) {
       <div className={`flex flex-col gap-8 overflow-x-hidden lg:flex-row`}>
        <Product productData={product}/>
       </div> 
+      <Category SearchBar={false} storiesSection={false}/>
       <Toaster />
     </div>
   );

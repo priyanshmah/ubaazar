@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { CiCircleMinus, CiCirclePlus } from "react-icons/ci";
-
+import shoppingBags from "@/public/icons/shopping-bags.svg"
 import {
   Drawer,
   DrawerClose,
@@ -113,11 +113,12 @@ export default function Bag() {
             className="flex flex-col justify-center items-center gap-8"
             style={{ minHeight: "70vh" }}
           >
-            <div className="h-40 w-40 relative">
+            <div className="h-40 w-40">
               <Image
-                src={"/public/icons/shopping-bags.svg"}
-                fill
+                src={shoppingBags}
                 className="object-contain"
+                height={300}
+                width={400}
                 alt="empty shopping bag showing image"
               />
             </div>

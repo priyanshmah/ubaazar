@@ -40,7 +40,7 @@ export default async function Home() {
       >
         <Sidebar />
       </div>
-      <Category feed={feed}/>
+      <Category feed={feed} searchBar={true} storiesSection={true}/>
     </div>
     </Suspense>
   );
