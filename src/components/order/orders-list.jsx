@@ -94,18 +94,31 @@ function OrderList({ orders }) {
               <div
                 className={`p-4 border flex flex-row text-left gap-4 w-full place-content-between rounded-xl shadow-md`}
               >
-                <div className="text-xs">
-                  <p className="text-darkBlue font-semibold text-sm">
-                    {value?.address?.name}
-                  </p>
-                  <p>
-                    {value?.address?.address} , {value?.address?.area}
-                  </p>
-                  <p>
-                    {value?.address?.city} , {value?.address?.state} - {value?.address?.pincode}
-                  </p>
-                  <p>{value?.address?.mobileNumber}</p>
-                </div>
+                {value.address.formatted_address ? (
+              <div className="text-xs">
+                <p className="text-darkGrayColor font-semibold text-sm">
+                  {value?.address?.name}
+                </p>
+                <p>{value?.address?.formatted_address}</p>
+                <p>{value?.address?.mobileNumber}</p>
+              </div>
+            ) : (
+              <div className="text-xs">
+                <p className="text-darkBlue font-semibold text-sm">
+                  {value?.address?.name}
+                </p>
+                <p>
+                  {value?.address?.address} ,{" "}
+                  {value?.address?.area}
+                </p>
+                <p>
+                  {value?.address?.city} ,{" "}
+                  {value?.address?.state} -{" "}
+                  {value?.address?.pincode}
+                </p>
+                <p>{response?.order?.address?.mobileNumber}</p>
+              </div>
+            )}
               </div>
             </div>}
           </div>

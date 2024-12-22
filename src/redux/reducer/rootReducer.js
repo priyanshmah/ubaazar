@@ -1,14 +1,11 @@
 import { combineReducers } from "@reduxjs/toolkit";
 
-import productDetailSlice from "../slice/productDetailSlice";
-import productCategorySlice from "../slice/product-type/productCategorySlice";
-import productInventorySlice from "../slice/product-type/productInventorySlice";
-
+import productArraySlice from "../slice/productArraySlice.js"
+import selectedCategorySlice from "../slice/selectedCategory.js"
 
 const rootReducer = combineReducers({
-    productDetails: productDetailSlice,
-    productCategoryData: productCategorySlice,
-    productVariants: productInventorySlice
+    productArray: productArraySlice,
+    selectedCategory: selectedCategorySlice,
 })
 
 export default rootReducer;

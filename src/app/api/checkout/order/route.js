@@ -27,17 +27,22 @@ export async function POST(request) {
                 success: false
             }, { status: 400 })
 
-        if (!address.name ||
-            !address.pinCode ||
-            !address.mobileNumber ||
+        if (!address.name || !address.mobileNumber)
+            return NextResponse.json({
+                message: "Name or mobile number not found",
+                success: false
+            }, { status: 400 })
+
+        if ((!address.pinCode ||
             !address.address ||
             !address.area ||
             !address.city ||
-            !address.state
-        ) return NextResponse.json({
-            message: "Incomplete Address",
-            success: false
-        }, { status: 404 })
+            !address.state) && !address.formatted_address) {
+            return NextResponse.json({
+                message: "Incomplete address",
+                success: false
+            }, { status: 400 })
+        }
 
         const addressData = {
             name: address.name,
@@ -46,7 +51,8 @@ export async function POST(request) {
             address: address.address,
             area: address.area,
             city: address.city,
-            state: address.state
+            state: address.state,
+            formatted_address: address.formatted_address
         }
 
         const newAddress = await Address.create(addressData);

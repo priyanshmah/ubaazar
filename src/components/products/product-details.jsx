@@ -1,23 +1,29 @@
 "use client";
 
-import styles from "@/styles/Product.module.css";
-
-import { FiShoppingBag } from "react-icons/fi";
-import { IoHeartCircle } from "react-icons/io5";
 import { CgNotes } from "react-icons/cg";
-
 import HorizontalLine from "@/components/ui/horizontal-line";
 import SareeDetails from "@/components/products/saree-details";
 import SuitDetails from "@/components/products/suit-details";
-import { TbRulerMeasure } from "react-icons/tb";
+import CordsetDetails from "./cordset-details";
+import {
+  TbCash,
+  TbRulerMeasure,
+  TbShoppingBag,
+  TbShoppingBagPlus,
+  TbStars,
+} from "react-icons/tb";
 
 import toast from "react-hot-toast";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { useRouter } from "nextjs-toploader/app";
 import { FaWhatsapp } from "react-icons/fa";
 import Link from "next/link";
-import CordsetDetails from "./cordset-details";
 import AuthContext from "@/context/authContext";
+import { MdSwapCalls } from "react-icons/md";
+import axios from "axios";
+import { RotatingLines } from "react-loader-spinner";
+import { IoIosCheckmarkCircle, IoIosCloseCircle } from "react-icons/io";
+
 
 export default function ProductDetails({
   productData,
@@ -27,12 +33,8 @@ export default function ProductDetails({
   const router = useRouter();
   const [bag, setBag] = useState([]);
   const [favourites, setFavourites] = useState([]);
-  const [addedToBag, setAddedToBag] = useState(false);
   const { setBagItems } = useContext(AuthContext);
 
-
-  console.log("product sizes", productData.sizes);
-  
   useEffect(() => {
     if (productData.category === "sarees") setSelectedSize("Free size");
 
@@ -79,9 +81,13 @@ export default function ProductDetails({
       },
     ]);
 
-    setBagItems(prev => prev + 1);
-    toast.success("Added To Bag");
-    setAddedToBag(true);
+    setBagItems((prev) => prev + 1);
+    toast.success("Added to bag");
+  };
+
+  const handleShopNow = () => {
+    handleAddToBag();
+    router.push("/bag");
   };
 
   const handleAddToFavourites = () => {
@@ -95,14 +101,10 @@ export default function ProductDetails({
     toast.success("Favourites added");
   };
 
-  const goToBag = () => {
-    router.push("/bag");
-  };
-
   return (
-    <div className="flex flex-col w-full lg:w-1/2">
-      <div className="p-4 rounded-2xl flex flex-col gap-6">
-        <p className="text-xl text-darkGrayColor">{productData.productName}</p>
+    <div className="flex flex-col w-full gap-4 bg-white lg:w-1/2">
+      <div className="p-4  flex flex-col gap-4 bg-white">
+        <p className={`font-sans font-medium text-darkGrayColor text-lg`}>{productData.productName}</p>
         <div className="hidden my-2">
           <HorizontalLine />
         </div>
@@ -124,7 +126,7 @@ export default function ProductDetails({
           </Link>
         </div>
         <div className="flex flex-col gap-2">
-          <div className="flex flex-row gap-2 items-center">
+          <div className="flex flex-row gap-2 items-center text-darkGrayColor">
             <TbRulerMeasure size={"1.5rem"} />
             <p className="text-brightOrange text-base font-semibold">
               Select size
@@ -135,7 +137,7 @@ export default function ProductDetails({
               Free size
             </div>
           )}
-          {(productData.category === "suits") && (
+          {productData.category === "suits" && (
             <div className="flex flex-row overflow-y-auto gap-4">
               {productData.sizes?.map((value, index) => {
                 if (value.quantity > 0) {
@@ -180,34 +182,41 @@ export default function ProductDetails({
           )}
         </div>
 
-        <div className="flex md:flex-row text-base place-content-evenly flex-row-reverse">
+        <div className="flex w-full bg-white md:flex-row text-base place-content-evenly flex-row-reverse gap-2">
           <button
-            onClick={addedToBag ? goToBag : handleAddToBag}
-            className="flex flex-row rounded-xl items-center justify-center font-bold gap-2 bg-darkBlue text-white py-2 w-1/2"
+            onClick={handleShopNow}
+            className="flex flex-row  items-center justify-center font-bold gap-2 bg-darkBlue text-white w-1/2 py-2 rounded-xl"
           >
-            <FiShoppingBag size={"1.5rem"} />
-            {addedToBag ? "Go to Bag" : "Add to Bag"}
+            <TbShoppingBag strokeWidth={1.5} size={"1.5rem"} />
+            <p>Shop now</p>
           </button>
           <button
-            onClick={handleAddToFavourites}
-            className="flex flex-row font-bold rounded-xl justify-center items-center text-darkBlue border-2 border-darkBlue gap-1 py-2 w-2/5"
+            onClick={handleAddToBag}
+            className="flex flex-row font-bold justify-center items-center text-darkBlue gap-1 w-2/5 py-2 rounded-xl border border-darkBlue"
           >
-            <IoHeartCircle className="text-red" size={"1.5rem"} />
-            <p>Favourite</p>
+            <TbShoppingBagPlus
+              className="text-darkBlue"
+              strokeWidth={1.5}
+              size={"1.5rem"}
+            />
+            <p>Add to bag</p>
           </button>
         </div>
       </div>
-      <div className="border-2 text-darkGrayColor border-lightGrayColor text-sm rounded-2xl my-14 mx-2 py-6">
+
+      <CheckDelivery />
+
+      <div className=" bg-white text-darkGrayColor  py-4 text-sm ">
         <div
-          className={`${styles.float} flex flex-row font-semibold gap-4 border-2 border-lightGrayColor w-fit p-2 px-4 bg-white rounded-xl text-base`}
+          className={` flex flex-row font-semibold gap-2  w-full p-2 px-4 rounded-xl text-sm items-center `}
         >
-          <p> Product details</p>
           <CgNotes size={"1.5rem"} />
+          <p> Product details</p>
         </div>
 
-        <div className="flex flex-col gap-8 px-4">
+        <div className="flex flex-col gap-4 p-4">
           <p
-            style={{ whiteSpace: "pre-line" }}
+            style={{ whiteSpace: "pre-line", lineHeight: "0.8" }}
             className="font-semibold text-grayColor"
           >
             {productData.description}
@@ -222,6 +231,161 @@ export default function ProductDetails({
           {productData.category === "cordset" && (
             <CordsetDetails productData={productData} />
           )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function CheckDelivery() {
+  const [pinCode, setPinCode] = useState("");
+  const [isCodAvailable, setIsCodAvailable] = useState("");
+  const [isPinServicable, setIsPinServicable] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  async function checkDelivery(e) {
+    e.preventDefault();
+    try {
+      setLoading(true);
+      setIsPinServicable("");
+      setIsCodAvailable("");
+
+      if (pinCode.length != 6) {
+        toast.error("Pincode must be exactly 6 characters");
+        return;
+      }
+
+      const response = await axios.post(
+        "/api/orders/check-delivery",
+        JSON.stringify({ pinCode })
+      );
+      console.log("response is : ", response.data);
+
+      if (response.data?.result?.delivery_codes?.length > 0) {
+        setIsPinServicable(true);
+        if (
+          response.data?.result?.delivery_codes?.[0]?.postal_code?.cash === "Y"
+        ) {
+          setIsCodAvailable(true);
+        } else setIsCodAvailable(false);
+      } else {
+        setIsPinServicable(false);
+        setIsCodAvailable(false);
+      }
+    } catch (error) {
+      toast.error("Something went wrong");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  const handleChange = (e) => {
+    const value = e.target.value;
+    if (/^\d{0,6}$/.test(value)) {
+      setPinCode(value);
+    }
+  };
+
+  useEffect(() => {
+    setIsCodAvailable("");
+    setIsPinServicable("");
+  }, [pinCode]);
+
+  return (
+    <div className="p-4 flex flex-col gap-4 bg-white">
+      <div className="flex flex-col gap-2">
+        <p className={`font-sans font-medium text-lg`}>Check Delivery</p>
+        <form
+          onSubmit={(e) => checkDelivery(e)}
+          className="flex flex-row place-content-between border border-silver rounded-xl p-2 font-semibold"
+        >
+          <input
+            value={pinCode}
+            onChange={(e) => handleChange(e)}
+            className="placeholder:text-brightOrange text-darkGrayColor w-3/4 focus:outline-none "
+            placeholder="Enter PIN Code"
+            style={{ caretColor: "GrayText" }}
+            type="text"
+            inputMode="numeric"
+            onFocus={(e) => {
+              e.target.placeholder = "";
+            }}
+            onBlur={(e) => (e.target.placeholder = "Enter PIN Code")}
+          />
+          {pinCode && (
+            <button
+              onClick={(e) => checkDelivery(e)}
+              className="text-brightOrange font-semibold px-2 "
+            >
+              {loading ? (
+                <RotatingLines
+                  visible={true}
+                  height="20"
+                  width="20"
+                  strokeColor="#ff6341"
+                  strokeWidth="5"
+                  animationDuration="0.75"
+                  ariaLabel="rotating-lines-loading"
+                />
+              ) : (
+                "CHECK"
+              )}
+            </button>
+          )}
+        </form>
+        <div>
+          {isPinServicable && (
+            <div className="flex flex-row gap-2">
+              <IoIosCheckmarkCircle size={"1rem"} className="text-green" />
+              <p className="text-xs font-semibold text-green">
+                This pincode is servicable
+              </p>
+            </div>
+          )}
+          {isPinServicable === false && (
+            <div className="flex flex-row gap-2">
+              <IoIosCloseCircle size={"1rem"} className="text-red" />
+              <p className="text-xs font-semibold text-red">
+                This pincode is not servicable
+              </p>
+            </div>
+          )}
+          {isCodAvailable && (
+            <div className="flex flex-row gap-2">
+              <IoIosCheckmarkCircle size={"1rem"} className="text-green" />
+              <p className="text-xs font-semibold text-green">
+                Cash on Delivery is available
+              </p>
+            </div>
+          )}
+          {isCodAvailable === false && (
+            <div className="flex flex-row gap-2">
+              <IoIosCloseCircle size={"1rem"} className="text-red" />
+              <p className="text-xs font-semibold text-red">
+                Cash on Delivery is not available
+              </p>
+            </div>
+          )}
+        </div>
+      </div>
+      <div className="flex flex-col bg-white gap-1 items-start text-darkGrayColor">
+        <div className="flex flex-row gap-2 items-center justify-center">
+          <TbCash size={"1.5rem"} />
+          <p className="text-sm text-center font-bold">Cash on Delivery </p>
+        </div>
+
+        <div className="flex flex-row gap-2 items-center justify-center">
+          <MdSwapCalls size={"1.5rem"} />
+          <p className="font-bold text-sm text-center">
+            36 hrs Exchange available
+          </p>
+        </div>
+
+        <div className="flex flex-row gap-2 items-center justify-center">
+          <TbStars strokeWidth={"1.6"} size={"1.5rem"} />
+          <p className="font-bold text-sm text-center">
+            Premium Quality product
+          </p>
         </div>
       </div>
     </div>

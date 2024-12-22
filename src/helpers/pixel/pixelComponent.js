@@ -4,13 +4,14 @@ import { useEffect } from 'react';
 
 export default function FacebookPixel() {
   useEffect(() => {
-    // Dynamically import the library to ensure it's only loaded on the client
     const initPixel = async () => {
       if (typeof window !== 'undefined') {
         const ReactPixel = (await import('react-facebook-pixel')).default;
         
         const pixelId = process.env.NEXT_PUBLIC_FACEBOOK_PIXEL_ID;
 
+        console.log("Next facebook pixel Id is: ", pixelId);
+        
         if (!pixelId) {
           console.warn('Facebook Pixel ID is not set');
           return;

@@ -13,7 +13,8 @@ import Head from "next/head";
 import Link from "next/link";
 import UB from '@/public/UB.png'
 import NextTopLoader from "nextjs-toploader";
-import  FacebookPixel  from "@/helpers/pixel/pixelComponent";
+import FacebookPixel from "@/helpers/pixel/pixelComponent";
+import { PostHogProvider } from "@/helpers/postHog/postHagComponent";
 
 
 const overlock = Overlock({
@@ -31,9 +32,6 @@ const monaSans = localFont({
 
 export default function RootLayout({ children }) {
 
-
-
-
   return (
     <html lang="en">
       <Head>
@@ -46,18 +44,20 @@ export default function RootLayout({ children }) {
           height={4}
         />
         <FacebookPixel />
-        <AuthProvider>
-          <Provider store={store}>
-            <header>
-              <Navbar />
-            </header>
-            {children}
-            <footer>
-              <BottomBar />
-            </footer>
-            <Analytics />
-          </Provider>
-        </AuthProvider>
+        <PostHogProvider>
+          <AuthProvider>
+            <Provider store={store}>
+              <header>
+                <Navbar />
+              </header>
+              {children}
+              <footer>
+                <BottomBar />
+              </footer>
+              <Analytics />
+            </Provider>
+          </AuthProvider>
+        </PostHogProvider>
       </body>
     </html>
   );

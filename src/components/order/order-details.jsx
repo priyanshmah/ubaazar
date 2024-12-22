@@ -10,43 +10,40 @@ function OrderDetails({ response }) {
   const router = useRouter();
   const { setBagItems } = useContext(AuthContext);
   const [orders, setOrders] = useState([]);
- 
 
   useEffect(() => {
-   
     let productIds = response?.order?.products?.map((value) => {
       return value?.product?._id;
     });
-    const storedOrders = localStorage.getItem('orders');
+    const storedOrders = localStorage.getItem("orders");
     let parsedOrders = [];
 
-    if (storedOrders) parsedOrders = JSON.parse(storedOrders) || [];    
-    if (response.order){
+    if (storedOrders) parsedOrders = JSON.parse(storedOrders) || [];
+    if (response.order) {
       const alreadyAdded = parsedOrders.includes(response.order?._id);
 
-      if(alreadyAdded) setOrders(parsedOrders)
-      else setOrders([...parsedOrders, response.order?._id])
-
+      if (alreadyAdded) setOrders(parsedOrders);
+      else setOrders([...parsedOrders, response.order?._id]);
     }
-    
+
     //remove products from cart which user ordered already
     if (productIds) {
-      
       let bagItems = localStorage.getItem("bag");
       let parsedBag = JSON.parse(bagItems) || [];
 
       let updatedBag = parsedBag?.filter((value) => {
-        return !(productIds?.includes(value?._id))
+        return !productIds?.includes(value?._id);
       });
 
       localStorage.setItem("bag", JSON.stringify(updatedBag));
-      setBagItems(updatedBag?.length)
+      setBagItems(updatedBag?.length);
     }
   }, []);
 
   useEffect(() => {
-    if (orders.length > 0) localStorage.setItem("orders", JSON.stringify(orders))
-  }, [orders])
+    if (orders.length > 0)
+      localStorage.setItem("orders", JSON.stringify(orders));
+  }, [orders]);
 
   return (
     <div className="flex flex-col justify-center items-center mb-20">
@@ -159,21 +156,31 @@ function OrderDetails({ response }) {
           <div
             className={`border p-4 rounded-2xl flex flex-row text-left gap-4 shadow-md w-full place-content-between`}
           >
-            <div className="text-xs">
-              <p className="text-darkBlue font-semibold text-sm">
-                {response?.order?.address?.name}
-              </p>
-              <p>
-                {response?.order?.address?.address} ,{" "}
-                {response?.order?.address?.area}
-              </p>
-              <p>
-                {response?.order?.address?.city} ,{" "}
-                {response?.order?.address?.state} -{" "}
-                {response?.order?.address?.pincode}
-              </p>
-              <p>{response?.order?.address?.mobileNumber}</p>
-            </div>
+            {response.order.address.formatted_address ? (
+              <div className="text-xs">
+                <p className="text-darkGrayColor font-semibold text-sm">
+                  {response?.order?.address?.name}
+                </p>
+                <p>{response?.order?.address?.formatted_address}</p>
+                <p>{response?.order?.address?.mobileNumber}</p>
+              </div>
+            ) : (
+              <div className="text-xs">
+                <p className="text-darkBlue font-semibold text-sm">
+                  {response?.order?.address?.name}
+                </p>
+                <p>
+                  {response?.order?.address?.address} ,{" "}
+                  {response?.order?.address?.area}
+                </p>
+                <p>
+                  {response?.order?.address?.city} ,{" "}
+                  {response?.order?.address?.state} -{" "}
+                  {response?.order?.address?.pincode}
+                </p>
+                <p>{response?.order?.address?.mobileNumber}</p>
+              </div>
+            )}
           </div>
         </div>
       </div>

@@ -11,7 +11,7 @@ export default function ImagesCrousel({ images }) {
 
   return (
     <div
-      className={`lg:w-3/5 lg:sticky overflow-x-auto w-full min-w-[100vw] justify-center lg:top-10 `}
+      className={`lg:w-3/5 lg:sticky overflow-x-auto w-full min-w-[100vw] justify-center lg:top-10 bg-white`}
     >
       <div className="inline-flex gap-4 p-2">
           {images.map((value, index) => {

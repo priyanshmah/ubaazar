@@ -2,7 +2,6 @@ import styles from "@/styles/Home.module.css";
 import "@/styles/globals.css";
 import Link from "next/link";
 import Image from "next/image";
-import img from "@/public/images/1.jpg";
 import Sidebar from "@/components/feed/sidebar";
 import Stories from "@/components/feed/stories";
 import Post from "@/components/feed/post";

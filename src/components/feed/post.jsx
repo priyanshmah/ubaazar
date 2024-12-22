@@ -1,20 +1,14 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
-import styles from "@/styles/Home.module.css";
-
-import { IoHeartOutline, IoHeart, IoPaperPlaneOutline } from "react-icons/io5";
-import Image from "next/image";
-import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useRouter } from "nextjs-toploader/app";
 import Loading from "../../app/loading";
 import LayoutOne from "../layouts/one/layout_one";
 import LayoutTwo from "../layouts/two/layout_two";
 import LayoutThree from "../layouts/three/layout_three";
-import LayoutFour1 from "../layouts/four/layout_four_a";
-import LayoutFour2 from "../layouts/four/layout_four_b";
 import { Passion_One } from "next/font/google";
 import { FaStar, FaStarHalfAlt } from "react-icons/fa";
+import { useSelector } from "react-redux";
 
 const passion = Passion_One({
   subsets: ["latin", "latin-ext"],
@@ -24,6 +18,7 @@ const passion = Passion_One({
 export default function ProductFeed({ feed }) {
   const [loading, setLoading] = useState(false);
   const pathname = usePathname();
+  const productArray = useSelector((state) => state.productArray);
 
   const router = useRouter();
 
@@ -40,7 +35,7 @@ export default function ProductFeed({ feed }) {
     <div className="w-[85vw] md:w-2/3 lg:w-1/2">
       {loading && <Loading />}
       <div className="flex flex-col justify-center items-center gap-6 ">
-        {feed.map((value, index) => {
+        {productArray.map((value, index) => {
           const slug = stringToSlug(value.productName);
           const fullStars = Math.floor(value.rating);
           const halfStar = value.rating - fullStars;
