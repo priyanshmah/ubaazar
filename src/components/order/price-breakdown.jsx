@@ -7,38 +7,40 @@ function PriceDetails({ total, isCod, showDiscount }) {
   const [discount, setDiscount] = useState(0);
 
   const handleApplyDiscount = () => {
-    toast.error("Invalid Disount Code")
-  }
+    toast.error("Invalid Disount Code");
+  };
 
   return (
     <div>
       <div className="flex flex-col gap-4">
-        { showDiscount && <div>
-        <p className="font-sans font-normal text-lg text-darkGrayColor">
-          Discount Code
-        </p>
-        <form 
-        className="flex flex-row items-center place-content-between gap-2">
-          <input
-            value={discountCode}
-            onChange={(e) => {
-              e.preventDefault();
-              setDiscountCode(e.target.value.toUpperCase());
-            }}
-            type="text"
-            className="bg-searchBarColor p-2 rounded-md w-3/4 outline-none
+        {showDiscount && (
+          <div>
+            <p className="font-sans font-normal text-lg text-darkGrayColor">
+              Discount Code
+            </p>
+            <form className="flex flex-row items-center place-content-between gap-2">
+              <input
+                value={discountCode}
+                onChange={(e) => {
+                  e.preventDefault();
+                  setDiscountCode(e.target.value.toUpperCase());
+                }}
+                type="text"
+                className="bg-searchBarColor p-2 rounded-md w-3/4 outline-none
                 focus:border focus:border-silver text-darkBlue font-medium"
-            placeholder="Add discount code"
-            autoCorrect="off"
-            spellCheck="false"
-          />
-          <button 
-          onClick={handleApplyDiscount}
-          className="p-2 border border-silver shadow-sm w-1/4 rounded-md">
-            Apply
-          </button>
-        </form>
-        </div>}
+                placeholder="Add discount code"
+                autoCorrect="off"
+                spellCheck="false"
+              />
+              <button
+                onClick={handleApplyDiscount}
+                className="p-2 border border-silver shadow-sm w-1/4 rounded-md"
+              >
+                Apply
+              </button>
+            </form>
+          </div>
+        )}
         <div className="">
           <div className="flex flex-row items-center place-content-between">
             <p className="font-medium text-sm">Subtotal</p>
@@ -46,15 +48,17 @@ function PriceDetails({ total, isCod, showDiscount }) {
           </div>
           <div className="flex flex-row items-center place-content-between">
             <p className="font-medium text-sm">Discount</p>
-            <p className="font-normal text-darkGrayColor">
-              ₹{discount}
-            </p>
+            <p className="font-normal text-darkGrayColor">₹{discount}</p>
           </div>
           <div className="flex flex-row items-center place-content-between">
             <p className="font-medium text-sm">COD Charges</p>
-            <p className="font-normal text-darkGrayColor">
-              ₹{isCod ? 79 : 0}
-            </p>
+            {isCod ? (
+              <p className="font-normal text-darkGrayColor">₹79</p>
+            ) : (<div className="flex flex-row gap-1">
+              <p className="font-normal text-darkGrayColor line-through">₹79</p>
+              <p className="font-normal text-darkGrayColor">₹0</p>
+              </div>
+            )}
           </div>
           <div className="flex flex-row items-center place-content-between">
             <p className="font-medium text-sm">Platform fee</p>

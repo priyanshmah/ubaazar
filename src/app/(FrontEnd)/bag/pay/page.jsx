@@ -139,7 +139,7 @@ export default function PaymentPage() {
         </div>
         <div
           onClick={handlePlaceOrder}
-          className="bg-darkBlue text-white flex flex-row justify-center items-center rounded-lg font-medium text-lg w-3/5 h-12 py-2"
+          className="bg-darkBlue text-white flex flex-row justify-center items-center rounded-lg  font-semibold text-lg w-3/5 h-12 py-2"
         >
           {loading ? 
             <RotatingLines

@@ -9,7 +9,7 @@ function Rating({ rating }) {
   const halfStar = rating - fullStars;
 
   return (
-    <div className="flex flex-col gap-4 bg-white">
+    <div className="flex flex-col gap-4 bg-white overflow-x-hidden">
       <div className="p-4 flex flex-col gap-4">
         <p className="font-sans text-lg font-medium">Customer reviews</p>
         <div className="bg-red rounded-xl flex flex-row items-end gap-4 justify-center p-2">
@@ -67,7 +67,7 @@ function Rating({ rating }) {
         </div>
       </div>
 
-      <div className="flex flex-row place-content-between items-center gap-4">
+      <div className="flex flex-row place-content-between items-center gap-4 ">
         <Image
           src={ubaazarWomen}
           className="h-40 w-40 object-contain"

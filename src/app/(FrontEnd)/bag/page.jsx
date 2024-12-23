@@ -145,10 +145,7 @@ export default function Bag() {
       toast.error("Please select shipping address");
       return;
     }
-
-    console.log("auto detected address: ", autoDetectedAddress);
-    console.log("selected address: ", selectedAddress);
-
+    
     if (
       autoDetectedAddress.formatted_address ||
       autoDetectedAddress.mobileNumber ||
@@ -374,7 +371,7 @@ export default function Bag() {
                 onClick={handleCheckout}
                 className="bg-darkBlue text-white flex flex-row justify-center items-center rounded-lg font-semibold w-3/5 text-lg h-full py-2"
               >
-                Checkout
+                Order now
               </button>
             </div>
           </div>

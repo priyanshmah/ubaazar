@@ -62,11 +62,11 @@ export default function ProductFeed({ feed }) {
                   <ImageGrid images={value.images}  alt={value.productName}/>
                 </div>
 
-                <div className="flex flex-row px-2 place-content-between">
-                  <p className="text-md font-semibold text-darkGrayColor w-4/5">
+                <div className="flex flex-row px-2 place-content-between text-darkGrayColor">
+                  <p className="text-md font-semibold w-4/5">
                     {value.productName}
                   </p>
-                  <div className="flex flex-row text-xl font-semibold text-darkGrayColor justify-center items-center">
+                  <div className="flex flex-row text-xl font-semibold justify-center items-center">
                     <p>₹</p>
                     <p>{value.price}</p>
                   </div>

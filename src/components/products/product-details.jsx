@@ -216,7 +216,7 @@ export default function ProductDetails({
 
         <div className="flex flex-col gap-4 p-4">
           <p
-            style={{ whiteSpace: "pre-line", lineHeight: "0.8" }}
+            style={{ whiteSpace: "pre-line" }}
             className="font-semibold text-grayColor"
           >
             {productData.description}
