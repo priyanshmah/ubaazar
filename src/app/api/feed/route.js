@@ -5,14 +5,18 @@ import { NextResponse } from "next/server";
 export async function POST(request){
     await dbConnect();
 
+    console.log("request received");
+    
+
     try {       
         const reqBody = await request.json();
         const { category } = reqBody;
 
-        let products = await Product.find({ category })
+        let products = await Product.find({ category }).lean();
         products = shuffleArray(products);
 
         const feed = products.map((value, _) => {
+                
             return {
                 _id: value._id,
                 productName: value.productName,

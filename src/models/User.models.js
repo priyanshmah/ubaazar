@@ -21,10 +21,24 @@ const userSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
-    Bag: {
+    bag: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Bag"
     },
+    coupons: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Coupon"
+    }],
+    usedCoupons: [{
+        couponId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Coupon"
+        },
+        usedCount: {
+            type: Number,
+            default: 1
+        }
+    }],
     previousOrders: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: "Order"

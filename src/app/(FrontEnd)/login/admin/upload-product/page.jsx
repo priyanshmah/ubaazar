@@ -18,26 +18,32 @@ import { CldUploadWidget } from "next-cloudinary";
 import toast, { Toaster } from "react-hot-toast";
 import { RotatingLines } from "react-loader-spinner";
 import AuthContext from "@/context/authContext";
-import { notFound } from "next/navigation";
+
+const removeImage = async (imageUrls) => {
+  try {
+    const response = await axios.post("/api/auth/admin/products/delete-image", {
+      imageUrls,
+    });
+    return response.data.success;
+  } catch (error) {
+    return null;
+  }
+};
 
 export default function UploadProductPage() {
   const [productName, setProductName] = useState("");
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState("");
   const [price, setPrice] = useState("");
-  const [colour, setColour] = useState("");
-  const [selectedImages, setSelectedImages] = useState([]);
-  const [inventory, setInventory] = useState("");
   const [loading, setLoading] = useState(false);
   const [productCategoryData, setProductCategoryData] = useState({});
+  const [variants, setVariants] = useState([]);
+  const [showVariants, setShowVariants] = useState(false);
+  const [video, setVideo] = useState([]);
+
+  console.log("variants is: ", variants);
 
   const { isAdmin } = useContext(AuthContext);
-
-
-  const removeImage = (imageUrl) => {
-    const updatedFiles = selectedImages.filter((img) => img !== imageUrl);
-    setSelectedImages(updatedFiles);
-  };
 
   const handleUpload = async () => {
     setLoading(true);
@@ -47,17 +53,10 @@ export default function UploadProductPage() {
         description,
         category,
         price,
-        colour,
         ...productCategoryData,
-        images: selectedImages,
+        variants,
+        video,
       };
-
-      if (category.toLowerCase() === 'sarees') {
-        data = { ...data , inventory: inventory}
-      } 
-      if (category.toLowerCase() === 'suits') {
-        data = { ...data, sizes: inventory}
-      }
 
       if (
         !data.productName ||
@@ -65,7 +64,7 @@ export default function UploadProductPage() {
         !data.category ||
         !data.price ||
         !productCategoryData ||
-        !inventory
+        !variants
       ) {
         toast.error("Please fill all fields first...", { duration: 5000 });
         return;
@@ -75,18 +74,17 @@ export default function UploadProductPage() {
         JSON.stringify(data)
       );
 
-      if (response.status === 200) {
+      if (response.data.success) {
         toast.success("Product uploaded successfully", { duration: 5000 });
-        // setProductName("");
-        // setDescription("");
-        // setCategory("");
-        // setPrice("");
-        // setProductCategoryData("");
-        // setColour("");
-        // setInventory("");
-        // setSelectedImages([]);
+        setProductName("");
+        setDescription("");
+        setCategory("");
+        setPrice("");
+        setProductCategoryData({});
+        setVariants([]);
+        setVideo([])
       } else {
-        toast.error(`${response.statusText}`, { duration: 5000 });
+        toast.error(`${response.data.message}`, { duration: 5000 });
       }
     } catch (error) {
       console.log(error);
@@ -130,7 +128,7 @@ export default function UploadProductPage() {
                   Name
                 </label>
                 <input
-                  maxLength={50}
+                  maxLength={120}
                   min={3}
                   type="text"
                   placeholder="Name of your product"
@@ -218,113 +216,122 @@ export default function UploadProductPage() {
         )}
       </div>
 
-      {/* upload variant  */}
-      <div className="flex flex-col lg:flex-row w-full p-6  gap-5 h-fit text-sm">
-        <div className="w-fit">
-          <p className="text-lg font-semibold py-4">Upload Images</p>
-          <div className="flex flex-col gap-6">
-            <div className="flex flex-row gap-4">
-              <div>
-                <label htmlFor="name" className={styles.label}>
-                  Colour
-                </label>
-                <input
-                  maxLength={50}
-                  min={3}
-                  type="text"
-                  placeholder="Colour"
-                  className={styles.input}
-                  value={colour}
-                  onChange={(e) => {
-                    e.preventDefault();
-                    setColour(e.target.value);
-                  }}
+      {/* upload variants  */}
+      <div className="p-6 gap-2">
+        <p className="text-lg font-semibold">Variants</p>
+
+        {variants.length > 0 &&
+          category === "sarees" &&
+          variants.map((value, index) => {
+            const removeVariants = async () => {
+              const response = await removeImage(value.images);
+              if (!response) {
+                toast.error("Not able to delete images");
+                return;
+              }
+              const updatedArray = variants.filter((item) => item !== value);
+              setVariants(updatedArray);
+            };
+
+            return (
+              <div
+                key={index}
+                className="rounded-xl p-2 border border-grayColor my-2 pt-6 relative"
+              >
+                <IoCloseCircle
+                  size={25}
+                  className="text-red absolute -top-2 -left-2 bg-white"
+                  onClick={removeVariants}
                 />
-              </div>
-              {category === "suits" && (
-                <SelectSize setInventory={setInventory} />
-              )}
-              {category === "cordset" && (
-                <SelectSize setInventory={setInventory} />
-              )}
-              {category === "sarees" && (
-                <div>
-                  <label>Inventory</label>
-                  <input
-                    maxLength={50}
-                    min={3}
-                    type="number"
-                    placeholder="Quantity"
-                    className={styles.input}
-                    value={inventory}
-                    onChange={(e) => {
-                      e.preventDefault();
-                      setInventory(e.target.value);
-                    }}
-                  />
+                <div className="flex flex-row items-center justify-between">
+                  <div className="flex flex-row gap-2 items-end">
+                    <p className="text-sm text-grayColor">Colour</p>
+                    <p className="text-sm text-darkBlue font-semibold">
+                      {value.color}
+                    </p>
+                  </div>
+                  <div className="flex flex-row gap-2 items-end">
+                    <p className="text-sm text-grayColor">Quantity</p>
+                    <p className="text-sm text-darkBlue font-semibold">
+                      {value.quantity}
+                    </p>
+                  </div>
                 </div>
-              )}
-            </div>
-
-            <div className="border-2 border-dashed border-grayColor rounded-xl flex flex-col justify-center items-center p-4 gap-4">
-              <div className="flex flex-col justify-center items-center">
-                <label className="hover:cursor-pointer">
-                  <CldUploadWidget
-                    uploadPreset={"t3ftzbug"}
-                    onSuccess={(result) =>
-                      setSelectedImages((prev) => [
-                        ...prev,
-                        result.info.secure_url,
-                      ])
-                    }
-                  >
-                    {({ open }) => (
-                      <IoIosAddCircleOutline
-                        onClick={() => open()}
-                        size={50}
-                        className="cursor-pointer"
-                      />
-                    )}
-                  </CldUploadWidget>
-                </label>
-                <p className="text-sm">Drag & drop or click to choose files</p>
+                <UploadedImages images={value.images} />
               </div>
-              <p className="flex flex-row items-center gap-2 text-xs font-semibold text-red">
-                <FiInfo size={"1rem"} />
-                Max file size: 4MB
-              </p>
-            </div>
-          </div>
-        </div>
+            );
+          })}
 
-        <div className="flex flex-row flex-wrap gap-6">
-          {selectedImages?.map((image, index) => (
-            <div key={index} className="flex flex-col items-end">
-              <IoCloseCircle
-                size={25}
-                className={styles.closeButton}
-                onClick={() => removeImage(image)}
-              />
-              <div className={styles.imageContainer}>
-                <Image
-                  src={image}
-                  fill
-                  sizes="(max-width: 120px) ,(max-height: 120px)"
-                  alt={`${productName} variant`}
-                  className="object-cover"
+        {variants.length > 0 &&
+          (category === "suits" || category === "cordset") &&
+          variants.map((value, index) => {
+            const removeVariants = async () => {
+              const response = await removeImage(value.images);
+              if (!response) {
+                toast.error("Not able to delete images");
+                return;
+              }
+              const updatedArray = variants.filter((item) => item !== value);
+              setVariants(updatedArray);
+            };
+
+            return (
+              <div
+                key={index}
+                className="rounded-xl p-2 border border-grayColor my-2 pt-6 relative"
+              >
+                <IoCloseCircle
+                  size={25}
+                  className="text-red absolute -top-2 -left-2 bg-white"
+                  onClick={removeVariants}
                 />
+                <div className="flex flex-row items-center justify-between">
+                  <div className="flex flex-row gap-2 items-end">
+                    <p className="text-sm text-grayColor">Colour</p>
+                    <p className="text-sm text-darkBlue font-semibold">
+                      {value.color}
+                    </p>
+                  </div>
+                  <div className="flex flex-row gap-2 items-end">
+                    <p className="text-sm text-grayColor">Sizes</p>
+                    {value.sizes?.map((value, index) => {
+                      return (
+                        <div key={index}>
+                          <div
+                            className={`h-6 w-6 rounded-md  font-semibold flex flex-row justify-center items-center bg-brightOrange border border-brightOrange text-white`}
+                          >
+                            {value.size}
+                          </div>
+                          <p>{value.quantity}</p>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+                <UploadedImages images={value.images} />
               </div>
-            </div>
-          ))}
-        </div>
+            );
+          })}
+
+        <button
+          onClick={() => setShowVariants(true)}
+          className="flex flex-row gap-4 justify-center items-center border rounded-xl w-full p-1 border-brightOrange border-dashed text-brightOrange font-semibold"
+        >
+          <IoIosAddCircleOutline size={"1.5rem"} />
+          Add variants
+        </button>
+        {showVariants && (
+          <VariantsUpload category={category} setVariants={setVariants} />
+        )}
       </div>
-      <VideoUpload />
+
+      <VideoUpload video={video} setVideo={setVideo} />
       <Toaster />
     </div>
   );
 }
 
-function SareesCard({ setCategoryData}) {
+function SareesCard({ setCategoryData }) {
   const [border, setBorder] = useState("");
   const [pattern, setPattern] = useState("");
   const [washCare, setWashCare] = useState("");
@@ -349,7 +356,7 @@ function SareesCard({ setCategoryData}) {
       blouseFabric,
       ornamentation,
     };
-    setCategoryData({ productCategoryData })
+    setCategoryData({ productCategoryData });
   }, [
     border,
     pattern,
@@ -616,7 +623,6 @@ function SareesCard({ setCategoryData}) {
 }
 
 function SuitsCard({ setCategoryData }) {
-
   const [topShape, setTopShape] = useState("");
   const [topLength, setTopLength] = useState("");
   const [topFabric, setTopFabric] = useState("");
@@ -626,7 +632,7 @@ function SuitsCard({ setCategoryData }) {
   const [bottomType, setBottomType] = useState("");
   const [bottomFabric, setBottomFabric] = useState("");
   const [bottomPattern, setBottomPattern] = useState("");
-  
+
   const [neck, setNeck] = useState("");
   const [dupatta, setDupatta] = useState(false);
   const [dupattaLength, setDupattaLength] = useState("");
@@ -654,7 +660,7 @@ function SuitsCard({ setCategoryData }) {
       occasion,
       washCare,
     };
-    setCategoryData({ productCategoryData })
+    setCategoryData({ productCategoryData });
   }, [
     topFabric,
     topShape,
@@ -981,22 +987,20 @@ function SuitsCard({ setCategoryData }) {
   );
 }
 
-function CordsetCard({ setCategoryData }){
+function CordsetCard({ setCategoryData }) {
+  const [topFabric, setTopFabric] = useState("");
+  const [topPattern, setTopPattern] = useState("");
+  const [topLength, setTopLength] = useState("");
 
-  const [topFabric, setTopFabric] = useState('');
-  const [topPattern, setTopPattern] = useState('');
-  const [topLength, setTopLength] = useState('');
+  const [bottomType, setBottomType] = useState("");
+  const [bottomFabric, setBottomFabric] = useState("");
+  const [bottomLength, setBottomLength] = useState("");
 
-  const [bottomType, setBottomType] = useState('');
-  const [bottomFabric, setBottomFabric] = useState('');
-  const [bottomLength, setBottomLength] = useState('');
-
-  const [neck, setNeck] = useState('');
-  const [occasion, setOccasion] = useState('');
-  const [washCare, setWashCare] = useState('');
+  const [neck, setNeck] = useState("");
+  const [occasion, setOccasion] = useState("");
+  const [washCare, setWashCare] = useState("");
 
   useEffect(() => {
-
     const productCategoryData = {
       topFabric,
       topPattern,
@@ -1006,10 +1010,9 @@ function CordsetCard({ setCategoryData }){
       bottomType,
       bottomLength,
       occasion,
-      washCare
+      washCare,
     };
-    setCategoryData({ productCategoryData })
-
+    setCategoryData({ productCategoryData });
   }, [
     topFabric,
     topLength,
@@ -1019,10 +1022,10 @@ function CordsetCard({ setCategoryData }){
     bottomLength,
     neck,
     occasion,
-    washCare
-  ])
+    washCare,
+  ]);
 
-  return(
+  return (
     <div className="flex flex-col lg:flex-row gap-4 text-sm">
       <div className={`${styles.Card} flex flex-col gap-4`}>
         <div className="text-darkBlue font-semibold text-base">Top Details</div>
@@ -1198,67 +1201,180 @@ function CordsetCard({ setCategoryData }){
         </form>
       </div>
     </div>
-  )
+  );
 }
 
-function VideoUpload() {
-  const [selectedVideos, setSelectedVideos] = useState([]);
+function VariantsUpload({ setVariants, category }) {
+  const [color, setColor] = useState("");
+  const [quantity, setQuantity] = useState(0);
+  const [selectedImages, setSelectedImages] = useState([]);
+  const [sizes, setSizes] = useState([]);
 
-  const handleVideoUpload = (event) => {
-    const files = Array.from(event.target.files);
-    const videoUrls = files.map((file) => ({
-      url: URL.createObjectURL(file),
-      name: file.name,
-    }));
-    setSelectedVideos((prevVideos) => [...prevVideos, ...videoUrls]);
-  };
+  const handleAddVariants = () => {
+    if (!color || selectedImages.length < 1) {
+      return null;
+    }
+    let variants;
+    if (category === "sarees")
+      variants = {
+        color,
+        quantity,
+        images: selectedImages,
+      };
 
-  const removeVideo = (videoUrl) => {
-    const updatedFiles = selectedVideos.filter(
-      (video) => video.url !== videoUrl
-    );
-    setSelectedVideos(updatedFiles);
+    if (category === "suits" || category === "cordset") {
+      variants = {
+        color,
+        sizes,
+        images: selectedImages,
+      };
+    }
+
+    setVariants((prev) => [...prev, variants]);
+    setColor("");
+    setQuantity(0);
+    setSelectedImages([]);
   };
 
   return (
+    <div className="flex flex-col lg:flex-row w-full gap-5 h-fit text-sm">
+      <div className="w-full">
+        <div className="flex flex-row justify-between items-center">
+          <p className="text-lg font-semibold py-4">New Variants </p>
+          <button
+            onClick={handleAddVariants}
+            className="bg-darkBlue text-white p-1 px-4 rounded-sm h-fit"
+          >
+            Save
+          </button>
+        </div>
+        <div className="flex flex-col gap-6">
+          <div className="flex flex-row gap-4">
+            <div>
+              <label htmlFor="name" className={styles.label}>
+                Colour
+              </label>
+              <input
+                maxLength={50}
+                min={3}
+                type="text"
+                placeholder="Colour"
+                className={styles.input}
+                value={color}
+                onChange={(e) => {
+                  e.preventDefault();
+                  setColor(e.target.value);
+                }}
+              />
+            </div>
+            {category === "suits" && (
+              <SelectSize setVariantSizes={setSizes} />
+            )}
+            {category === "cordset" && (
+              <SelectSize setVariantSizes={setSizes} />
+            )}
+            {category === "sarees" && (
+              <div>
+                <label>Quantity</label>
+                <input
+                  type="number"
+                  placeholder="Quantity"
+                  className={styles.input}
+                  value={quantity}
+                  onChange={(e) => {
+                    e.preventDefault();
+                    setQuantity(e.target.value);
+                  }}
+                />
+              </div>
+            )}
+          </div>
+
+          <div className="border-2 border-dashed border-grayColor rounded-xl flex flex-col justify-center items-center p-4 gap-4">
+            <div className="flex flex-col justify-center items-center">
+              <label className="hover:cursor-pointer">
+                <CldUploadWidget
+                  uploadPreset={"t3ftzbug"}
+                  onSuccess={(result) =>
+                    setSelectedImages((prev) => [
+                      ...prev,
+                      result.info.secure_url,
+                    ])
+                  }
+                >
+                  {({ open }) => (
+                    <IoIosAddCircleOutline
+                      onClick={() => open()}
+                      size={50}
+                      className="cursor-pointer"
+                    />
+                  )}
+                </CldUploadWidget>
+              </label>
+              <p className="text-sm">Drag & drop or click to choose files</p>
+            </div>
+            <p className="flex flex-row items-center gap-2 text-xs font-semibold text-red">
+              <FiInfo size={"1rem"} />
+              Max file size: 4MB
+            </p>
+          </div>
+        </div>
+      </div>
+      <UploadedImages images={selectedImages} setImages={setSelectedImages} />
+    </div>
+  );
+}
+
+function VideoUpload({ video, setVideo }) {
+  return (
     <div className="flex flex-col w-full shadow-md p-6 rounded-2xl gap-5">
       <p className="text-lg font-semibold">Video Upload</p>
-      <div className="border-2 border-dashed border-grayColor rounded-xl flex flex-col justify-center items-center p-4 gap-4 lg:w-1/4">
-        <input
-          id="uploadVideo"
-          type="file"
-          accept="video/*"
-          multiple
-          onChange={handleVideoUpload}
-          style={{
-            display: "none",
-          }}
-        />
+      <div className="border-2 border-dashed border-grayColor rounded-xl flex flex-col justify-center items-center p-4 gap-4">
         <div className="flex flex-col justify-center items-center">
-          <label htmlFor="uploadVideo" className="hover:cursor-pointer">
-            <IoIosAddCircleOutline size={"2.5rem"} />
+          <label className="hover:cursor-pointer">
+            <CldUploadWidget
+              uploadPreset={"t3ftzbug"}
+              options={{
+                folder: "videos",
+                resourceType: "video",
+              }}
+              onSuccess={(result) =>
+                setVideo((prev) => [...prev, result.info.secure_url])
+              }
+            >
+              {({ open }) => (
+                <IoIosAddCircleOutline
+                  onClick={() => open()}
+                  size={50}
+                  className="cursor-pointer"
+                />
+              )}
+            </CldUploadWidget>
           </label>
           <p className="text-sm">Drag & drop or click to choose files</p>
         </div>
         <p className="flex flex-row items-center gap-2 text-xs font-semibold text-red">
           <FiInfo size={"1rem"} />
-          Max file size: 10MB
+          Max file size: 4MB
         </p>
       </div>
       <div className="flex flex-row flex-wrap gap-6">
-        {selectedVideos.map((video, index) => (
+        {video.map((video, index) => (
           <div key={index} className="flex flex-col items-end">
             <IoCloseCircle
               size={25}
               className={styles.closeButton}
-              onClick={() => removeVideo(video.url)}
+              onClick={async () => {
+                await removeImage([video]);
+                setVideo(video.filter((item) => item !== video));
+              }}
             />
             <div className={styles.videoContainer}>
               <video
                 controls
                 style={{ height: "100%", width: "100%", objectFit: "cover" }}
               >
-                <source src={video.url} type="video/mp4" />
+                <source src={video} type="video/mp4" />
                 Your browser does not support the video tag.
               </video>
             </div>
@@ -1269,7 +1385,7 @@ function VideoUpload() {
   );
 }
 
-function SelectSize({ setInventory }) {
+function SelectSize({ setVariantSizes }) {
   const availableSizes = [
     "XS",
     "S",
@@ -1292,7 +1408,7 @@ function SelectSize({ setInventory }) {
     "4XL": { selected: false, quantity: "" },
     "5XL": { selected: false, quantity: "" },
   });
-  
+
   useEffect(() => {
     const selectedSizes = Object.keys(sizes)
       .filter((size) => sizes[size].selected)
@@ -1300,9 +1416,9 @@ function SelectSize({ setInventory }) {
         size: size,
         quantity: sizes[size].quantity,
       }));
-
-    setInventory(selectedSizes);
+    setVariantSizes(selectedSizes);
   }, [sizes]);
+
 
   // Handle checkbox toggle for selecting sizes
   const handleSizeChange = (size) => {
@@ -1351,5 +1467,34 @@ function SelectSize({ setInventory }) {
         </div>
       ))}
     </form>
+  );
+}
+
+function UploadedImages({ images, setImages }) {
+  return (
+    <div className="flex flex-row flex-wrap gap-2">
+      {images.length > 1 &&
+        images?.map((image, index) => (
+          <div key={index} className="flex flex-col items-end">
+            <IoCloseCircle
+              size={25}
+              className={styles.closeButton}
+              onClick={async () => {
+                await removeImage([image]);
+                setImages(images.filter((item) => item !== image));
+              }}
+            />
+            <div className={styles.imageContainer}>
+              <Image
+                src={image}
+                fill
+                sizes="(max-width: 60) ,(max-height: 60)"
+                alt={`product variants`}
+                className="object-cover"
+              />
+            </div>
+          </div>
+        ))}
+    </div>
   );
 }

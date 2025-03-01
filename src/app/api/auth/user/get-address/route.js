@@ -16,13 +16,13 @@ export async function GET(request) {
         return NextResponse.json({
             message: "User not found",
             success: false
-        }, { status: 404 });
+        }, { status: 403 });
     }
     
     try {
         
         const userData = await User.findById(user._id)
-        .select("-refreshToken -isSeller -password")
+        .select("savedAddresses")
 
         if (!userData) {
             return NextResponse.json({
@@ -31,14 +31,14 @@ export async function GET(request) {
             }, { status: 400 })
         }
 
-        userData.savedAddresses = await Address.find(
+        let savedAddresses = await Address.find(
             { _id: { $in: userData.savedAddresses}}
         )
                 
         return NextResponse.json({
             message: "User data fetched successfully",
             success: true,
-            user: userData
+            addresses: savedAddresses
         }, { status: 200 })
         
 

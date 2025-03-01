@@ -20,9 +20,10 @@ const productSchema = new mongoose.Schema({
         type: Number,
         default: 4.5
     },
-    images: [{
-        type: String
-    }],
+    isTrending: {
+        type: Boolean,
+        default: false
+    },
     video: [{
         type: String,
     }]
@@ -31,7 +32,7 @@ const productSchema = new mongoose.Schema({
 
 productSchema.index(
     { productName: "text", description: "text", category: "text" },
-    { weights: { productName: 5, description: 2 } }
+    { weights: { productName: 5, description: 2, category: 10 } }
 ); 
 const Product = mongoose.models?.Product || 
                 mongoose.model("Product", productSchema);

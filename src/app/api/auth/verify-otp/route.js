@@ -9,12 +9,14 @@ export async function POST(request) {
     await dbConnect();
     const reqBody = await request.json();
     const { mobileNumber, enteredOTP } = reqBody;
+    console.log("mobile number is: ", mobileNumber);
+
 
     if (!mobileNumber || !enteredOTP)
         return NextResponse.json({
             message: "Mobile number or OTP not found",
             success: false
-        }, { status: 400 })
+        }, { status: 200 })
 
     try {
 
@@ -24,7 +26,7 @@ export async function POST(request) {
             return NextResponse.json({
                 message: "OTP not sent !!!",
                 success: false
-            }, { status: 400 })
+            }, { status: 200 })
         }
 
 
@@ -34,7 +36,7 @@ export async function POST(request) {
             return NextResponse.json({
                 message: "OTP expired",
                 success: false
-            }, { status: 400 })
+            }, { status: 200 })
         }
 
         if (otpRecord.verificationCode == enteredOTP) {
@@ -50,13 +52,14 @@ export async function POST(request) {
                 if (!accessToken || !refreshToken)
                     return NextResponse.json({
                         message: "Failed to generate your tokens",
-                        success: false
-                    }, { status: 400 })
+                        success: false,
+                    }, { status: 200 })
 
 
                 return NextResponse.json({
                     message: "Logged in successfully....",
                     success: true,
+                    user: existedUser,
                     accessToken,
                     refreshToken
                 }, { status: 200 })
@@ -71,8 +74,8 @@ export async function POST(request) {
                 if (!newUser) {
                     return NextResponse.json({
                         message: "New User not created",
-                        success: true
-                    }, { status: 400 })
+                        success: false
+                    }, { status: 200 })
                 }
 
                 const { accessToken, refreshToken } =
@@ -82,7 +85,7 @@ export async function POST(request) {
                     return NextResponse.json({
                         message: "Failed to generate your tokens",
                         success: false
-                    }, { status: 400 })
+                    }, { status: 200 })
 
                 return NextResponse.json({
                     message: "OTP verified successfully....",
@@ -99,13 +102,13 @@ export async function POST(request) {
             return NextResponse.json({
                 message: "Incorrect OTP",
                 success: false
-            }, { status: 400 })
+            }, { status: 200 })
         }
 
     } catch (error) {
         return NextResponse.json({
             message: error.message || "Internal server error",
             success: false
-        }, { status: 400 })
+        }, { status: 200 })
     }
 }

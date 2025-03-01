@@ -6,11 +6,19 @@ const bagItemSchema = new mongoose.Schema({
         ref: 'Product',
         required: true
     },
+    variantId: {
+        type: 'String',
+        required: true
+    },
     quantity: {
         type: Number,
         required: true,
         default: 1,
         min: 1
+    },
+    size: {
+        type: 'String',
+        default: 'Free size'
     }
 })
 

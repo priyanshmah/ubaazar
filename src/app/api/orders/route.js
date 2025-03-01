@@ -6,50 +6,61 @@ import { NextResponse } from "next/server";
 
 export async function POST(request) {
     await dbConnect();
-    
+
     try {
-        console.log("request received...");
-        
 
         const reqBody = await request.json();
         const { orderIds } = reqBody;
 
-        if(!orderIds)
+        if (!orderIds)
             return NextResponse.json({
                 message: "Order Id not found",
                 success: false
-        }, { status: 400 })
+            }, { status: 200 })
 
-        const orders = await Order.find({ _id: { $in: orderIds }});
-        
-        if(!orders)
+        const orders = await Order.find({ _id: { $in: orderIds } }).lean();
+        if (!orders)
             return NextResponse.json({
                 message: "Order not found",
                 success: false
-        }, { status: 400 })
+            }, { status: 200 });
 
         for (let order of orders) {
 
             let productIds = order?.products?.map((value) => value.product);
-            let productInfo = await Product.find({ _id: { $in: productIds } }).select("_id productName images");
+            let productInfo = await Product
+                .find({ _id: { $in: productIds } })
+                .select("_id productName price variants")
+                .lean();
+                
 
-            const address = await Address.findById(order.address);
+            const address = await Address.findById(order.address).lean();
 
             order.address = address;
-            order.products = order.products.map((product) => {
-                const detailedProduct = productInfo.find(p => p._id.toString() === product.product.toString());
-                return { ...product, product: detailedProduct };
-            });
+            order.products = order.products.map((productObj) => {
 
+                let detailedProduct = productInfo.find(p => 
+                    p._id.toString() === productObj.product.toString()
+                );
+                const variant = detailedProduct.variants?.find(
+                    value => value._id.toString() === productObj.variantId.toString()
+                );
+
+                return {...productObj, product: {
+                    _id: detailedProduct?._id,
+                    image: variant?.images?.at(0),
+                    price: detailedProduct.price,
+                    productName: detailedProduct?.productName || ''
+                }};
+            });
         }
-       
-                
+
         return NextResponse.json({
             message: "User data fetched successfully",
             success: true,
             orders
         }, { status: 200 })
-        
+
 
     } catch (error) {
         console.error(error);

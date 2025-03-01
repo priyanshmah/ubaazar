@@ -29,19 +29,19 @@ const suitSchema = new mongoose.Schema({
     bottomType: {
         type: String,
         required: function () {
-            return this.Bottom
+            return this.bottom
         }
     },
     bottomPattern: {
         type: String,
         required: function () {
-            return this.Bottom
+            return this.bottom
         }
     },
     bottomFabric: {
         type: String,
         required: function () {
-            return this.Bottom
+            return this.bottom
         }
     },
     dupatta: {
@@ -51,13 +51,13 @@ const suitSchema = new mongoose.Schema({
     dupattaFabric: {
         type: String,
         required: function () {
-            return this.Dupatta
+            return this.dupatta
         }
     },
     dupattaLength: {
         type: String,
         required: function () {
-            return this.Dupatta
+            return this.dupatta
         }
     },
     ornamentation: {
@@ -72,23 +72,40 @@ const suitSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    colour: {
-        type: String,
-        required: true,
-    },
-    sizes: [{
-        size: { type: String, required: true },
-        quantity: { type: Number, default: 1, required: true }
-    }],
     variants: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Suits"
+        sizes: [{ 
+            size: {
+                type: String,
+                required: true
+            },
+            quantity: {
+                type: Number,
+                default: 0,
+                required: true
+            }
+        }],
+        color: {
+            type: String,
+            required: true
+        },
+        images: [{
+            type: String,
+            required: true
+        }]
     }]
 }, { discriminatorKey: 'type'});
 
-suitSchema.index({ "$**": "text" });
+suitSchema.index({ 
+    topShape: 'text',
+    topPattern: 'text',
+    topFabric: 'text',
+    neck: 'text',
+    bottomType: 'text',
+    bottomPattern: 'text',
+    occasion: 'text'
+ });
 
-const Suits = mongoose.models.Product?.discriminators?.Suits
+const Suits = Product?.discriminators?.Suits
     || Product.discriminator('Suits', suitSchema);
 
 export default Suits;

@@ -16,7 +16,7 @@ export async function POST(request) {
         return NextResponse.json({
             message: "Unauthorized access",
             success: false
-        }, { status: 400 })
+        }, { status: 200 })
     }
 
     try {
@@ -30,14 +30,14 @@ export async function POST(request) {
             return NextResponse.json({
                 message: "Invalid refresh token",
                 success: false
-            }, { status: 400 })
+            }, { status: 200 })
         
 
         if (user.refreshToken !== incomingRefreshToken) 
             return NextResponse.json({
                 message: "Refresh token is expired or used",
                 success: false
-            }, { status: 401 })
+            }, { status: 200 })
         
 
         const { accessToken, refreshToken } = await generateTokens(user._id);
@@ -45,7 +45,7 @@ export async function POST(request) {
             return NextResponse.json({
                 message: "Tokens not generated",
                 success: false
-            }, { status: 400 })
+            }, { status: 200 })
         }        
 
         console.log("access and refresh token are ", accessToken, "refresh :", refreshToken);
@@ -65,6 +65,6 @@ export async function POST(request) {
         return NextResponse.json({
             message: error.message || 'Internal server error',
             success: false
-        }, { status: 500 })
+        }, { status: 200 })
     }
 }

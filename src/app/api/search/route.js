@@ -7,7 +7,6 @@ export async function POST(request) {
     const reqBody = await request.json();
     const searchQuery = reqBody.search;
 
-    console.log("search is :", searchQuery);
     
 
     try {
@@ -15,7 +14,7 @@ export async function POST(request) {
         const results = await Product.find(
             { $text: { $search: searchQuery } },
             { score: { $meta: 'textScore' } }
-        ).sort({ score: { $meta: 'textScore' } });
+        ).sort({ score: { $meta: 'textScore' } }).select('_id productName price images variants mrp rating');
 
         console.log("Results is: ", results);
         

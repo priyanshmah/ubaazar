@@ -15,45 +15,39 @@ export async function POST(request) {
     try {
 
         const reqBody = await request.json();
-        const { imageUrl, productId } = reqBody;
+        const { imageUrls, productId } = reqBody;
 
-        if (!imageUrl || !productId) {
+        if (!imageUrls || !Array.isArray(imageUrls) || imageUrls.length === 0) {
             return NextResponse.json({
-                    message: 'Image URL is required',
-                    success: false,
-                },{ status: 400 });
+                message: 'Image URLs are required and should be an array',
+                success: false,
+            }, { status: 200 });
         }
 
-        const publicId = extractPublicId(imageUrl);
         const product = await Product.findById(productId);
+        const publicIds = imageUrls.map(extractPublicId).filter(id => id);
 
-        if (!publicId || !product) {
+        if (publicIds.length === 0) {
             return NextResponse.json({
-                    message: 'Invalid Cloudinary URL or Product Id',
-                    success: false,
-                },{ status: 400 });
+                message: 'Invalid Cloudinary URLs',
+                success: false,
+            }, { status: 200 });
         }
+
+         const deleteResults = await Promise.all(publicIds.map(id => cloudinary.uploader.destroy(id)));
+
+         const successfullyDeleted = publicIds.filter((id, index) => deleteResults[index].result === 'ok');
+ 
+         if (successfullyDeleted.length === 0) {
+             return NextResponse.json({
+                 message: 'Failed to delete images from Cloudinary',
+                 success: false,
+             }, { status: 200 });
+         }
        
-        const result = await cloudinary.uploader.destroy(publicId);
-
-        if (result.result !== 'ok') {
-            return NextResponse.json({
-                    message: 'Failed to delete image from Cloudinary',
-                    success: false,
-                    result,
-                },{ status: 500 });
-        }
-
-        product.images = product.images?.filter((value) => {
-            return value !== imageUrl;
-        })
-
-        const updatedProduct = await product.save();
-
         return NextResponse.json({
                 message: 'Image deleted successfully',
                 success: true,
-                images : updatedProduct.images,
             },{ status: 200 });
 
     } catch (error) {
@@ -63,7 +57,7 @@ export async function POST(request) {
                 message: 'Internal server error',
                 success: false,
                 error: error.message,
-            },{ status: 500 });
+            },{ status: 200 });
     }
 }
 

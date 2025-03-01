@@ -11,8 +11,8 @@ const addressSchema = new Schema({
     formatted_address: { type: String },
     addressType: {
         type: String,
-        enum: ['Home', 'Work', 'Other'],
-        default: 'Home'
+        enum: ['home', 'work', 'other'],
+        default: 'home'
     },
     isDefault: {
         type: Boolean,

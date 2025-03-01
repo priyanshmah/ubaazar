@@ -42,30 +42,38 @@ const cordsetSchema = new mongoose.Schema({
         required: true,
         enum: ['Hand Wash', 'Dry Clean']
     },
-    colour: {
-        type: String,
-        required: true,
-    },
-    sizes: [{
-        size: {
+    variants: [{
+        sizes: [{ 
+            size: {
+                type: String,
+                required: true
+            },
+            quantity: {
+                type: Number,
+                default: 0,
+                required: true
+            }
+        }],
+        color: {
             type: String,
             required: true
         },
-        quantity: {
-            type: Number,
-            required: true,
-            default: 1
-        }
-    }],
-    variants: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Cordset"
+        images: [{
+            type: String,
+            required: true
+        }]
     }]
 })
 
-cordsetSchema.index({ "$**": "text" });
+cordsetSchema.index({ 
+    topPattern: 'text',
+    topFabric: 'text',
+    neck: 'text',
+    bottomType: 'text',
+    occasion: 'text'
+ });
 
-const Cordset = mongoose.models?.Product?.discriminators?.Cordset || 
+const Cordset = Product?.discriminators?.Cordset || 
                 Product.discriminator('Cordset', cordsetSchema);
 
 export default Cordset;

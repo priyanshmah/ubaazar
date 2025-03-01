@@ -36,6 +36,7 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <Head>
         <Link rel="shortcut icon" href={UB} />
+        <meta name="fast2sms" content="HlP9ycWlnE7ml6bRo17rml20kmjhOczh"/>
       </Head>
       <body className={`${monaSans.variable} ${overlock.className}`}>
         <NextTopLoader

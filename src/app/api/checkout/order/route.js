@@ -10,6 +10,8 @@ import { AuthenticateUser } from "@/lib/authenticateUser";
 import User from "@/models/User.models";
 import Suits from "@/models/products/Suits&Kurtas.models";
 import Sarees from "@/models/products/Sarees.models";
+import Coupon from "@/models/Coupon.models";
+import BagModels from "@/models/Bag.models";
 
 
 export async function POST(request) {
@@ -17,163 +19,210 @@ export async function POST(request) {
     await dbConnect();
     const user = await AuthenticateUser(request);
 
+    if (!user || !user._id)
+        return NextResponse.json({
+            message: "User credentials not found or expired",
+            success: false
+        }, { status: 403 })
+
     try {
         const reqBody = await request.json();
-        const { products, address, paymentMode } = reqBody;
+        const { products, addressId, paymentMode, couponCode } = reqBody;
 
         if (!(Array.isArray(products)) || products.length <= 0 || !paymentMode)
             return NextResponse.json({
                 message: "Products or payment mode not defined",
                 success: false
-            }, { status: 400 })
+            }, { status: 200 });
 
-        if (!address.name || !address.mobileNumber)
+        if (!addressId)
             return NextResponse.json({
-                message: "Name or mobile number not found",
+                message: "AddressId not defined",
                 success: false
-            }, { status: 400 })
+            }, { status: 200 });
 
-        if ((!address.pinCode ||
-            !address.address ||
-            !address.area ||
-            !address.city ||
-            !address.state) && !address.formatted_address) {
+        const address = await Address.findById(addressId);
+        if (!address)
             return NextResponse.json({
-                message: "Incomplete address",
+                message: "Address not found",
                 success: false
-            }, { status: 400 })
-        }
+            }, { status: 200 });
 
-        const addressData = {
-            name: address.name,
-            pincode: address.pinCode,
-            mobileNumber: address.mobileNumber,
-            address: address.address,
-            area: address.area,
-            city: address.city,
-            state: address.state,
-            formatted_address: address.formatted_address
-        }
-
-        const newAddress = await Address.create(addressData);
+        console.log("address is: ", address);
 
 
-        // please check the inventory left then process order and then calculate the total amount to be paid
-        const productIds = products.map(item => item.product);
+        const productIds = products.map(item => item.product._id);
         const dbProducts = await Product.find({ _id: { $in: productIds } }).lean();
 
         let totalAmount = 0;
         for (const item of products) {
 
-            const product = dbProducts.find(p => p._id.toString() === item.product);
-            if (!product) {
+            const product = dbProducts.find(p => p._id.toString() === item.product._id);
+            const isValidVariant = product.variants.find(variant => variant._id.toString() === item.variantId)
+            if (!product || !isValidVariant) {
                 return NextResponse.json({
-                    message: `Product with id ${item.product} not found`,
+                    message: `Product or variant with id ${item.product} not found`,
                     success: false
-                }, { status: 400 });
-            }
-
-
-            if (product.inventory && (product.inventory < item.quantity)) {
-                return NextResponse.json({
-                    message: `${product.productName} is out of stock`,
-                    success: false
-                }, { status: 400 });
-            }
-
-            if (product.sizes) {
-                const sizeToBeOrdered = product.sizes?.find(
-                    (value) => value.size?.toString() === item.size
-                )
-
-                if (sizeToBeOrdered.quantity < item.quantity) {
-                    return NextResponse.json({
-                        message: `${product.productName} is out of stock`,
-                        success: false
-                    }, { status: 400 });
-                }
+                }, { status: 200 });
             }
 
             totalAmount += product.price * item.quantity;
         }
 
+        let coupon;
+        let discount = 0;
+        console.log("Coupon code is: ", couponCode);
 
-        if (paymentMode === 'cod') {
+        if (couponCode) {
+            coupon = await Coupon.findOne({ code: couponCode });
+            console.log("fetched coupon is: ", coupon);
+
+            if (coupon) {
+                const isUserHave = (user.coupons?.includes(coupon._id));
+                const previouslyUsed = user.usedCoupons?.some(item =>
+                    (item.couponId.toString() === coupon._id.toString()) &&
+                    (item.usedCount >= coupon.userUsageLimit))
+                const isValid = isUserHave && !previouslyUsed;
+
+                if (isValid && (totalAmount >= coupon.minPurchase)) {
+                    if (coupon.discountType === 'PERCENTAGE') {
+                        discount = Math.min(totalAmount * (coupon.discountValue / 100), coupon.maxDiscount || Infinity);
+                    }
+                    else if (coupon.discountType === 'FIXED') discount = coupon.discountValue
+
+                    await User.findByIdAndUpdate(
+                        user._id,
+                        {
+                            $pull: { coupons: coupon._id },
+                            $push: { usedCoupons: { couponId: coupon._id, usedCount: 1 } }
+                        },
+                        { new: true }
+                    );
+                }
+            }
+        };
+        console.log("yahan tak aa gye");
+
+
+        if (paymentMode === 'COD') {
 
             const orderData = {
+                orderNumber: generateOrderNumber(),
+                user: user._id,
                 products,
-                address: newAddress._id,
-                totalAmount: totalAmount + 79,
-                paymentMode,
-                orderNumber: generateOrderNumber()
+                address: addressId,
+                paymentInfo: {
+                    method: 'COD',
+                    status: 'PENDING'
+                },
+                status: 'PENDING',
+                priceDetails: {
+                    subTotal: totalAmount,
+                    shippingCharge: 0,
+                    codCharge: 79,
+                    discount,
+                    total: totalAmount + 79 - discount
+                },
+                appliedCoupon: coupon ? coupon._id : null,
             }
 
             const newOrder = await Order.create(orderData);
-            let updatedUser;
-
-            await updateInventory(products);
-
-            if (user) {
-                updatedUser = await User.findByIdAndUpdate(
-                    user._id,
-                    { $push: { previousOrders: newOrder._id } },
-                    { new: true }
-                )
-
+            if (!newOrder) {
+                NextResponse.json({
+                    message: "Order not placed",
+                    success: true
+                }, { status: 200 })
             }
+
+            const updatedUser = await User.findByIdAndUpdate(
+                user._id,
+                { $push: { previousOrders: newOrder?._id } },
+                { new: true }
+            )
+
+            if (!updatedUser) {
+                NextResponse.json({
+                    message: "Order placed successfully but user not updated",
+                    orderId: newOrder._id,
+                    success: true
+                }, { status: 200 })
+            }
+
+            console.log("user update bhi ho gya");
+
+            const userBag = await BagModels.findByIdAndUpdate(user?.bag, { items: [] });
+            if (!userBag)
+                NextResponse.json({
+                    message: "Order placed successfully but cart not cleared",
+                    orderId: newOrder._id,
+                    success: true
+                }, { status: 200 })
+
 
             return NextResponse.json({
                 message: "Order placed successfully",
                 orderId: newOrder._id,
-                user: updatedUser,
                 success: true
             }, { status: 200 })
 
         }
-        else if (paymentMode === 'online') {
+        else if (paymentMode === 'ONLINE') {
 
             const transactionId = uuid();
             const orderData = {
+                orderNumber: generateOrderNumber(),
+                user: user._id,
                 products,
-                address: newAddress._id,
-                totalAmount: totalAmount,
-                paymentMode,
-                transactionId,
-                orderNumber: generateOrderNumber()
+                address: address._id,
+                paymentInfo: {
+                    method: 'ONLINE',
+                    status: 'PENDING',
+                    transactionId
+                },
+                status: 'PENDING',
+                priceDetails: {
+                    subTotal: totalAmount,
+                    shippingCharge: 0,
+                    codCharge: 0,
+                    discount,
+                    total: totalAmount - discount
+                },
+                appliedCoupon: coupon ? coupon._id : null,
             }
+
             const newOrder = await Order.create(orderData);
-            if (!newOrder) {
-                return NextResponse.json({ message: 'Order cancelled' }, { status: 404 })
-            }
+            if (!newOrder)
+                return NextResponse.json({
+                    message: 'Order cancelled',
+                    success: false
+                }, { status: 200 })
 
 
-            if (user) {
-                await User.findByIdAndUpdate(
-                    user._id,
-                    { $push: { previousOrders: newOrder._id } },
-                )
-
-            }
+            await User.findByIdAndUpdate(
+                user._id,
+                { $push: { previousOrders: newOrder._id } },
+            )
 
             const paymentUrl = await initializePayment(
                 transactionId, newOrder._id, totalAmount
             );
             if (paymentUrl) {
                 return NextResponse.json({
+                    message: "Payment url generated...",
                     url: paymentUrl,
                     success: true
                 }, { status: 200 })
             } else {
                 return NextResponse.json({
-                    message: 'Something went wrong',
+                    message: 'Something went wrong while generating url',
                     success: false
-                }, { status: 500 })
+                }, { status: 200 })
             }
         }
 
     } catch (error) {
         console.error(error);
-        return NextResponse.json({ error: error.message }, { status: 500 })
+        return NextResponse.json({ error: error.message }, { status: 200 })
     }
 }
 
@@ -183,7 +232,8 @@ async function initializePayment(merchantTransactionId, orderId, amount) {
 
         const payEndPoint = "/pg/v1/pay"
         const merchantUserId = uuid();
-        const redirectUrl = `https://www.ubaazar.com/bag/pay/payment-details/${orderId}`
+        // const redirectUrl = `https://www.ubaazar.com/bag/pay/payment-details/${orderId}`
+        const redirectUrl = `ubaazar://payment-status`
 
         const payload = {
             "merchantId": process.env.NEXT_PUBLIC_PHONEPE_MERCHANT_ID,
@@ -267,5 +317,5 @@ async function updateInventory(products) {
 
 
 function generateOrderNumber() {
-    return Math.floor(10000000 + Math.random() * 90000000).toString();
+    return Date.now().toString().slice(-8);
 }

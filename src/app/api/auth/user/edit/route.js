@@ -29,7 +29,7 @@ export async function POST(request) {
             return NextResponse.json({
                 message: "Details not found",
                 success: false
-            }, { status: 404 })
+            }, { status: 200 })
         }
 
         const detailsToBeUpdated = {
@@ -51,7 +51,7 @@ export async function POST(request) {
             return NextResponse.json({
                 message: "Details not updated",
                 success: false
-            }, { status: 401 })
+            }, { status: 200 })
         }
 
         const updatedUserDetails = await User.findById(updatedUser._id)
@@ -68,7 +68,7 @@ export async function POST(request) {
         return NextResponse.json({
             message: error.message,
             success: false
-        }, { status: 500 })
+        }, { status: 200 })
     }
 
 }

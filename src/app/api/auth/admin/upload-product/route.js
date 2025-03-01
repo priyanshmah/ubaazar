@@ -22,16 +22,12 @@ export async function POST(request) {
 
 
         if (body.category === 'sarees') {
-            console.log("start");
 
             const product = await Sarees.create({ ...body, ...body?.productCategoryData });
-
-            console.log("end");
-
             if (!product) {
                 return NextResponse.json({
                     error: 'Something went wrong while uploading your product'
-                }, { status: 400 })
+                }, { status: 200 })
             }
             return NextResponse.json({
                 message: "Product uploaded successfully...",
@@ -43,9 +39,10 @@ export async function POST(request) {
             const product = await Suits.create({ ...body, ...body?.productCategoryData });
             if (!product) {
                 return NextResponse.json({
-                    error: 'Something went wrong while uploading your product'
-                }, { status: 400 })
-            }
+                    error: 'Something went wrong while uploading your product',
+                    success: false
+                }, { status: 200 })
+            }            
             return NextResponse.json({
                 message: "Product uploaded successfully...",
                 success: true
@@ -59,7 +56,7 @@ export async function POST(request) {
                 return NextResponse.json({
                     message: 'Something went wrong while uploading your product',
                     success: false
-                }, { status: 400 })
+                }, { status: 200 })
             }
             return NextResponse.json({
                 message: "Product uploaded successfully...",
@@ -72,7 +69,7 @@ export async function POST(request) {
             return NextResponse.json({ 
                 message: 'Invalid product type',
                 success: false
-         }, { status: 400 })
+         }, { status: 200 })
         }
     } catch (error) {
         console.log(error);
@@ -80,6 +77,6 @@ export async function POST(request) {
         return NextResponse.json({
              message: error.message || "Internal server error",
              success: false
-        }, { status: 500 })
+        }, { status: 200 })
     }
 }
