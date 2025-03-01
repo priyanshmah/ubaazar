@@ -1,3 +1,4 @@
+'use client'
 import "@/styles/globals.css";
 import Navbar from "@/components/ui/navbar";
 import { Provider } from "react-redux";
@@ -14,6 +15,7 @@ import UB from '@/public/UB.png'
 import NextTopLoader from "nextjs-toploader";
 import FacebookPixel from "@/helpers/pixel/pixelComponent";
 import { PostHogProvider } from "@/helpers/postHog/postHagComponent";
+import HeadContent from "@/components/header/HeadComponent";
 
 
 const overlock = Overlock({
@@ -33,10 +35,7 @@ export default function RootLayout({ children }) {
 
   return (
     <html lang="en">
-      <Head>
-        <Link rel="shortcut icon" href={UB} />
-        <meta name="fast2sms" content="HlP9ycWlnE7ml6bRo17rml20kmjhOczh"/>
-      </Head>
+      <HeadContent />
       <body className={`${monaSans.variable} ${overlock.className}`}>
         <NextTopLoader
           showSpinner={false}
