@@ -1,4 +1,3 @@
-'use client'
 import "@/styles/globals.css";
 import Navbar from "@/components/ui/navbar";
 import { Provider } from "react-redux";
