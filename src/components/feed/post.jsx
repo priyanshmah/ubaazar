@@ -35,7 +35,7 @@ export default function ProductFeed({ feed }) {
     <div className="w-[85vw] md:w-2/3 lg:w-1/2">
       {loading && <Loading />}
       <div className="flex flex-col justify-center items-center gap-6 ">
-        {productArray.map((value, index) => {
+        {productArray?.map((value, index) => {
           const slug = stringToSlug(value.productName);
           const fullStars = Math.floor(value.rating);
           const halfStar = value.rating - fullStars;
@@ -117,8 +117,8 @@ function stringToSlug(str) {
 }
 
 function ImageGrid({ images, alt }) {
-  if (images.length === 1) return <LayoutOne images={images} alt={alt} />;
-  else if (images.length === 3) return <LayoutThree images={images} alt={alt}/>;
+  if (images?.length === 1) return <LayoutOne images={images} alt={alt} />;
+  else if (images?.length === 3) return <LayoutThree images={images} alt={alt}/>;
   else return <LayoutTwo images={images} alt={alt}/>;
 }
 
