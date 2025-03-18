@@ -9,11 +9,15 @@ export async function POST(request) {
 
     const user = await AuthenticateUser(request);
     if (!user || !user?._id) {
-        return null;
+        return NextResponse.json({
+            message: "Unauthorised access",
+            success: false
+        }, { status: 403 });
     }
 
     try {
 
+        console.log("request received");
         const reqBody = await request.json();
         const { username, email, mobileNumber, bag, previousOrders, favourites, savedAddresses } = reqBody;
 

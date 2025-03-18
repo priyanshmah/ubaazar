@@ -32,18 +32,29 @@ export async function GET(request) {
 
         const productIds = userBag.items?.map(item => item.product);
         const products = await Product.find({ _id: { $in: productIds } })
-            .select('_id productName category price mrp variants');
+            .select('_id productName images category price mrp variants');
 
         const itemsWithDetails = userBag.items?.map(item => {
             
-            let product = products.find(prod => prod._id.toString() === item.product.toString()).toObject();
-            product.variant = product.variants?.find(variant => variant._id.toString() === item.variantId.toString());
+            let product = products.find(
+                prod => prod._id.toString() === item.product.toString()
+            ).toObject();
+
+            product.variant = product.variants?.find(
+                variant => variant._id.toString() === item.variantId.toString()
+            );
+            
             const trimmedVariant = {
-                color: product.variant.color,
-                image: product.variant.images.at(0)
+                color: product.variant?.color || '',
+                image: product.variant?.images?.at(0) || product.images.at(0)
             }
             product.variant = trimmedVariant;
-            let { variants, ...trimmedProduct} = product
+            let { variants, images, ...trimmedProduct} = product
+
+            console.log({
+                ...item.toObject(),
+                product: trimmedProduct
+            })
            
             return {
                 ...item.toObject(),

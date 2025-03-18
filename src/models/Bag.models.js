@@ -8,7 +8,6 @@ const bagItemSchema = new mongoose.Schema({
     },
     variantId: {
         type: 'String',
-        required: true
     },
     quantity: {
         type: Number,

@@ -4,6 +4,7 @@ import { NextResponse } from "next/server";
 import Suits from '@/models/products/Suits&Kurtas.models';
 import { AuthenticateUser } from '@/lib/authenticateUser';
 import Cordset from "@/models/products/Cordset.models";
+import Reel from "@/models/Reels.models";
 
 
 export async function POST(request) {
@@ -17,51 +18,38 @@ export async function POST(request) {
 
     try {
         const body = await request.json();
-
-        console.log(body.productCategoryData);
-
+        let product;
 
         if (body.category === 'sarees') {
 
-            const product = await Sarees.create({ ...body, ...body?.productCategoryData });
+            product = await Sarees.create({ ...body, ...body?.productCategoryData });
             if (!product) {
                 return NextResponse.json({
                     error: 'Something went wrong while uploading your product'
                 }, { status: 200 })
             }
-            return NextResponse.json({
-                message: "Product uploaded successfully...",
-                success: true
-            }, { status: 200 })
         }
         else if (body.category === 'suits') {
 
-            const product = await Suits.create({ ...body, ...body?.productCategoryData });
+            product = await Suits.create({ ...body, ...body?.productCategoryData });
             if (!product) {
                 return NextResponse.json({
                     error: 'Something went wrong while uploading your product',
                     success: false
                 }, { status: 200 })
             }            
-            return NextResponse.json({
-                message: "Product uploaded successfully...",
-                success: true
-            }, { status: 200 })
 
         }
         else if (body.category === 'cordset') {
 
-            const product = await Cordset.create({ ...body, ...body?.productCategoryData });
+            product = await Cordset.create({ ...body, ...body?.productCategoryData });
             if (!product) {
                 return NextResponse.json({
                     message: 'Something went wrong while uploading your product',
                     success: false
                 }, { status: 200 })
             }
-            return NextResponse.json({
-                message: "Product uploaded successfully...",
-                success: true
-            }, { status: 200 })
+            
 
         }
 
@@ -71,6 +59,21 @@ export async function POST(request) {
                 success: false
          }, { status: 200 })
         }
+
+        if (Array.isArray(body.video) && body.video?.length > 0) {
+            await Promise.all(body.video.map(reel => 
+                Reel.create({
+                    videoUrl: reel,
+                    products: [product._id]
+                })
+            ));
+        }
+        
+        return NextResponse.json({
+            message: "Product uploaded successfully...",
+            success: true
+        }, { status: 200 })
+
     } catch (error) {
         console.log(error);
 

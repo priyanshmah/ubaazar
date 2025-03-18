@@ -6,6 +6,9 @@ export async function POST(request) {
     const reqBody = await request.json();
     const { videoUrl, products } = reqBody;
 
+    console.log("videourl is: ", videoUrl);
+    
+
     if(!videoUrl){
         return NextResponse.json({
             message: "Video url not found",
@@ -19,12 +22,15 @@ export async function POST(request) {
             videoUrl,
             products
         }, { new: true });
-
+        
         if(!newReel)
             return NextResponse.json({
                 message: "Reel not added!!!",
                 success: false,
             }, { status: 200 })
+
+            console.log("done..");
+            
 
         return NextResponse.json({
             message: "Reel added successfully....",
@@ -33,6 +39,7 @@ export async function POST(request) {
         }, { status: 200 })
 
     } catch (error) {
+        console.error(error)
         return NextResponse.json({
             message: error.message || "Internal server error",
             success: false

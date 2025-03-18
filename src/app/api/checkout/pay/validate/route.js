@@ -22,26 +22,7 @@ export async function POST(request) {
             }, { status: 400 })
         }
 
-        if(order?.paymentMode === 'cod'){
-
-            order.address = await Address.findById(order?.address);
-
-            for (let productData of order.products) {
-
-                let productInfo = await Product.findById(productData.product).select('_id productName price images')   
-                productData.product = productInfo;
-    
-            }
-
-            return NextResponse.json({
-                message: "Order placed successfully",
-                success: true,
-                amount: order.totalAmount,
-                order
-            }, { status: 200 })
-        }
-
-        if (order?.paymentMode === 'online') {
+        if (order?.paymentMode === 'ONLINE') {
 
             let statusUrl = `https://api.phonepe.com/apis/hermes/pg/v1/status/${process.env.NEXT_PUBLIC_PHONEPE_MERCHANT_ID}/${order?.transactionId}`;
 
@@ -76,7 +57,6 @@ export async function POST(request) {
             }
             return NextResponse.json({
                 message: "Order placed successfully",
-                amount: (response?.data?.data?.amount) / 100,
                 success: response?.data?.success,
                 order: updatedOrder
             }, { status: 200 })

@@ -3,8 +3,6 @@ import mongoose from "mongoose";
 const reelSchema = new mongoose.Schema({
     videoUrl: {
         type: String,
-        required: true,
-        unique: true
     },
     products: [{
         type: mongoose.Schema.Types.ObjectId,

@@ -27,7 +27,7 @@ export async function POST(request) {
 
     try {
         const reqBody = await request.json();
-        const { products, addressId, paymentMode, couponCode } = reqBody;
+        let { products, addressId, paymentMode, couponCode } = reqBody;
 
         if (!(Array.isArray(products)) || products.length <= 0 || !paymentMode)
             return NextResponse.json({
@@ -48,18 +48,18 @@ export async function POST(request) {
                 success: false
             }, { status: 200 });
 
-        console.log("address is: ", address);
 
 
-        const productIds = products.map(item => item.product._id);
+        const productIds = products.map(item => item.id);
         const dbProducts = await Product.find({ _id: { $in: productIds } }).lean();
+        
 
         let totalAmount = 0;
-        for (const item of products) {
+        for (let item of products) {
 
-            const product = dbProducts.find(p => p._id.toString() === item.product._id);
-            const isValidVariant = product.variants.find(variant => variant._id.toString() === item.variantId)
-            if (!product || !isValidVariant) {
+            const product = dbProducts.find(p => p?._id?.toString() === item?.id);
+            const isValidVariant = product?.variants?.find(variant => variant._id.toString() === item.variantId)
+            if (!product || (product.variants?.length > 0 && !isValidVariant)) {
                 return NextResponse.json({
                     message: `Product or variant with id ${item.product} not found`,
                     success: false
@@ -69,13 +69,17 @@ export async function POST(request) {
             totalAmount += product.price * item.quantity;
         }
 
+        products.forEach((value) => {
+            if (!value.product) {
+                value.product = value.id
+            }
+        })        
+
         let coupon;
         let discount = 0;
-        console.log("Coupon code is: ", couponCode);
 
         if (couponCode) {
             coupon = await Coupon.findOne({ code: couponCode });
-            console.log("fetched coupon is: ", coupon);
 
             if (coupon) {
                 const isUserHave = (user.coupons?.includes(coupon._id));
@@ -101,8 +105,6 @@ export async function POST(request) {
                 }
             }
         };
-        console.log("yahan tak aa gye");
-
 
         if (paymentMode === 'COD') {
 
@@ -148,8 +150,6 @@ export async function POST(request) {
                 }, { status: 200 })
             }
 
-            console.log("user update bhi ho gya");
-
             const userBag = await BagModels.findByIdAndUpdate(user?.bag, { items: [] });
             if (!userBag)
                 NextResponse.json({
@@ -159,9 +159,22 @@ export async function POST(request) {
                 }, { status: 200 })
 
 
+            const response = await axios.post('https://www.ubaazar.com/api/orders',
+                JSON.stringify({
+                    orderIds: [newOrder._id]
+                })
+            )
+
+            if (!response.data?.success || !response.data?.orders?.at(0))
+                return NextResponse.json({
+                    message: "Order placed but data not found",
+                    success: false
+                }, { status: 200 })
+
+
             return NextResponse.json({
                 message: "Order placed successfully",
-                orderId: newOrder._id,
+                order: response.data?.orders?.at(0),
                 success: true
             }, { status: 200 })
 
@@ -173,7 +186,7 @@ export async function POST(request) {
                 orderNumber: generateOrderNumber(),
                 user: user._id,
                 products,
-                address: address._id,
+                address: addressId,
                 paymentInfo: {
                     method: 'ONLINE',
                     status: 'PENDING',
@@ -189,7 +202,7 @@ export async function POST(request) {
                 },
                 appliedCoupon: coupon ? coupon._id : null,
             }
-
+           
             const newOrder = await Order.create(orderData);
             if (!newOrder)
                 return NextResponse.json({

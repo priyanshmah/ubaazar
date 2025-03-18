@@ -23,7 +23,7 @@ export async function POST(request) {
         const reqBody = await request.json();
         const { productId, variantId, quantity, size } = reqBody;
 
-        if (!productId || !quantity || !variantId) {
+        if (!productId || !quantity ) {
             return NextResponse.json({
                 message: "Details not found",
                 success: false
@@ -35,7 +35,7 @@ export async function POST(request) {
         const variant = productToBeAdded?.variants?.find(value => value._id.toString() === variantId)
         const isSizeAvailable = variant?.sizes?.find((value) => value.size === size)       
 
-        if (!productToBeAdded || !variant) {
+        if (!productToBeAdded ) {
             return NextResponse.json({
                 message: "Product or variant not found",
                 success: false
@@ -49,6 +49,9 @@ export async function POST(request) {
             }, { status: 200 })
         }
 
+        console.log("Adding to bag");
+        
+
         let bag = await BagModels.findOne({ user: user._id });
         if (bag) {
 
@@ -58,16 +61,18 @@ export async function POST(request) {
             if (existingItem)
                 existingItem.quantity += 1;
 
+            
+
             else bag.items.push({ product: productId, quantity, variantId, size });
             await bag.save();
 
         } else {
-            const newBag = await BagModels.create({
+            bag = await BagModels.create({
                 user: user._id,
                 items: [{ product: productId, quantity, variantId }]
             });
 
-            if (!newBag) {
+            if (!bag) {
                 return NextResponse.json({
                     message: "Internal Server error while creating bag",
                     success: false
@@ -75,7 +80,7 @@ export async function POST(request) {
             }
             const updatedUser = await User.findByIdAndUpdate(
                 user._id,
-                { bag: newBag._id }
+                { bag: bag._id }
             );
             if (!updatedUser) {
                 return NextResponse.json({
@@ -85,9 +90,40 @@ export async function POST(request) {
             }
         }
 
+        const productIds = bag.items?.map(item => item.product);
+        const products = await Product.find({ _id: { $in: productIds } })
+            .select('_id productName images category price mrp variants');
+
+        const itemsWithDetails = bag.items?.map(item => {
+            
+            let product = products.find(
+                prod => prod._id.toString() === item.product.toString()
+            ).toObject();
+
+            product.variant = product.variants?.find(
+                variant => variant._id.toString() === item.variantId.toString()
+            );
+            
+            const trimmedVariant = {
+                color: product.variant?.color || '',
+                image: product.variant?.images?.at(0) || product.images.at(0)
+            }
+            product.variant = trimmedVariant;
+            let { variants, images, ...trimmedProduct} = product
+           
+            return {
+                ...item.toObject(),
+                product: trimmedProduct
+            };
+        });
+        
         return NextResponse.json({
             message: "Added to bag successfully",
             success: true,
+            bag: {
+                ...bag.toObject(),
+                items: itemsWithDetails
+            },
         }, { status: 200 })
 
     } catch (error) {

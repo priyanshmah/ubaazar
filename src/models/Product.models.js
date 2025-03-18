@@ -16,6 +16,9 @@ const productSchema = new mongoose.Schema({
         type: Number,
         required: [true, "Product price is required"]
     },
+    mrp: {
+        type: Number,
+    },
     rating: {
         type: Number,
         default: 4.5

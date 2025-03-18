@@ -8,7 +8,7 @@ export async function POST(request) {
     await dbConnect();
 
     const user = await AuthenticateUser(request);
-    if (!user || !user._id) 
+    if (!user || !user._id)
         return NextResponse.json({
             message: "User credentials not found or expired",
             success: false
@@ -37,24 +37,35 @@ export async function POST(request) {
         const existingItem = user.favourites.find(
             item => item.toString() === productId
         );
-        if (existingItem)
-            return NextResponse.json({
-                message: "Already in favourites",
-                success: true
-            }, { status: 200 })
-
-        user.favourites.push(productId);
-        await user.save();
+        if (!existingItem) {
+            user.favourites.push(productId);
+            await user.save();
+        }
 
         const productIds = user.favourites;
         let products = await Product.find({ _id: { $in: productIds } })
-            .select('_id productName category price images mrp rating');
+            .select('_id productName price images mrp rating variants').lean();
 
         products = products.map(product => {
-            if (!product.images.length && product.variants.length) {
-                product.images = product.variants[0].images;
+            console.log(product.productName);
+            let image = '';
+            if (product?.images?.length > 0 ) {
+                image = product.images.at(0)
             }
-            return product;
+            if (product?.variants?.length > 0 ) {
+                image = product.variants?.at(0)?.images?.at(0);                
+            }
+
+            const { images, ...restProduct } = product;
+            console.log({
+                ...restProduct,
+                image
+            });
+            
+            return {
+                ...restProduct,
+                image
+            };
         });
 
         return NextResponse.json({

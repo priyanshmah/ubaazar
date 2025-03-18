@@ -19,7 +19,6 @@ const orderSchema = new mongoose.Schema({
         },
         variantId: {
             type: String,
-            required: true
         },
         quantity: {
             type: Number,
@@ -48,7 +47,7 @@ const orderSchema = new mongoose.Schema({
     },
     status: {
         type: String,
-        enum: ['PENDING', 'CONFIRMED', 'PROCESSING', 'SHIPPED', 'DELIVERED', 'CANCELLED', 'RETURNED'],
+        enum: ['PENDING', 'CONFIRMED','SHIPPED', 'DELIVERED', 'CANCELLED', 'RETURNED'],
         default: 'PENDING'
     },
     priceDetails: {

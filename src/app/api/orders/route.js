@@ -30,7 +30,7 @@ export async function POST(request) {
             let productIds = order?.products?.map((value) => value.product);
             let productInfo = await Product
                 .find({ _id: { $in: productIds } })
-                .select("_id productName price variants")
+                .select("_id productName price variants images")
                 .lean();
                 
 
@@ -44,11 +44,13 @@ export async function POST(request) {
                 );
                 const variant = detailedProduct.variants?.find(
                     value => value._id.toString() === productObj.variantId.toString()
-                );
+                );      
+                
+                
 
                 return {...productObj, product: {
                     _id: detailedProduct?._id,
-                    image: variant?.images?.at(0),
+                    image: variant ? variant?.images?.at(0) : detailedProduct?.images?.at(0),
                     price: detailedProduct.price,
                     productName: detailedProduct?.productName || ''
                 }};

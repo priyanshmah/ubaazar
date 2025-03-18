@@ -18,6 +18,7 @@ import { CldUploadWidget } from "next-cloudinary";
 import toast, { Toaster } from "react-hot-toast";
 import { RotatingLines } from "react-loader-spinner";
 import AuthContext from "@/context/authContext";
+import { RiCheckboxBlankCircleLine, RiCheckboxCircleFill, RiCheckboxCircleLine } from "react-icons/ri";
 
 const removeImage = async (imageUrls) => {
   try {
@@ -40,10 +41,13 @@ export default function UploadProductPage() {
   const [variants, setVariants] = useState([]);
   const [showVariants, setShowVariants] = useState(false);
   const [video, setVideo] = useState([]);
-
-  console.log("variants is: ", variants);
+  const [rating, setRating] = useState("");
+  const [isTrending, setisTrending] = useState(false);
+  const [mrp, setMrp] = useState("");
 
   const { isAdmin } = useContext(AuthContext);
+
+  console.log("trending: ", isTrending);
 
   const handleUpload = async () => {
     setLoading(true);
@@ -53,6 +57,9 @@ export default function UploadProductPage() {
         description,
         category,
         price,
+        rating,
+        mrp,
+        isTrending,
         ...productCategoryData,
         variants,
         video,
@@ -80,9 +87,12 @@ export default function UploadProductPage() {
         setDescription("");
         setCategory("");
         setPrice("");
+        setRating("");
+        setMrp("");
+        setisTrending(false);
         setProductCategoryData({});
         setVariants([]);
-        setVideo([])
+        setVideo([]);
       } else {
         toast.error(`${response.data.message}`, { duration: 5000 });
       }
@@ -159,6 +169,26 @@ export default function UploadProductPage() {
                 />
               </div>
               <div className="flex flex-col ">
+                <label htmlFor="mrp" className={styles.label}>
+                  MRP
+                </label>
+                <div className="flex flex-row gap-3 items-center">
+                  <p className="text-lg">₹</p>
+                  <input
+                    max={10000}
+                    step={"none"}
+                    type="number"
+                    value={mrp}
+                    placeholder="MRP"
+                    className={styles.input}
+                    onChange={(e) => {
+                      e.preventDefault();
+                      setMrp(e.target.value);
+                    }}
+                  />
+                </div>
+              </div>
+              <div className="flex flex-col ">
                 <label htmlFor="price" className={styles.label}>
                   Price
                 </label>
@@ -176,6 +206,43 @@ export default function UploadProductPage() {
                       setPrice(e.target.value);
                     }}
                   />
+                </div>
+              </div>
+              <div className="flex flex-col ">
+                <label htmlFor="rating" className={styles.label}>
+                  Rating
+                </label>
+                <div className="flex flex-row gap-3 items-center">
+                  <input
+                    max={5}
+                    step={"none"}
+                    type="number"
+                    value={rating}
+                    placeholder="Rating"
+                    className={styles.input}
+                    onChange={(e) => {
+                      e.preventDefault();
+                      setRating(e.target.value);
+                    }}
+                  />
+                </div>
+              </div>
+              <div className="flex flex-row gap-4 ">
+                <label htmlFor="rating" className={styles.label}>
+                  Trending
+                </label>
+                <div onClick={() => setisTrending((prev) => !prev)}>
+                  {isTrending ? (
+                    <RiCheckboxCircleFill
+                      size={25}
+                      className="text-brightOrange"
+                    />
+                  ) : (
+                    <RiCheckboxBlankCircleLine
+                      size={25}
+                      className="text-brightOrange"
+                    />
+                  )}
                 </div>
               </div>
               <div className="flex flex-col ">
@@ -1267,9 +1334,7 @@ function VariantsUpload({ setVariants, category }) {
                 }}
               />
             </div>
-            {category === "suits" && (
-              <SelectSize setVariantSizes={setSizes} />
-            )}
+            {category === "suits" && <SelectSize setVariantSizes={setSizes} />}
             {category === "cordset" && (
               <SelectSize setVariantSizes={setSizes} />
             )}
@@ -1418,7 +1483,6 @@ function SelectSize({ setVariantSizes }) {
       }));
     setVariantSizes(selectedSizes);
   }, [sizes]);
-
 
   // Handle checkbox toggle for selecting sizes
   const handleSizeChange = (size) => {

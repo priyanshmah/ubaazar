@@ -21,7 +21,7 @@ export async function POST(request) {
 
         const reqBody = await request.json();
         const { productId } = reqBody;
-
+       
         if (!productId) {
             return NextResponse.json({
                 message: "Details not found",
@@ -37,17 +37,52 @@ export async function POST(request) {
             }, { status: 200 })
         }
 
-        let bag = await BagModels.findOne({ user: user._id });
-        if (bag) {
-            const newBag = bag.items.filter(item => item.product.toString() !== productId);
+        let userBag = await BagModels.findOne({ user: user._id });
+        console.log("user Bag is: ", userBag);
+        
+        if (userBag) {
+            const newBag = userBag.items.filter(item => item.product.toString() !== productId);
                         
-            bag.items = newBag;
-            await bag.save();
+            userBag.items = newBag;
+            console.log("new bag is: ", newBag);
+            
+            await userBag.save();
         } 
+
+        const productIds = userBag.items?.map(item => item.product);
+        const products = await Product.find({ _id: { $in: productIds } })
+            .select('_id productName images category price mrp variants');
+
+        const itemsWithDetails = userBag.items?.map(item => {
+            
+            let product = products.find(
+                prod => prod._id.toString() === item.product.toString()
+            ).toObject();
+
+            product.variant = product.variants?.find(
+                variant => variant._id.toString() === item.variantId.toString()
+            );
+            
+            const trimmedVariant = {
+                color: product.variant?.color || '',
+                image: product.variant?.images?.at(0) || product.images.at(0)
+            }
+            product.variant = trimmedVariant;
+            let { variants, images, ...trimmedProduct} = product
+           
+            return {
+                ...item.toObject(),
+                product: trimmedProduct
+            };
+        });
 
         return NextResponse.json({
             message: "Deleted from bag successfully",
             success: true,
+            bag: {
+                ...userBag.toObject(),
+                items: itemsWithDetails
+            },
         }, { status: 200 });
 
     } catch (error) {
