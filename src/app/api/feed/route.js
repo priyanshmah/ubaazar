@@ -9,7 +9,13 @@ export async function POST(request) {
         const reqBody = await request.json();
         const { category } = reqBody;
 
-        let products = await Product.find({ category }).lean();
+
+
+        let products;
+
+        if (category !== 'all') products = await Product.find({ category }).lean();
+        else products = await Product.find().lean();
+
         products = shuffleArray(products);
 
         let trendingProducts = await Product.find({ isTrending: true })
@@ -39,6 +45,8 @@ export async function POST(request) {
                 images: value.images || value?.variants?.at(0)?.images,
                 mrp: value.mrp || Math.floor(value.price * 1.5),
                 rating: value.rating || 4.0,
+                category: value.category,
+                type: value.occasion
             }
         })
 
