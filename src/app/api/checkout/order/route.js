@@ -52,7 +52,7 @@ export async function POST(request) {
 
         const productIds = products.map(item => item.id);
         const dbProducts = await Product.find({ _id: { $in: productIds } }).lean();
-        
+
 
         let totalAmount = 0;
         for (let item of products) {
@@ -73,7 +73,7 @@ export async function POST(request) {
             if (!value.product) {
                 value.product = value.id
             }
-        })        
+        })
 
         let coupon;
         let discount = 0;
@@ -202,7 +202,7 @@ export async function POST(request) {
                 },
                 appliedCoupon: coupon ? coupon._id : null,
             }
-           
+
             const newOrder = await Order.create(orderData);
             if (!newOrder)
                 return NextResponse.json({
@@ -246,7 +246,7 @@ async function initializePayment(merchantTransactionId, orderId, amount) {
         const payEndPoint = "/pg/v1/pay"
         const merchantUserId = uuid();
         // const redirectUrl = `https://www.ubaazar.com/bag/pay/payment-details/${orderId}`
-        const redirectUrl = `ubaazar://payment-status`
+        const redirectUrl = `ubaazar://payment-status?orderId=${orderId}`
 
         const payload = {
             "merchantId": process.env.NEXT_PUBLIC_PHONEPE_MERCHANT_ID,

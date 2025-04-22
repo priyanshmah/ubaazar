@@ -13,7 +13,7 @@ export async function POST(request) {
 
         const message = {
             token,
-            notification: {
+            data: {
                 title,
                 body,
             }

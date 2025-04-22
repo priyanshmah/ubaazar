@@ -16,18 +16,18 @@ export async function POST(request) {
         const { page, limit, category, filter = {} } = reqBody;
         const skip = (page - 1) * limit;
 
-        if (!page || !category) {
+        if (!category) {
             return NextResponse.json({
                 message: 'Missing data',
                 success: false
-            }, { status: 404 })
+            }, { status: 200 })
         }
 
         
 
         const products = await Product.find({ category ,...filter }).sort({ createdAt: -1 })
-            .skip(skip)
-            .limit(limit);
+            // .skip(skip)
+            // .limit(limit);
 
         if (!products) {
             return NextResponse.json({
@@ -35,14 +35,13 @@ export async function POST(request) {
                 success: false
             }, { status: 401 })
         }
-        const shuffledProducts = shuffleArray(products);
         let totalProducts = await Product.countDocuments({ category })
 
         return NextResponse.json({
             message: 'Products data fetched successfully',
             success: true,
             totalProducts,
-            products: shuffledProducts
+            products
         }, { status: 200 })
 
 

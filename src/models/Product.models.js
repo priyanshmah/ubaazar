@@ -27,6 +27,10 @@ const productSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
+    embeddings:{
+        type: [Number],
+        default: [],
+    },
     video: [{
         type: String,
     }]
@@ -37,9 +41,8 @@ productSchema.index(
     { productName: "text", description: "text", category: "text" },
     { weights: { productName: 5, description: 2, category: 10 } }
 ); 
+
 const Product = mongoose.models?.Product || 
                 mongoose.model("Product", productSchema);
-
-
 
 export default Product;
