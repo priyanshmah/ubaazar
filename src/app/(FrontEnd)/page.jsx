@@ -25,10 +25,10 @@ export const metadata = {
 };
 
 export default async function Home() {
-  const posts = await axios.post(`https://www.ubaazar.com/api/feed`, JSON.stringify({
-    category: 'sarees'
-  }));
-  const { feed } = posts.data;
+  // const posts = await axios.post(`https://www.ubaazar.com/api/feed`, JSON.stringify({
+  //   category: 'sarees'
+  // }));
+  // const { feed } = posts.data;
 
   return (
     <Suspense fallback={<Loading />}>
@@ -39,7 +39,7 @@ export default async function Home() {
       >
         <Sidebar />
       </div>
-      <Category feed={feed} searchBar={true} storiesSection={true}/>
+      {/* <Category feed={feed} searchBar={true} storiesSection={true}/> */}
     </div>
     </Suspense>
   );

@@ -23,8 +23,8 @@ export default async function dbConnect() {
         console.log('Establishing a new MongoDB connection...');
         cached.promise = mongoose
             .connect(MONGODB_URI, {
-                useNewUrlParser: true,
-                useUnifiedTopology: true,
+                // useNewUrlParser: true,
+                // useUnifiedTopology: true,
             })
             .then((mongoose) => {
                 console.log('MongoDB connected successfully...');

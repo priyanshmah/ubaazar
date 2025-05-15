@@ -46,19 +46,12 @@ const suitSchema = new mongoose.Schema({
     },
     dupatta: {
         type: Boolean,
-        required: true
     },
     dupattaFabric: {
         type: String,
-        required: function () {
-            return this.dupatta
-        }
     },
     dupattaLength: {
         type: String,
-        required: function () {
-            return this.dupatta
-        }
     },
     ornamentation: {
         type: String,

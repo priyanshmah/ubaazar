@@ -6,17 +6,28 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: [true, "Please provide your name"]
     },
-    email: {
-        type: String,
-    },
-    password: {
-        type: String,
-    },
+    email: { type: String },
+    password: { type: String },
     mobileNumber: {
         type: String,
         unique: true,
         required: [true, "please give your mobile number"]
     },
+    physicalAttributes: {
+        gender: { type: String },
+        dateOfBirth: { type: Date },
+        height: { type: String },
+        skinTone: { type: String },
+        hairColor: { type: String },
+        bodyType: { type: String },
+    },
+    prefrences: [{ type: String }],
+    interestEmbeddings: [{
+            clusterId: Number,
+            embedding: [Number],
+            weight: Number
+    }],
+    userEmbedding: [Number],
     isSeller: {
         type: Boolean,
         default: false

@@ -44,6 +44,8 @@ export default function UploadProductPage() {
   const [rating, setRating] = useState("");
   const [isTrending, setisTrending] = useState(false);
   const [mrp, setMrp] = useState("");
+  const [costPrice, setCostPrice] = useState("");
+  const [sellerName, setSellerName] = useState("");
 
   const { isAdmin } = useContext(AuthContext);
 
@@ -59,6 +61,8 @@ export default function UploadProductPage() {
         price,
         rating,
         mrp,
+        costPrice,
+        sellerName,
         isTrending,
         ...productCategoryData,
         variants,
@@ -89,6 +93,8 @@ export default function UploadProductPage() {
         setPrice("");
         setRating("");
         setMrp("");
+        setCostPrice("");
+        setSellerName("");
         setisTrending(false);
         setProductCategoryData({});
         setVariants([]);
@@ -158,7 +164,7 @@ export default function UploadProductPage() {
                   type="text"
                   rows={6}
                   cols={50}
-                  maxLength={200}
+                  maxLength={800}
                   placeholder="Description of your product"
                   value={description}
                   className={styles.input}
@@ -207,6 +213,43 @@ export default function UploadProductPage() {
                     }}
                   />
                 </div>
+              </div>
+              <div className="flex flex-col ">
+                <label htmlFor="price" className={styles.label}>
+                  Cost Price
+                </label>
+                <div className="flex flex-row gap-3 items-center">
+                  <p className="text-lg">₹</p>
+                  <input
+                    max={10000}
+                    step={"none"}
+                    type="number"
+                    value={costPrice}
+                    placeholder="Cost Price"
+                    className={styles.input}
+                    onChange={(e) => {
+                      e.preventDefault();
+                      setCostPrice(e.target.value);
+                    }}
+                  />
+                </div>
+              </div>
+              <div className="flex flex-col">
+                <label htmlFor="name" className={styles.label}>
+                  Seller name
+                </label>
+                <input
+                  maxLength={120}
+                  min={3}
+                  type="text"
+                  placeholder="Seller's name"
+                  className={styles.input}
+                  value={sellerName}
+                  onChange={(e) => {
+                    e.preventDefault();
+                    setSellerName(e.target.value);
+                  }}
+                />
               </div>
               <div className="flex flex-col ">
                 <label htmlFor="rating" className={styles.label}>
@@ -1424,14 +1467,14 @@ function VideoUpload({ video, setVideo }) {
         </p>
       </div>
       <div className="flex flex-row flex-wrap gap-6">
-        {video.map((video, index) => (
+        {video?.map((video, index) => (
           <div key={index} className="flex flex-col items-end">
             <IoCloseCircle
               size={25}
               className={styles.closeButton}
               onClick={async () => {
                 await removeImage([video]);
-                setVideo(video.filter((item) => item !== video));
+                setVideo(video?.filter((item) => item !== video));
               }}
             />
             <div className={styles.videoContainer}>
