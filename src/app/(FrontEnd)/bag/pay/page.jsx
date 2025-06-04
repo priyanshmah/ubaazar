@@ -1,6 +1,7 @@
 "use client";
 
 import PriceDetails from "@/components/order/price-breakdown";
+import CustomNavbar from "@/components/ui/CustomNavbar";
 import AuthContext from "@/context/authContext";
 import axios from "axios";
 import { useRouter } from "nextjs-toploader/app";
@@ -11,7 +12,7 @@ import { FiCheck, FiX } from "react-icons/fi";
 import { RotatingLines } from "react-loader-spinner";
 
 export default function PaymentPage() {
-  const [paymentMode, setPaymentMode] = useState("online");
+  const [paymentMode, setPaymentMode] = useState("ONLINE");
   const [totalAmount, setTotalAmount] = useState("");
   const [loading, setLoading] = useState(false);
   const [isCodAvailable, setIsCodAvailable] = useState(true);
@@ -93,53 +94,73 @@ export default function PaymentPage() {
   };
 
   return (
-    <div className="flex flex-col justify-center gap-8 text-grayColor text-sm p-4 lg:w-full lg:flex-row ">
-      <div className="flex flex-col gap-4">
+    <div className="bg-lightBackground">
+      <CustomNavbar customText={"Payment Details"}/>
+    <div className="flex flex-col min-h-[80vh] my-2 gap-2 text-darkGrayColor text-sm lg:w-full lg:flex-row ">
+      <div className="flex flex-col gap-2 px-2 py-4 bg-white">
         <button
-          onClick={() => setPaymentMode("online")}
+          onClick={() => setPaymentMode("ONLINE")}
           className={`border ${
-            paymentMode === "online"
-              ? "border-brightOrange"
-              : "border-lightGrayColor"
-          } p-4 rounded-2xl flex flex-row  text-left gap-4 shadow-md font-bold `}
+            paymentMode === "ONLINE"
+              ? "border-pink font-semibold"
+              : "border-lightGrayColor text-grayColor"
+          } p-4  flex flex-row text-base rounded-lg  text-left gap-4  `}
         >
-          {paymentMode === "online" ? (
-            <CgRadioChecked size={20} className="text-brightOrange" />
+          {paymentMode === "ONLINE" ? (
+            <CgRadioChecked size={20} className="text-pink" />
           ) : (
             <CgRadioCheck size={20} className="text-lightGrayColor" />
           )}
           Pay Online
         </button>
         <button
-          onClick={() => setPaymentMode('cod')}
+          onClick={() => setPaymentMode('COD')}
           className={`border ${
-            paymentMode === "cod"
-              ? "border-brightOrange"
-              : "border-lightGrayColor"
-          } p-4 rounded-2xl flex flex-col text-left gap-4 text-grayColor shadow-md font-bold`}
+            paymentMode === "COD"
+              ? "border-pink font-semibold"
+              : "border-lightGrayColor text-grayColor"
+          } p-4  flex flex-col text-left gap-4 rounded-lg`}
         >
-          <div className="flex flex-row gap-2">
-            {paymentMode === "cod" ? (
-              <CgRadioChecked size={20} className="text-brightOrange" />
+          <div className="flex flex-row gap-2 text-base">
+            {paymentMode === "COD" ? (
+              <CgRadioChecked size={20} className="text-pink" />
             ) : (
               <CgRadioCheck size={20} className="text-lightGrayColor" />
             )}
             Cash On Delivery
           </div>
         </button>
+
+        <button
+          onClick={() => setPaymentMode('PARTIAL_COD')}
+          className={`border ${
+            paymentMode === "PARTIAL_COD"
+              ? "border-pink font-semibold"
+              : "border-lightGrayColor text-grayColor"
+          } p-4  flex flex-col text-left rounded-lg gap-4 `}
+        >
+          <div className="flex flex-row gap-2 text-base">
+            {paymentMode === "PARTIAL_COD" ? (
+              <CgRadioChecked size={20} className="text-pink" />
+            ) : (
+              <CgRadioCheck size={20} className="text-lightGrayColor" />
+            )}
+            Partial Cash on Delivery
+          </div>
+        </button>
       </div>
       <PriceDetails total={totalAmount} showDiscount={true} isCod={isCodAvailable}/>
 
-      <div className="flex flex-row items-end place-content-between w-full p-4 fixed bottom-0 left-0 bg-white">
-        <div>
-          <p className="text-grayColor">Total</p>
+      <div className="flex flex-col items-end place-content-between w-full p-4 fixed bottom-0 left-0 bg-white">
+        <div className="flex flex-row items-center place-content-between w-full">
+          <p className="text-grayColor text-xl">Total</p>
           <p className="font-medium text-darkGrayColor text-2xl">
             ₹{totalAmount}
           </p>
         </div>
         <div
           onClick={handlePlaceOrder}
-          className="bg-darkBlue text-white flex flex-row justify-center items-center rounded-lg  font-semibold text-lg w-3/5 h-12 py-2"
+          className="bg-black text-white flex flex-row justify-center items-center font-semibold text-lg w-full h-12 py-2"
         >
           {loading ? 
             <RotatingLines
@@ -155,6 +176,7 @@ export default function PaymentPage() {
         </div>
       </div>
       <Toaster />
+    </div>
     </div>
   );
 }

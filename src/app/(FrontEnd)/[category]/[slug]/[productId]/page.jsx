@@ -4,6 +4,9 @@ import { Toaster } from "react-hot-toast";
 import Product from "@/components/products/product";
 import Category from "@/components/feed/category";
 import Rating from "@/components/products/rating";
+import { HiOutlineHeart } from "react-icons/hi";
+import { TbShoppingBag } from "react-icons/tb";
+import BottomBar from "@/components/products/bottom-bar";
 
 export async function generateMetadata({ params }) {
   const { slug, productId, category } = params;
@@ -44,21 +47,19 @@ export default async function ProductPage({ params }) {
     notFound();
   }
 
+
   return (
-    <div>
+    <div className="scrollbar-hide">
       <div
         className={`flex flex-col bg-white gap-4  overflow-x-hidden lg:flex-row`}
       >
         <Product productData={product} />
         <Rating rating={product?.rating} />
       </div>
-      <div>
-        <p className="font-sans text-xl font-medium p-4">
-          More products you might love 💖
-        </p>
-        <Category SearchBar={false} storiesSection={false} />
-      </div>
       <Toaster />
+      <BottomBar />
     </div>
   );
 }
+
+

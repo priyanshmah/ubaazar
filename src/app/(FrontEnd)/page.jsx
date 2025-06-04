@@ -11,8 +11,10 @@ import axios from "axios";
 import Loading from "@/app/loading";
 import { Suspense } from "react";
 import Category from "@/components/feed/category";
+import Carousel from "@/components/feed/carousel";
+import Explore from "@/components/feed/Explore";
 
-
+import Banner from "@/public/images/banners/Welcome100.png";
 
 export const metadata = {
   title:
@@ -25,24 +27,25 @@ export const metadata = {
 };
 
 export default async function Home() {
-  // const posts = await axios.post(`https://www.ubaazar.com/api/feed`, JSON.stringify({
-  //   category: 'sarees'
-  // }));
-  // const { feed } = posts.data;
+  const posts = await axios.post(
+    `https://www.ubaazar.com/api/feed`,
+    JSON.stringify({
+      category: "sarees",
+    })
+  );
+  const { feed } = posts.data;
 
   return (
     <Suspense fallback={<Loading />}>
-    <div className="overflow-x-clip">
-      <div
-        className="hidden lg:flex lg:w-1/3 p-4 lg:sticky lg:top-0"
-        style={{ height: "100vh" }}
-      >
-        <Sidebar />
+      <div className="overflow-x-clip">
+        <Carousel />
+        <div className="w-full aspect-[3.09] relative my-4 py-4">
+          <Image src={Banner} alt="Explore" fill className="object-cover" />
+        </div>
+        
+        <Explore />
+        <Category feed={feed} searchBar={true} storiesSection={true} />
       </div>
-      {/* <Category feed={feed} searchBar={true} storiesSection={true}/> */}
-    </div>
     </Suspense>
   );
 }
-
-

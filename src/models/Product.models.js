@@ -33,7 +33,7 @@ const productSchema = new mongoose.Schema({
     },
     video: [{
         type: String,
-    }]
+    }],
 }, { discriminatorKey: 'type', collection: 'products'})
 
 

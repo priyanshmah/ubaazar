@@ -216,13 +216,13 @@ export async function POST(request) {
                 { $push: { previousOrders: newOrder._id } },
             )
 
-            const paymentUrl = await initializePayment(
+            const paymentInitData = await initializePayment(
                 transactionId, newOrder._id, totalAmount
             );
-            if (paymentUrl) {
+            if (paymentInitData) {
                 return NextResponse.json({
                     message: "Payment url generated...",
-                    url: paymentUrl,
+                    data: paymentInitData,
                     success: true
                 }, { status: 200 })
             } else {
@@ -243,48 +243,68 @@ export async function POST(request) {
 async function initializePayment(merchantTransactionId, orderId, amount) {
     try {
 
-        const payEndPoint = "/pg/v1/pay"
+        const payEndPoint = "/checkout/v2/pay"
         const merchantUserId = uuid();
         // const redirectUrl = `https://www.ubaazar.com/bag/pay/payment-details/${orderId}`
         const redirectUrl = `ubaazar://payment-status?orderId=${orderId}`
 
         const payload = {
-            "merchantId": process.env.NEXT_PUBLIC_PHONEPE_MERCHANT_ID,
+            // "merchantId": process.env.NEXT_PUBLIC_PHONEPE_MERCHANT_ID,
+            "merchantId": 'TEST-M226WBXVLE3XO_25051',
             "merchantTransactionId": merchantTransactionId,
             "merchantUserId": merchantUserId,
             "amount": amount * 100,
             "redirectUrl": redirectUrl,
             "redirectMode": "REDIRECT",
+            "callbackUrl": redirectUrl,
             "paymentInstrument": {
                 "type": "PAY_PAGE"
             }
         }
+        // const payload = {
+        //     "merchantOrderId": 'TEST-M226WBXVLE3XO_25051',
+        //     "amount": amount * 100,
+        //     "paymentFlow": {
+        //         "type": "PG_CHECKOUT",
+        //         "merchantUrls": {
+        //             "redirectUrl": redirectUrl
+        //         },
+        //     }
+        // }
 
         const bufferObj = Buffer.from(JSON.stringify(payload), "utf-8");
         const base64EncodedPayload = bufferObj.toString('base64');
 
         const xVerify = crypto.createHash('sha256')
-            .update(base64EncodedPayload + payEndPoint + process.env.NEXT_PUBLIC_PHONEPE_API_KEY)
+            .update(base64EncodedPayload + payEndPoint + 'ZTU1NTMwYWYtZDAwNS00Mzk1LWJiYmUtMzk1Y2U1MjYzNGU3')
             .digest('hex') + '###' + 1;
 
+        // const xVerify = crypto.createHash('sha256')
+        //     .update(base64EncodedPayload + payEndPoint + process.env.NEXT_PUBLIC_PHONEPE_API_KEY)
+        //     .digest('hex') + '###' + 1;
 
-        const options = {
-            method: 'post',
-            url: `${process.env.NEXT_PUBLIC_PHONEPE_HOST_URL}${payEndPoint}`,
-            headers: {
-                accept: "application/json",
-                "Content-Type": "application/json",
-                "X-VERIFY": xVerify,
-            },
-            data: {
-                request: base64EncodedPayload
-            }
-        }
 
-        const response = await axios.request(options);
-        const paymentUrl = (response.data.data?.instrumentResponse?.redirectInfo?.url);
+        // const options = {
+        //     // url: `${process.env.NEXT_PUBLIC_PHONEPE_HOST_URL}${payEndPoint}`,
+        //     url: `https://api-preprod.phonepe.com/apis/pg-sandbox${payEndPoint}`,
+        //     headers: {
+        //         accept: "application/json",
+        //         "Content-Type": "application/json",
+        //         "X-VERIFY": xVerify,
+        //     },
+        //     data: {
+        //         request: base64EncodedPayload
+        //     }
+        // }
 
-        return paymentUrl;
+        return {
+            merchantId: process.env.NEXT_PUBLIC_PHONEPE_MERCHANT_ID,
+            payload: base64EncodedPayload,
+            checkSum: xVerify,
+            transactionId: merchantTransactionId,
+            success: true,
+            redirectUrl
+        };
 
     } catch (error) {
         console.error(error);

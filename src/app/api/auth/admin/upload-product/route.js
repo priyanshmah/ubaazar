@@ -10,6 +10,7 @@ import Product from "@/models/Product.models";
 import generateEmbedding from "@/lib/generateEmbeddings";
 import { pineconeIndex } from "@/helpers/pinecone/pineconeClient";
 import Lehangas from "@/models/products/Lehangas.models";
+import Gown from "@/models/products/Gown.models";
 
 
 export async function POST(request) {
@@ -48,6 +49,18 @@ export async function POST(request) {
         else if (body.category === 'cordset') {
 
             product = await Cordset.create({ ...body, ...body?.productCategoryData });
+            if (!product) {
+                return NextResponse.json({
+                    message: 'Something went wrong while uploading your product',
+                    success: false
+                }, { status: 200 })
+            }
+
+
+        }
+        else if (body.category === 'gown') {
+
+            product = await Gown.create({ ...body, ...body?.productCategoryData });
             if (!product) {
                 return NextResponse.json({
                     message: 'Something went wrong while uploading your product',

@@ -4,7 +4,7 @@ import Navbar from "@/components/ui/navbar";
 import { Provider } from "react-redux";
 import store from "@/redux/store";
 import localFont from '@next/font/local'
-import { Overlock } from "next/font/google"
+import { Overlock, Josefin_Sans } from "next/font/google"
 import BottomBar from "@/components/ui/bottom-bar";
 import AuthContext, { AuthProvider } from "@/context/authContext";
 import { Analytics } from '@vercel/analytics/react'
@@ -16,11 +16,12 @@ import NextTopLoader from "nextjs-toploader";
 import FacebookPixel from "@/helpers/pixel/pixelComponent";
 import { PostHogProvider } from "@/helpers/postHog/postHagComponent";
 import HeadContent from "@/components/header/HeadComponent";
+import Options from "@/components/footer/Options";
 
 
-const overlock = Overlock({
+const overlock = Josefin_Sans({
   subsets: ['latin', 'latin-ext'],
-  weight: ['400', '700', '900']
+  weight: ['100', '200', '300', '400', '500', '600', '700']
 });
 
 const monaSans = localFont({
@@ -46,12 +47,12 @@ export default function RootLayout({ children }) {
         <PostHogProvider>
           <AuthProvider>
             <Provider store={store}>
-              <header>
+              <header className="sticky top-0 left-0 z-50 bg-white">
                 <Navbar />
               </header>
               {children}
               <footer>
-                <BottomBar />
+                <Options />
               </footer>
               <Analytics />
             </Provider>

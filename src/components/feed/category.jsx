@@ -36,10 +36,9 @@ function Category({ feed, searchBar, storiesSection }) {
 
   return (
     <div className="bg-white min-h-[100vh]">
-      {searchBar && <SearchBar />}
       {storiesSection && <StoriesSection />}
       <div className="flex flex-row">
-        <div className="bg-white w-[15vw] h-[50vh] sticky left-0 top-[20vh] flex flex-col place-content-around p-2">
+        {/* <div className="bg-white w-[15vw] h-[50vh] sticky left-0 top-[20vh] flex flex-col place-content-around p-2">
           <div
             onClick={() => {
               dispatch(setSelectedCategory({ category: "sarees" }));
@@ -81,7 +80,7 @@ function Category({ feed, searchBar, storiesSection }) {
               Cord Set
             </p>
           </div>
-        </div>
+        </div> */}
         <ProductFeed feed={feed} />
       </div>
     </div>

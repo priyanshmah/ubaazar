@@ -3,22 +3,6 @@ import Product from "../Product.models";
 
 const lehangaSchema = new mongoose.Schema({
 
-    flair: String ,
-    lehangaFabric: String ,
-    lehangaWork: String ,
-    lehangaInner: String ,
-
-    blouseFabric: String ,
-    blouseWork: String ,
-    blouseInner: String ,
-
-    dupattaFabric: String,
-    dupattaLength: String ,
-    dupattaWork: String ,
-
-    lehangaStitchingType: String ,
-    blouseStitchingType: String ,
-
     variants: [{
         sizes: [{ 
             size: {
@@ -39,19 +23,6 @@ const lehangaSchema = new mongoose.Schema({
     }]
 })
 
-lehangaSchema.index({
-    lehangaFabric: 'text',
-    lehangaWork: 'text',
-    lehangaInner: 'text',
-    flair: 'text',
-    blouseFabric: 'text',
-    blouseWork: 'text',
-    blouseInner: 'text',
-    dupattaFabric: 'text',
-    dupattaLength: 'text',
-    dupattaWork: 'text',
-    
-});
 
 const Lehangas = Product?.discriminators?.Lehangas ||
     Product.discriminator('Lehangas', lehangaSchema);

@@ -85,14 +85,11 @@
 .label {
     padding: 1rem;
     color: white;
-    background-color: var(--brightOrange);
+    background-color: var(--pink);
     width: 100%;
     font-size: medium;
     font-weight: 600;
-    padding-top: 4%;
-    padding-bottom: 4%;
-    border-top-left-radius: 0.75rem;
-    border-top-right-radius: 0.75rem;
+    border-radius: 2px;
 }
 .link {
     font-size: 18px;

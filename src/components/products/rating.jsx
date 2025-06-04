@@ -11,8 +11,10 @@ function Rating({ rating }) {
   return (
     <div className="flex flex-col gap-4 bg-white overflow-x-hidden">
       <div className="p-4 flex flex-col gap-4">
-        <p className="font-sans text-lg font-medium">Customer reviews</p>
-        <div className="bg-red rounded-xl flex flex-row items-end gap-4 justify-center p-2">
+      <div className="text-2xl font-semibold text-center">
+          Customer Ratings
+        </div>
+        <div className="bg-pink rounded-xl flex flex-row items-end gap-4 justify-center p-2">
           <div className="flex flex-row text-gold items-center justify-center gap-1">
             {Array.from({ length: fullStars }, (_, key) => (
               <FaStar key={key} size={"1.5rem"} className="text-[#FCF596]" />
@@ -21,18 +23,18 @@ function Rating({ rating }) {
             {halfStar < 1 && (
               <FaStarHalfAlt size={"1.5rem"} className="text-[#FCF596]" />
             )}
-            {halfStar == 1 && <FaStar size={"1.5rem"} className="text-gold" />}
+            {halfStar == 1 && <FaStar size={"1.5rem"} className="text-[#FCF596]" />}
           </div>
           <p className="text-sm font-semibold text-white ">{rating} out of 5</p>
         </div>
-        <p className="text-xs text-center font-semibold text-darkGrayColor">
+        <p className="text-xs text-center font-normal text-grayColor">
           This rating is calculated based on customer reviews via Whatsapp and
           Instagram Dms
         </p>
       </div>
 
       <div>
-        <p className="font-sans text-lg font-medium px-4">
+        <p className="text-lg font-semibold px-4 text-center">
           What customers feel about us ?
         </p>
 
@@ -76,19 +78,17 @@ function Rating({ rating }) {
           alt="girl with shopping bags"
         />
         <div>
-          <div className="px-4 font-medium font-sans text-3xl text-darkGrayColor">
+          <div className="px-4 font-semibold font-sans text-3xl text-darkGrayColor">
             <div className="flex flex-row gap-2">
               <p className="">Waiting</p>
-              <p className="text-silver">for</p>
+              <p className="text-silver font-medium">for</p>
             </div>
             <div className="flex flex-row gap-2  ">
-              <p className="text-silver">your</p>
+              <p className="text-silver font-medium">your</p>
               <p className="">review</p>
             </div>
           </div>
-          <p className="text-base text-brightOrange font-semibold p-2 text-center">
-            Keep Shopping 😘
-          </p>
+          
         </div>
       </div>
 

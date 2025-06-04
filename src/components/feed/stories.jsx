@@ -1,21 +1,17 @@
 "use client";
 import Image from "next/image";
-import Sarees from "@/public/images/categories/party_wear_saree.jpg";
-import Kurtis from "@/public/images/categories/kurtis.jpg";
-import CordSet from "@/public/images/categories/cord_set.jpg";
-import DailyWearSarees from "@/public/images/categories/daily_wear_saree.jpeg";
-import AnarkaliSuit from "@/public/images/categories/anarkali_suit.jpg";
 import { useDispatch, useSelector } from "react-redux";
 import { setSelectedCategory } from "@/redux/slice/selectedCategory";
 import { setProductarray } from "@/redux/slice/productArraySlice";
 import axios from "axios";
 
 const categories = [
-  { img: Sarees, description: "Indian Sarees", slug: "sarees" },
-  { img: Kurtis, description: "Kurtis & Suits", slug: "suits" },
-  { img: CordSet, description: "Cord Set", slug: "cordset" },
-  { img: DailyWearSarees, description: "Daily Wear Saree", slug: "daily-wear" },
-  { img: AnarkaliSuit, description: "Anarkali Suit", slug: "anarkali" },
+  { description: "All Products", slug: "all" },
+  { description: "Sarees", slug: "sarees" },
+  { description: "Kurtis & Suits", slug: "suits" },
+  { description: "Cord Set", slug: "cordset" },
+  { description: "Lehengas", slug: "daily-wear" },
+  { description: "Gown", slug: "anarkali" },
 ];
 
 export default function StoriesSection() {
@@ -25,7 +21,7 @@ export default function StoriesSection() {
   const getProductsArray = async (category) => {
     try {
       console.log("category is: ", category);
-      
+
       const response = await axios.post(
         "/api/feed",
         JSON.stringify({ category })
@@ -41,39 +37,29 @@ export default function StoriesSection() {
   };
 
   return (
-    <div className="bg-white">
-      <div className=" overflow-x-auto w-full px-2 scrollbar-hide">
-        <div className="inline-flex gap-2">
+    <div className="bg-white sticky top-20 left-0 z-50 px-2 py-4">
+      <div className=" overflow-x-auto whitespace-nowrap w-full px-2 scrollbar-hide">
+        <div className="inline-flex flex-nowrap gap-4">
           {categories.map((value, index) => {
+            const isSelected = selected === value.slug;
             return (
-              <div 
-              onClick={() => {
-                console.log("clicked");
-                
-                dispatch(setSelectedCategory({ category: value.slug }));
-                getProductsArray(value.slug);
-              }}
-              className="flex flex-col text-center gap-2" key={index}>
-                <div
-                  className={`relative border-2 ${
-                    selected === value.slug
-                      ? "border-brightOrange"
-                      : "border-white"
-                  } rounded-full`}
-                  style={{
-                    height: "5rem",
-                    width: "5rem",
-                  }}
+              <div
+                onClick={() => {
+                  console.log("clicked");
+
+                  dispatch(setSelectedCategory({ category: value.slug }));
+                  getProductsArray(value.slug);
+                }}
+                className={`flex flex-col text-center border-b-2 ${
+                  isSelected ? "border-black" : "border-white"
+                } gap-2`}
+                key={index}
+              >
+                <p
+                  className={`text-base lg:text-base text-black  px-2 ${
+                    isSelected ? "font-bold" : "font-normal text-grayColor"
+                  }`}
                 >
-                  <Image
-                    src={value.img}
-                    key={index}
-                    alt={`${value.description} product category`}
-                    fill
-                    className="rounded-full object-cover p-1"
-                  />
-                </div>
-                <p className="text-xs lg:text-base  font-semibold text-darkGrayColor">
                   {value.description}
                 </p>
               </div>

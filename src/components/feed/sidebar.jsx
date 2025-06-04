@@ -52,13 +52,9 @@ export default function SideBar({ closeDrawer }) {
           </div>
         ) : (
           <div className="my-4">
-            <p className="text-darkBlue text-xl">Namaste Ji 🙏</p>
-            <p className="text-sm  text-darkBlue">
-              To interact and shop please
-            </p>
             <button
               onClick={handleClick}
-              className="rounded-xl font-semibold w-full py-2 shadow-lg my-4 border-2 border-darkBlue text-darkBlue"
+              className="rounded-none font-medium text-lg w-full p-2 border border-black text-black"
             >
               Login / Signup
             </button>

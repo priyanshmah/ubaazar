@@ -13,23 +13,23 @@ import Image from "next/image";
 
 export default function SareeDetails({ productData }) {
     return (
-      <div className="flex flex-col gap-6 font-semibold text-xs">
+      <div className="flex flex-col gap-6 font-semibold text-xs my-4">
   
-        <div className="rounded-2xl shadow-md">
+        <div className="">
           <p className={styles.label}>Saree Details</p>
-          <div className="flex flex-col place-content-evenly p-4 border-2 border-brightOrange rounded-b-xl">
+          <div className="flex flex-col p-4 rounded-b-sm shadow-sm">
             <div className="flex flex-row place-content-between">
               <div className="flex flex-row gap-4 items-center justify-center">
-                <Image src={tape} height={30} width={30} />
+                <Image src={tape} height={25} width={25} />
                 <p className="text-darkGrayColor">Saree Length</p>
               </div>
               <p className="text-grayColor my-2">
-                {productData?.sareeLength}
+                {productData?.sareeLength} meters
               </p>
             </div>
             <div className="flex flex-row place-content-between">
               <div className="flex flex-row gap-4 items-center justify-center">
-                <Image src={fabric} height={30} width={30} />
+                <Image src={fabric} height={25} width={25} />
                 <p className="text-darkGrayColor">Saree Fabric</p>
               </div>
               <p className="text-grayColor my-2 ">
@@ -38,7 +38,7 @@ export default function SareeDetails({ productData }) {
             </div>
             <div className="flex flex-row place-content-between">
               <div className="flex flex-row gap-4 items-center justify-center">
-                <Image src={border} height={30} width={30} />
+                <Image src={border} height={25} width={25} />
                 <p className="text-darkGrayColor">Border</p>
               </div>
               <p className="text-grayColor my-2">
@@ -48,12 +48,12 @@ export default function SareeDetails({ productData }) {
           </div>
         </div>
   
-        <div className="rounded-2xl shadow-md">
+        <div className="">
           <p className={styles.label}>Blouse Details</p>
-          <div className="flex flex-col place-content-evenly p-4 border-2 border-brightOrange rounded-b-xl">
+          <div className="flex flex-col place-content-evenly p-4 rounded-b-sm shadow-sm">
             <div className="flex flex-row place-content-between">
               <div className="flex flex-row gap-4 items-center justify-center">
-                <Image src={blouse} height={30} width={30} />
+                <Image src={blouse} height={25} width={25} />
                 <p className="text-darkGrayColor ">Blouse Type</p>
               </div>
               <p className="text-grayColor my-2">
@@ -62,7 +62,7 @@ export default function SareeDetails({ productData }) {
             </div>
             <div className="flex flex-row place-content-between">
               <div className="flex flex-row gap-4 items-center justify-center">
-                <Image src={fabric} height={30} width={30} />
+                <Image src={fabric} height={25} width={25} />
                 <p className="text-darkGrayColor">Blouse Fabric</p>
               </div>
               <p className="text-grayColor my-2 ">
@@ -71,7 +71,7 @@ export default function SareeDetails({ productData }) {
             </div>
             <div className="flex flex-row place-content-between ">
               <div className="flex flex-row gap-4 justify-center items-center">
-                <Image src={tape} height={30} width={30} />
+                <Image src={tape} height={25} width={25} />
                 <p className="text-darkGrayColor">Blouse Length</p>
               </div>
               <p className="text-grayColor my-2">
@@ -81,12 +81,12 @@ export default function SareeDetails({ productData }) {
           </div>
         </div>
   
-        <div className="rounded-2xl shadow-md">
+        <div className="shadow-sm">
           <p className={styles.label}>Basic Details</p>
-          <div className="flex flex-col place-content-evenly p-4 border-2 border-brightOrange rounded-b-xl">
+          <div className="flex flex-col place-content-evenly p-4 rounded-b-sm shadow-sm">
             <div className="flex flex-row gap-8 place-content-between">
               <div className="flex flex-row gap-4 justify-center items-center">
-                <Image src={floral} height={30} width={30} />
+                <Image src={floral} height={25} width={25} />
                 <p className="text-darkGrayColor">Ornamentation</p>
               </div>
               <p className="text-grayColor my-2">
@@ -97,8 +97,8 @@ export default function SareeDetails({ productData }) {
               <div className="flex flex-row gap-4 justify-center items-center">
                 <Image
                   src={pattern}
-                  height={30}
-                  width={30}
+                  height={25}
+                  width={25}
                 />
                 <p className="text-darkGrayColor">Pattern</p>
               </div>
@@ -108,7 +108,7 @@ export default function SareeDetails({ productData }) {
             </div>
             <div className="flex flex-row place-content-between gap-8">
               <div className="flex flex-row gap-4 justify-center items-center">
-                <Image src={washcare} height={30} width={30} />
+                <Image src={washcare} height={25} width={25} />
                 <p className="text-darkGrayColor">Wash Care</p>
               </div>
               <p className="text-grayColor my-2">

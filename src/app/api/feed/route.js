@@ -1,6 +1,9 @@
 import dbConnect from "@/lib/dbConnect";
 import Product from "@/models/Product.models";
 import { NextResponse } from "next/server";
+import admin from "@/lib/firebaseAdmin";
+
+const db = admin.firestore()
 
 export async function POST(request) {
     await dbConnect();
@@ -9,12 +12,10 @@ export async function POST(request) {
         const reqBody = await request.json();
         const { category } = reqBody;
 
-
-
         let products;
 
         if (category !== 'all') products = await Product.find({ category }).lean();
-        else products = await Product.find().lean();
+        else products = await Product.find().lean().limit(20);
 
         products = shuffleArray(products);
 
@@ -50,11 +51,16 @@ export async function POST(request) {
             }
         })
 
+        // const snapshots = await db.collection('banners').get();        
+        // const banners = snapshots.docs.map((doc) => doc.data());
+        // console.log('Banners: ', banners);
+        
         return NextResponse.json({
             message: 'Post fetched successfully',
             success: true,
             feed: shuffleArray(feed),
             trendingProducts: shuffleArray(trendingProducts),
+            // banners: banners
         }, { status: 200 })
 
 

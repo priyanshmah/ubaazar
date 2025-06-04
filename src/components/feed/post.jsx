@@ -3,24 +3,27 @@ import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import { useRouter } from "nextjs-toploader/app";
 import Loading from "../../app/loading";
-import LayoutOne from "../layouts/one/layout_one";
-import LayoutTwo from "../layouts/two/layout_two";
-import LayoutThree from "../layouts/three/layout_three";
 import { Passion_One } from "next/font/google";
 import { FaStar, FaStarHalfAlt } from "react-icons/fa";
 import { useSelector } from "react-redux";
+import Image from "next/image";
+import Lottie from "lottie-react";
+import saleAnimation from "@/public/animations/sale.json";
+import { HiOutlineHeart } from "react-icons/hi";
 
 const passion = Passion_One({
   subsets: ["latin", "latin-ext"],
   weight: ["400", "700", "900"],
 });
 
-export default function ProductFeed({ feed }) {
+export default function ProductFeed() {
   const [loading, setLoading] = useState(false);
   const pathname = usePathname();
   const productArray = useSelector((state) => state.productArray);
 
   const router = useRouter();
+
+  console.log("productArray is: ", productArray[0]);
 
   const handleBuyNow = ({ category, slug, id }) => {
     setLoading(true);
@@ -32,71 +35,82 @@ export default function ProductFeed({ feed }) {
   }, [pathname]);
 
   return (
-    <div className="w-[85vw] md:w-2/3 lg:w-1/2">
+    <div className="w-full">
       {loading && <Loading />}
-      <div className="flex flex-col justify-center items-center gap-6 ">
+      <div className="grid grid-cols-2 gap-1">
         {productArray?.map((value, index) => {
           const slug = stringToSlug(value.productName);
           const fullStars = Math.floor(value.rating);
           const halfStar = value.rating - fullStars;
+          const discount = value.mrp ? value.mrp - value.price : 0;
+          const discountPercentage = value.mrp
+            ? Math.round((discount / value.mrp) * 100)
+            : 50;
 
           return (
-            <div className={`flex flex-col w-full`} key={index}>
+            <div className={`flex flex-col w-full gap-2`} key={index}>
               <div
-                className={`flex flex-row ${passion.className} text-lg items-center`}
+                onClick={() =>
+                  handleBuyNow({
+                    category: value.category,
+                    slug,
+                    id: value._id,
+                  })
+                }
+                className={`hover:cursor-pointer w-full aspect-[3/4] relative`}
               >
-                <p className="text-brightOrange">U</p>
-                <p className="text-darkBlue">BAAZAR</p>
+                <Image
+                  src={value.images[0]}
+                  alt={value.productName}
+                  fill
+                  className="object-cover rounded-none"
+                />
               </div>
-              <div className="flex flex-col gap-1">
-                <div
-                  onClick={() =>
-                    handleBuyNow({
-                      category: value.category,
-                      slug,
-                      id: value._id,
-                    })
-                  }
-                  className={`hover:cursor-pointer`}
-                >
-                  <ImageGrid images={value.images}  alt={value.productName}/>
-                </div>
 
-                <div className="flex flex-row px-2 place-content-between text-darkGrayColor">
-                  <p className="text-md font-semibold w-4/5">
+              <div className=" w-full flex flex-col px-1  text-darkGrayColor">
+                <div>
+                  <p className="text-md font-semibold line-clamp-2 leading-none">
                     {value.productName}
                   </p>
-                  <div className="flex flex-row text-xl font-semibold justify-center items-center">
-                    <p>₹</p>
-                    <p>{value.price}</p>
+                  <div className="flex flex-row place-content-between">
+                    <div className="flex flex-row gap-2">
+                      <div className="flex flex-row text-xl bg-yellowColor font-semibold justify-center items-center">
+                        <p>₹</p>
+                        <p>{value.price}</p>
+                      </div>
+                      <div className="flex flex-row text-md text-silver line-through font-normal justify-center items-center">
+                        <p>₹</p>
+                        <p>{value.mrp || value.price * 1.5}</p>
+                      </div>
+                    </div>
+                    <HiOutlineHeart
+                      strokeWidth={1.25}
+                      size={20}
+                      className="text-black"
+                    />
+                  </div>
+                  <div className="flex flex-row place-content-between mt-1">
+                    <div className="bg-darkGreen justify-center py-0 px-2 items-center w-fit rounded text-white flex flex-row gap-1">
+                      {value.rating}
+                      <FaStar size={12} color="white" />
+                    </div>
+                    <div className="bg-pink text-white rounded-md text-xs font-semibold px-2 py-1">
+                      Save {discountPercentage}%
+                    </div>
                   </div>
                 </div>
               </div>
 
-              <div className="flex flex-row px-2 w-full items-center place-content-between">
-                <div className="flex flex-row text-gold gap-1">
-                  {Array.from({ length: fullStars }, (_, key) => (
-                    <FaStar key={key} size={"1.2rem"} className="text-gold" />
-                  ))}
+              {/* <div className="flex flex-row border-0 border-silver border-dashed overflow-hidden justify-center place-content-around">
+                  <div className="h-20 w-20">
+                    <Lottie animationData={saleAnimation} loop={true} />
+                  </div>
+                  <div className="text-xs text-silver">Get upto 50% off</div>
+                </div> */}
 
-                  {halfStar < 1 && (
-                    <FaStarHalfAlt size={"1.2rem"} className="text-gold" />
-                  )}
-                  {halfStar == 1 && (
-                    <FaStar size={"1.2rem"} className="text-gold" />
-                  )}
-                </div>
-                <button
-                  onClick={() =>
-                    handleBuyNow({
-                      category: value.category,
-                      slug,
-                      id: value._id,
-                    })
-                  }
-                  className="px-8 py-2 font-semibold rounded-lg text-sm bg-red text-white shadow-md"
-                >
-                  Buy now
+              <div className="px-1 mb-2">
+                <button className="bg-white text-black w-full rounded-full text-sm  font-medium p-2 border border-black">
+                  Add to Bag
                 </button>
               </div>
             </div>
@@ -115,10 +129,3 @@ function stringToSlug(str) {
     .replace(/\s+/g, "-")
     .replace(/-+/g, "-");
 }
-
-function ImageGrid({ images, alt }) {
-  if (images?.length === 1) return <LayoutOne images={images} alt={alt} />;
-  else if (images?.length === 3) return <LayoutThree images={images} alt={alt}/>;
-  else return <LayoutTwo images={images} alt={alt}/>;
-}
-
