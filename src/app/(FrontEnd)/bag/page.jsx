@@ -31,7 +31,7 @@ import { IoInformationCircleOutline, IoTicketOutline } from "react-icons/io5";
 import CustomNavbar from "../../../components/ui/CustomNavbar";
 import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
 import BagItems from "@/components/bag/BagItems";
-import { setProducts } from "@/redux/slice/bagSlice";
+import { setProducts, setSelectedAddress } from "@/redux/slice/bagSlice";
 import { useDispatch, useSelector } from "react-redux";
 import AddressForm from "./add-address/page";
 
@@ -39,14 +39,15 @@ export default function Bag() {
   const bag = useSelector((state) => state.bag?.products);
   const total = useSelector((state) => state.bag?.priceDetails?.subTotal);
   const price = useSelector((state) => state.bag?.priceDetails);
-  const [selectedAddress, setSelectedAddress] = useState({});
+  const [address, setAddress] = useState({});
   const [openDrawer, setOpenDrawer] = useState(false);
   const router = useRouter();
   const dispatch = useDispatch();
 
   useEffect(() => {
     let savedAddresses = JSON.parse(localStorage.getItem("addresses")) || [];
-    setSelectedAddress(savedAddresses?.at(-1));
+    setAddress(savedAddresses?.at(-1));
+    dispatch(setSelectedAddress(savedAddresses?.at(-1)?._id));
 
     let storedBag = localStorage.getItem("bag");
     if (storedBag) {
@@ -63,7 +64,7 @@ export default function Bag() {
   
   
   const handleCheckout = () => {
-    if (!selectedAddress) {
+    if (!address) {
       setOpenDrawer(true);
       return;
     }
@@ -114,8 +115,8 @@ export default function Bag() {
                     <div className="p-4">
                       <DrawerClose className="w-full">
                         <SavedAddresses
-                          selectedAddress={selectedAddress}
-                          setSelectedAddress={setSelectedAddress}
+                          selectedAddress={address}
+                          setSelectedAddress={setAddress}
                         />
                       </DrawerClose>
                     </div>
@@ -123,7 +124,7 @@ export default function Bag() {
                 </Drawer>
               </div>
               <AddAddressButton isOpen={openDrawer} setIsOpen={setOpenDrawer} />
-              {selectedAddress && (
+                {address && (
                 <div
                   className={`border border-pink text-pink rounded-2xl flex flex-row text-left p-4 gap-4`}
                 >
@@ -131,16 +132,16 @@ export default function Bag() {
 
                   <div className="text-xs">
                     <p className="text-darkGrayColor font-semibold text-sm">
-                      {selectedAddress?.name}
+                      {address?.name}
                     </p>
                     <p>
-                      {selectedAddress?.address} , {selectedAddress?.area}
+                      {address?.address} , {address?.area}
                     </p>
                     <p>
-                      {selectedAddress?.city} , {selectedAddress?.state} -{" "}
-                      {selectedAddress?.pincode}
+                      {address?.city} , {address?.state} -{" "}
+                      {address?.pincode}
                     </p>
-                    <p>{selectedAddress?.mobileNumber}</p>
+                    <p>{address?.mobileNumber}</p>
                   </div>
                 </div>
               )}
@@ -160,7 +161,7 @@ export default function Bag() {
                 onClick={handleCheckout}
                 className="bg-black text-white flex flex-row justify-center items-center  font-semibold w-full text-lg h-full py-2"
               >
-                {selectedAddress ? "Place order" : "Add address"}
+                {address ? "Place order" : "Add address"}
               </button>
             </div>
           </div>

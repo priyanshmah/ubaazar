@@ -12,6 +12,7 @@ import Suits from "@/models/products/Suits&Kurtas.models";
 import Sarees from "@/models/products/Sarees.models";
 import Coupon from "@/models/Coupon.models";
 import BagModels from "@/models/Bag.models";
+import { isNull } from "util";
 
 
 export async function POST(request) {
@@ -19,11 +20,11 @@ export async function POST(request) {
     await dbConnect();
     const user = await AuthenticateUser(request);
 
-    if (!user || !user._id)
-        return NextResponse.json({
-            message: "User credentials not found or expired",
-            success: false
-        }, { status: 403 })
+    // if (!user || !user._id)
+    //     return NextResponse.json({
+    //         message: "User credentials not found or expired",
+    //         success: false
+    //     }, { status: 200 })
 
     try {
         const reqBody = await request.json();
@@ -78,7 +79,7 @@ export async function POST(request) {
         let coupon;
         let discount = 0;
 
-        if (couponCode) {
+        if (couponCode && user) {
             coupon = await Coupon.findOne({ code: couponCode });
 
             if (coupon) {
@@ -184,7 +185,7 @@ export async function POST(request) {
             const transactionId = uuid();
             const orderData = {
                 orderNumber: generateOrderNumber(),
-                user: user._id,
+                user: user._id || null,
                 products,
                 address: addressId,
                 paymentInfo: {
@@ -211,10 +212,11 @@ export async function POST(request) {
                 }, { status: 200 })
 
 
-            await User.findByIdAndUpdate(
-                user._id,
-                { $push: { previousOrders: newOrder._id } },
-            )
+            if (user) await User.findByIdAndUpdate(
+                    user._id,
+                    { $push: { previousOrders: newOrder._id } },
+                )
+            
 
             const url = await initializePayment(
                 transactionId, newOrder._id, totalAmount
@@ -288,9 +290,9 @@ async function initializePayment(merchantTransactionId, orderId, amount) {
         const paymentUrl = (response.data.data?.instrumentResponse?.redirectInfo?.url);
 
         return paymentUrl || null;
-        
 
-       
+
+
 
     } catch (error) {
         console.error(error);

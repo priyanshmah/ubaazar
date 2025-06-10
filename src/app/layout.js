@@ -3,7 +3,7 @@ import "@/styles/globals.css";
 import Navbar from "@/components/ui/navbar";
 import { Provider } from "react-redux";
 import store from "@/redux/store";
-import { Josefin_Sans, Overlock } from "next/font/google"
+import { Josefin_Sans, Montserrat, Overlock, Solway } from "next/font/google"
 import AuthContext, { AuthProvider } from "@/context/authContext";
 import { Analytics } from '@vercel/analytics/react'
 import NextTopLoader from "nextjs-toploader";
@@ -14,8 +14,8 @@ import Options from "@/components/footer/Options";
 
 
 const josefinSans = Josefin_Sans({
-  subsets: ['latin', 'latin-ext'],
-  weight: ['200', '300', '400', '500', '600', '700'],
+  subsets: ['latin'],
+  weight: ['300', '400', '500', '600', '700'],
 
 });
 
