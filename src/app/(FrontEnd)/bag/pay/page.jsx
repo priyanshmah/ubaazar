@@ -26,16 +26,25 @@ export default function PaymentPage() {
   const handlePlaceOrder = async () => {
     setLoading(true);
     try {
+      const updatedProducts = products.map(({ productId, ...rest }) => ({
+        id: productId,
+        ...rest
+      }));
+
+      console.log("products: ", products);
+      
+      
       const response = await axios.post(
-        "https://www.ubaazar.com/api/checkout/order",
+        "http://localhost:3000/api/checkout/order",
         JSON.stringify({
-          products,
+          products: updatedProducts,
           addressId,
           paymentMode,
           couponCode,
         })
       );
-
+      
+      console.log("response aa gya: ", response.data)
       if (response?.data?.url) router.push(response?.data?.url);
       else if (!response?.data?.success) toast.error(response?.data?.message);
       else if (response?.data?.orderId)

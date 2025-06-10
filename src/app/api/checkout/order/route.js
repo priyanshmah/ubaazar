@@ -12,7 +12,6 @@ import Suits from "@/models/products/Suits&Kurtas.models";
 import Sarees from "@/models/products/Sarees.models";
 import Coupon from "@/models/Coupon.models";
 import BagModels from "@/models/Bag.models";
-import { isNull } from "util";
 
 
 export async function POST(request) {
@@ -54,6 +53,8 @@ export async function POST(request) {
         const productIds = products.map(item => item.id);
         const dbProducts = await Product.find({ _id: { $in: productIds } }).lean();
 
+        console.log("yahantak aa gya");
+        
 
         let totalAmount = 0;
         for (let item of products) {
@@ -75,6 +76,9 @@ export async function POST(request) {
                 value.product = value.id
             }
         })
+
+        console.log("coupon or discount");
+
 
         let coupon;
         let discount = 0;
@@ -182,10 +186,13 @@ export async function POST(request) {
         }
         else if (paymentMode === 'ONLINE') {
 
+            console.log("payment mode");
+
+
             const transactionId = uuid();
             const orderData = {
                 orderNumber: generateOrderNumber(),
-                user: user._id || null,
+                user: user?._id || null,
                 products,
                 address: addressId,
                 paymentInfo: {
@@ -212,7 +219,7 @@ export async function POST(request) {
                 }, { status: 200 })
 
 
-            if (user) await User.findByIdAndUpdate(
+            if (user && user._id) await User.findByIdAndUpdate(
                     user._id,
                     { $push: { previousOrders: newOrder._id } },
                 )
