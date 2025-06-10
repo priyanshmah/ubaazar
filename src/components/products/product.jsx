@@ -1,9 +1,9 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import ImagesCrousel from "./image-crousel";
+import ImagesCarousel from "./image-crousel";
 import ProductDetails from "./product-details";
 import { useDispatch, useSelector } from "react-redux";
-import { setProductData, setSelectedSize, setVariantData, setVariantId } from "@/redux/slice/ProductSlice";
+import { setProductData, setProductId, setSelectedSize, setVariantData, setVariantId } from "@/redux/slice/ProductSlice";
 
 function Product({ productData }) {
  
@@ -23,7 +23,10 @@ function Product({ productData }) {
 
   useEffect(() => {
 
-    if(productData) dispatch(setProductData(productData));
+    if(productData) {
+      dispatch(setProductData(productData))
+      dispatch(setProductId(productData._id))
+    };
 
     if (!variantId) {
       dispatch(setVariantId(productData?.variants[0]?._id));
@@ -41,9 +44,7 @@ function Product({ productData }) {
 
   return (
     <div className="flex flex-col lg:flex-row w-full">
-      <ImagesCrousel
-      images={variantData?.images}
-      />
+      <ImagesCarousel images={variantData?.images} />
       <ProductDetails 
         selectedSize={selectedSize}
         setSelectedSize={setSelectedSize}

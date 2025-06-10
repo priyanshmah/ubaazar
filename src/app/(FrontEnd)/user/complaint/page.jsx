@@ -1,6 +1,6 @@
 "use client";
 import Loading from "@/app/loading";
-import { Roboto } from "@next/font/google";
+import { Roboto } from "next/font/google";
 import axios from "axios";
 import React, { useState } from "react";
 import toast, { Toaster } from "react-hot-toast";

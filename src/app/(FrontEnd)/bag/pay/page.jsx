@@ -3,6 +3,7 @@
 import PriceDetails from "@/components/order/price-breakdown";
 import CustomNavbar from "@/components/ui/CustomNavbar";
 import AuthContext from "@/context/authContext";
+import { setPaymentMode } from "@/redux/slice/bagSlice";
 import axios from "axios";
 import { useRouter } from "nextjs-toploader/app";
 import { useState, useEffect, useContext } from "react";
@@ -10,43 +11,14 @@ import toast, { Toaster } from "react-hot-toast";
 import { CgRadioCheck, CgRadioChecked } from "react-icons/cg";
 import { FiCheck, FiX } from "react-icons/fi";
 import { RotatingLines } from "react-loader-spinner";
+import { useDispatch, useSelector } from "react-redux";
 
 export default function PaymentPage() {
-  const [paymentMode, setPaymentMode] = useState("ONLINE");
-  const [totalAmount, setTotalAmount] = useState("");
+  const paymentMode = useSelector((state) => state.bag?.paymentMode);
+  const subTotal = useSelector((state) => state.bag?.priceDetails?.subTotal);
   const [loading, setLoading] = useState(false);
-  const [isCodAvailable, setIsCodAvailable] = useState(true);
   const router = useRouter();
-
-
-  const [items, setItems] = useState([]);
-  const [address, setAddress] = useState({});
-
-  useEffect(() => {
-    const selectedItems = localStorage.getItem("selectedItems");
-    const savedAddress = localStorage.getItem("address");   
-
-    let parsedItems;
-    let parsedAddress;
-
-    if (selectedItems) parsedItems = JSON.parse(selectedItems);
-    if (savedAddress) parsedAddress = JSON.parse(savedAddress);
-
-    setItems(parsedItems || []);
-    setAddress(parsedAddress || {});
-  }, []);
-
-  useEffect(() => {
-    const amount = items?.reduce((acc, value) => acc + value.price, 0);
-    console.log(totalAmount);
-
-    setTotalAmount(amount);
-  }, [items]);
-
-  useEffect(() => {
-    if (paymentMode === 'cod') setIsCodAvailable(true)
-    else setIsCodAvailable(false)
-  }, [paymentMode])
+  const dispatch = useDispatch();
 
   const handlePlaceOrder = async () => {
     setLoading(true)
@@ -94,12 +66,12 @@ export default function PaymentPage() {
   };
 
   return (
-    <div className="bg-lightBackground">
+    <div className="bg-lightBackground min-h-screen">
       <CustomNavbar customText={"Payment Details"}/>
     <div className="flex flex-col min-h-[80vh] my-2 gap-2 text-darkGrayColor text-sm lg:w-full lg:flex-row ">
       <div className="flex flex-col gap-2 px-2 py-4 bg-white">
         <button
-          onClick={() => setPaymentMode("ONLINE")}
+          onClick={() => dispatch(setPaymentMode("ONLINE"))}
           className={`border ${
             paymentMode === "ONLINE"
               ? "border-pink font-semibold"
@@ -114,7 +86,7 @@ export default function PaymentPage() {
           Pay Online
         </button>
         <button
-          onClick={() => setPaymentMode('COD')}
+          onClick={() => dispatch(setPaymentMode('COD'))}
           className={`border ${
             paymentMode === "COD"
               ? "border-pink font-semibold"
@@ -132,7 +104,7 @@ export default function PaymentPage() {
         </button>
 
         <button
-          onClick={() => setPaymentMode('PARTIAL_COD')}
+          onClick={() => dispatch(setPaymentMode('PARTIAL_COD'))}
           className={`border ${
             paymentMode === "PARTIAL_COD"
               ? "border-pink font-semibold"
@@ -149,13 +121,13 @@ export default function PaymentPage() {
           </div>
         </button>
       </div>
-      <PriceDetails total={totalAmount} showDiscount={true} isCod={isCodAvailable}/>
+      <PriceDetails />
 
       <div className="flex flex-col items-end place-content-between w-full p-4 fixed bottom-0 left-0 bg-white">
         <div className="flex flex-row items-center place-content-between w-full">
           <p className="text-grayColor text-xl">Total</p>
           <p className="font-medium text-darkGrayColor text-2xl">
-            ₹{totalAmount}
+            ₹{subTotal + (paymentMode === 'COD' ? 79 : 0)}
           </p>
         </div>
         <div

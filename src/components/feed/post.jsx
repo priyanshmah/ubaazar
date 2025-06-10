@@ -5,7 +5,7 @@ import { useRouter } from "nextjs-toploader/app";
 import Loading from "../../app/loading";
 import { Passion_One } from "next/font/google";
 import { FaStar, FaStarHalfAlt } from "react-icons/fa";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Image from "next/image";
 import Lottie from "lottie-react";
 import saleAnimation from "@/public/animations/sale.json";
@@ -27,6 +27,7 @@ export default function ProductFeed() {
 
   const handleBuyNow = ({ category, slug, id }) => {
     setLoading(true);
+    
     router.push(`/${category}/${slug}/${id}`);
   };
 
@@ -101,12 +102,6 @@ export default function ProductFeed() {
                 </div>
               </div>
 
-              {/* <div className="flex flex-row border-0 border-silver border-dashed overflow-hidden justify-center place-content-around">
-                  <div className="h-20 w-20">
-                    <Lottie animationData={saleAnimation} loop={true} />
-                  </div>
-                  <div className="text-xs text-silver">Get upto 50% off</div>
-                </div> */}
 
               <div className="px-1 mb-2">
                 <button className="bg-white text-black w-full rounded-full text-sm  font-medium p-2 border border-black">

@@ -4,10 +4,14 @@ import toast, { Toaster } from "react-hot-toast";
 import { IoCashOutline, IoTicketOutline } from "react-icons/io5";
 import { RiMoneyRupeeCircleLine } from "react-icons/ri";
 import { TbRosetteDiscount, TbShoppingBag } from "react-icons/tb";
+import { useSelector } from "react-redux";
 
-function PriceDetails({ total, isCod, showDiscount }) {
+function PriceDetails() {
   const [discountCode, setDiscountCode] = useState("");
-  const [discount, setDiscount] = useState(0);
+
+  const paymentMode = useSelector((state) => state.bag?.paymentMode);
+  const totalMrp = useSelector((state) => state.bag?.priceDetails?.totalMrp);
+  const subTotal = useSelector((state) => state.bag?.priceDetails?.subTotal);
 
   const handleApplyDiscount = () => {
     toast.error("Invalid Disount Code");
@@ -56,7 +60,7 @@ function PriceDetails({ total, isCod, showDiscount }) {
                 />
                 <p className="font-medium text-sm">Total MRP</p>
               </div>
-              <p className="font-normal text-darkGrayColor">₹{total}</p>
+              <p className="font-normal text-darkGrayColor">₹{totalMrp}</p>
             </div>
             <div className="flex flex-row items-center place-content-between">
             <div className="flex flex-row items-center gap-2">
@@ -67,7 +71,7 @@ function PriceDetails({ total, isCod, showDiscount }) {
                 />
                 <p className="font-medium text-sm">Discount on MRP</p>
               </div>
-              <p className="font-normal text-green">-₹{discount}</p>
+              <p className="font-normal text-green">-₹{totalMrp - subTotal}</p>
             </div>
             <div className="flex flex-row items-center place-content-between">
             <div className="flex flex-row items-center gap-2">
@@ -88,7 +92,7 @@ function PriceDetails({ total, isCod, showDiscount }) {
                 />
                 <p className="font-medium text-sm">COD Charges</p>
               </div>
-              {isCod ? (
+              {paymentMode === 'COD' ? (
                 <p className="font-normal text-darkGrayColor">₹79</p>
               ) : (
                 <div className="flex flex-row gap-1">
@@ -106,7 +110,7 @@ function PriceDetails({ total, isCod, showDiscount }) {
               Grand total
             </p>
             <p className="font-semibold text-lg text-darkGrayColor ">
-              ₹{total - discount + (isCod ? 79 : 0)}
+              ₹{subTotal + (paymentMode === 'COD' ? 79 : 0)}
             </p>
           </div>
         </div>

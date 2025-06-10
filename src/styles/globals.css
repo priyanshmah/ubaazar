@@ -82,14 +82,7 @@ input[type="number"]::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
-@font-face {
-  font-family: 'Mona Sans';
-  src: url('/fonts/MonaSans-Medium.woff2') format('woff2'),
-       url('/fonts/MonaSans-Regular.woff') format('woff2'),
-       url('/fonts/MonaSansCondensed-SemiBold.woff') format('woff2');
-  font-weight: normal ;
-  font-style: normal;
-}
+
 
 
 @media screen and (min-width: 1024px) {
@@ -112,9 +105,6 @@ body {
   overflow-x: hidden;
 }
 
-.mona-sans {
-  font-family: 'Mona Sans' sans-serif;
-}
 
 .scrollbar-hide::-webkit-scrollbar {
   display: none;

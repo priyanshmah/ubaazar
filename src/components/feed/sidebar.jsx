@@ -8,7 +8,7 @@ import { usePathname } from "next/navigation";
 import { FiLogOut } from "react-icons/fi";
 import Cookies from "js-cookie";
 import toast from "react-hot-toast";
-import { useRouter } from 'nextjs-toploader/app'
+import { useRouter } from "nextjs-toploader/app";
 
 import {
   Dialog,
@@ -20,6 +20,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { Cross } from "lucide-react";
+import { IoClose } from "react-icons/io5";
 
 export default function SideBar({ closeDrawer }) {
   const { isLoggedIn, setIsLoggedIn } = useContext(AuthContext);
@@ -37,11 +39,14 @@ export default function SideBar({ closeDrawer }) {
     closeDrawer();
   };
 
-  console.log("loggedin status: ", isLoggedIn);
-  console.log("current path is: ", currentPath);
 
   return (
-    <div className="h-full flex flex-col place-content-between">
+    <div className="h-full flex flex-col bg-lightPink gap-4">
+      <div 
+      onClick={closeDrawer}
+      className="flex bg-black ">
+        <IoClose size={25} className="text-white"/>
+      </div>
       <div className="text-darkGrayColor text-base flex flex-col gap-4">
         {isLoggedIn ? (
           <div className={`${styles.sideBarItem} mb-4`}>
@@ -51,7 +56,7 @@ export default function SideBar({ closeDrawer }) {
             </p>
           </div>
         ) : (
-          <div className="my-4">
+          <div className="bg-white mx-2">
             <button
               onClick={handleClick}
               className="rounded-none font-medium text-lg w-full p-2 border border-black text-black"
@@ -60,96 +65,57 @@ export default function SideBar({ closeDrawer }) {
             </button>
           </div>
         )}
-        <div
-          onClick={() => {
-            closeDrawer();
-            router.push("/");
-          }}
-        >
-          <p
-            className={`px-4 font-semibold ${
-              currentPath === "/" &&
-              "bg-darkBlue text-white rounded-xl py-2"
-            }`}
+        <div className="pl-4 flex flex-col gap-2">
+          <div
+            onClick={() => {
+              closeDrawer();
+              router.push("/");
+            }}
           >
-            Product Feed
-          </p>
-        </div>
-
-        <div
-          onClick={() => {
-            closeDrawer();
-            router.push("/user/favourites");
-          }}
-        >
-          <p
-            className={`px-4 font-semibold ${
-              currentPath === "/user/favourites" &&
-              "bg-darkBlue text-white rounded-xl py-2"
-            }`}
+            <p className="py-2 font-semibold border-b border-silver ">
+              Home
+            </p>
+          </div>
+          <div
+            onClick={() => {
+              closeDrawer();
+              router.push("/");
+            }}
           >
-            Favourites
-          </p>
-        </div>
-        <div
-          onClick={() => {
-            closeDrawer();
-            router.push("/user/orders");
-          }}
-        >
-          <p
-            className={`px-4 font-semibold ${
-              currentPath === "/user/orders" &&
-              "bg-darkBlue text-white rounded-xl py-2"
-            }`}
+            <p className="py-2 font-semibold border-b border-silver ">
+              Ethnic Wear
+            </p>
+          </div>
+          <div
+            onClick={() => {
+              closeDrawer();
+              router.push("/");
+            }}
           >
-            Orders
-          </p>
-        </div>
-       { isLoggedIn && <> <div
-          onClick={() => {
-            closeDrawer();
-            router.push("/user/profile");
-          }}
-        >
-          <p
-            className={`px-4 font-semibold ${
-              currentPath === "/user/profile" &&
-              "bg-darkBlue text-white rounded-xl py-2 "
-            }`}
+            <p className="py-2 font-semibold border-b border-silver ">
+              Party Wear
+            </p>
+          </div>
+          <div
+            onClick={() => {
+              closeDrawer();
+              router.push("/");
+            }}
           >
-            Profile
-          </p>
-        </div>
-        <div
-          onClick={() => {
-            closeDrawer();
-            router.push("/user/notifications");
-          }}
-        >
-          <p
-            className={`px-4 font-semibold ${
-              currentPath === "/user/notifications" &&
-              "bg-darkBlue text-white rounded-xl py-2"
-            }`}
+            <p className="py-2 font-semibold border-b border-silver ">
+              Daily Wear
+            </p>
+          </div>
+          <div
+            onClick={() => {
+              closeDrawer();
+              router.push("/");
+            }}
           >
-            Notifications
-          </p>
-        </div> </>}
-        <div
-          onClick={() => {
-            closeDrawer();
-            router.push("/user/complaint");
-          }}
-        >
-          <p
-            className={`px-4 font-semibold ${
-              currentPath === "/user/complaint" &&
-              "bg-darkBlue text-white rounded-xl py-2"
-            }`}
-          >
-            Raise Complaint
-          </p>
+            <p className="py-2 font-semibold border-b border-silver ">
+              Wedding Wear
+            </p>
+          </div>
         </div>
       </div>
 
@@ -164,8 +130,8 @@ export default function SideBar({ closeDrawer }) {
               <DialogHeader className="p-4 gap-2">
                 <DialogTitle>Are you absolutely sure?</DialogTitle>
                 <DialogDescription className="font-mona text-xs">
-                  Once you logout you are not able to see your data still do
-                  you want it...
+                  Once you logout you are not able to see your data still do you
+                  want it...
                 </DialogDescription>
               </DialogHeader>
               <DialogFooter>

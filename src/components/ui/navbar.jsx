@@ -40,9 +40,10 @@ import {
   CarouselItem,
 } from "@/components/ui/carousel";
 import Autoplay from "embla-carousel-autoplay";
+import { useSelector } from "react-redux";
 
 const passion = Passion_One({
-  subsets: ["latin", "latin-ext"],
+  subsets: ["latin"],
   weight: ["400", "700", "900"],
 });
 
@@ -77,7 +78,7 @@ const Drawer = () => {
           />
         </div>
       </SheetTrigger>
-      <SheetContent side="left">
+      <SheetContent className="" side="left">
         <SideBar closeDrawer={closeDrawer} />
       </SheetContent>
     </Sheet>
@@ -101,7 +102,7 @@ const AnnouncementBar = () => {
         <CarouselContent>
           <CarouselItem>FREE SHIPPING</CarouselItem>
           <CarouselItem>CASH ON DELIVERY</CarouselItem>
-          <CarouselItem>Get $100 of on your first purchase</CarouselItem>
+          <CarouselItem>Get ₹100 off on your first purchase</CarouselItem>
         </CarouselContent>
       </Carousel>
   )
@@ -109,9 +110,7 @@ const AnnouncementBar = () => {
 
 const HomeNavbar = () => {
   const router = useRouter();
-  const { bagItems } = useContext(AuthContext);
-
-  console.log("bag items is: ", bagItems);
+  const bag = useSelector(state => state.bag?.products);
 
   return (
     <div className="flex flex-col w-full">
@@ -149,9 +148,9 @@ const HomeNavbar = () => {
                 className="text-darkBlue"
               />
               {/* <p className="hidden md:block md:navbarItemText">Bag</p> */}
-              {bagItems > 0 && (
+              {bag?.length > 0 && (
                 <p className="text-white bg-black rounded-full text-xs h-4 w-4 flex flex-row justify-center items-center font-medium absolute -bottom-2 -right-2">
-                  {bagItems}
+                  {bag?.length}
                 </p>
               )}
             </div>

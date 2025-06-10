@@ -10,10 +10,10 @@ function BottomBar() {
   const [bag, setBag] = useState([]);
   const [favourites, setFavourites] = useState([]);
   const { setBagItems } = useContext(AuthContext);
-  const productData = useSelector(state => state.product.productData);
-  const variantData = useSelector(state => state.product.variantData);
-  const selectedSize = useSelector(state => state.product.selectedSize);
-  const variantId = useSelector(state => state.product.selectedVariantId);
+  const productData = useSelector((state) => state.product.productData);
+  const variantData = useSelector((state) => state.product.variantData);
+  const selectedSize = useSelector((state) => state.product.selectedSize);
+  const variantId = useSelector((state) => state.product.selectedVariantId);
   const router = useRouter();
 
   useEffect(() => {
@@ -34,8 +34,6 @@ function BottomBar() {
   }, []);
 
   const handleAddToBag = () => {
-       
-
     let addedItems = bag?.map((value) => value._id);
     let alreadyAdded = addedItems.includes(productData._id);
 
@@ -50,27 +48,30 @@ function BottomBar() {
         productId: productData._id,
         variantId: variantId,
         price: productData.price,
-        mrp: productData.mrp || (productData.price * 1.5),
+        mrp: productData.mrp || productData.price * 1.5,
         productName: productData.productName,
         image: variantData?.images?.[0],
         selectedSize,
+        quantity: 1,
       },
     ];
 
     setBag(newBag);
     localStorage.setItem("bag", JSON.stringify(newBag));
-
-    setBagItems((prev) => prev + 1);
+    
     toast.success("Added to bag");
     router.push("/bag");
+
   };
 
   const handleAddToFavourites = () => {
     favourites.push({
-      id: productData._id,
+      productId: productData._id,
+      variantId: variantId,
       price: productData.price,
+      mrp: productData.mrp || productData.price * 1.5,
       productName: productData.productName,
-      image: productData.images?.[0],
+      image: variantData?.images?.[0],
     });
     localStorage.setItem("favourites", JSON.stringify(favourites));
     toast.success("Favourites added");
@@ -79,12 +80,12 @@ function BottomBar() {
   return (
     <div className="flex flex-row items-center place-content-between gap-2 justify-center fixed bottom-0 left-0 right-0 bg-white w-full py-2 px-4">
       <HiOutlineHeart size={32} className="text-black" strokeWidth={1} />
-      <button 
-      onClick={handleAddToBag}
-      className="border bg-black border-black text-white text-lg w-full rounded-full p-2">
+      <button
+        onClick={handleAddToBag}
+        className="border bg-black border-black text-white text-lg w-full rounded-full p-2"
+      >
         Add to Bag
       </button>
-      
     </div>
   );
 }

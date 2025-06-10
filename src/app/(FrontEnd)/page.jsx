@@ -38,7 +38,7 @@ export default async function Home() {
   return (
     <Suspense fallback={<Loading />}>
       <div className="overflow-x-clip">
-        <Carousel />
+        <Carousel  aspectRatio={1}/>
         <div className="w-full aspect-[3.09] relative my-4 py-4">
           <Image src={Banner} alt="Explore" fill className="object-cover" />
         </div>

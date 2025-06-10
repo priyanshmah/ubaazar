@@ -216,14 +216,14 @@ export async function POST(request) {
                 { $push: { previousOrders: newOrder._id } },
             )
 
-            const paymentInitData = await initializePayment(
+            const url = await initializePayment(
                 transactionId, newOrder._id, totalAmount
             );
-            if (paymentInitData) {
+            if (url) {
                 return NextResponse.json({
                     message: "Payment url generated...",
-                    data: paymentInitData,
-                    success: true
+                    success: true,
+                    url,
                 }, { status: 200 })
             } else {
                 return NextResponse.json({
@@ -245,12 +245,10 @@ async function initializePayment(merchantTransactionId, orderId, amount) {
 
         const payEndPoint = "/checkout/v2/pay"
         const merchantUserId = uuid();
-        // const redirectUrl = `https://www.ubaazar.com/bag/pay/payment-details/${orderId}`
-        const redirectUrl = `ubaazar://payment-status?orderId=${orderId}`
+        const redirectUrl = `https://www.ubaazar.com/bag/pay/payment-details/${orderId}`
 
         const payload = {
-            // "merchantId": process.env.NEXT_PUBLIC_PHONEPE_MERCHANT_ID,
-            "merchantId": 'TEST-M226WBXVLE3XO_25051',
+            "merchantId": process.env.NEXT_PUBLIC_PHONEPE_MERCHANT_ID,
             "merchantTransactionId": merchantTransactionId,
             "merchantUserId": merchantUserId,
             "amount": amount * 100,
@@ -261,50 +259,38 @@ async function initializePayment(merchantTransactionId, orderId, amount) {
                 "type": "PAY_PAGE"
             }
         }
-        // const payload = {
-        //     "merchantOrderId": 'TEST-M226WBXVLE3XO_25051',
-        //     "amount": amount * 100,
-        //     "paymentFlow": {
-        //         "type": "PG_CHECKOUT",
-        //         "merchantUrls": {
-        //             "redirectUrl": redirectUrl
-        //         },
-        //     }
-        // }
 
         const bufferObj = Buffer.from(JSON.stringify(payload), "utf-8");
         const base64EncodedPayload = bufferObj.toString('base64');
 
-        const xVerify = crypto.createHash('sha256')
-            .update(base64EncodedPayload + payEndPoint + 'ZTU1NTMwYWYtZDAwNS00Mzk1LWJiYmUtMzk1Y2U1MjYzNGU3')
-            .digest('hex') + '###' + 1;
-
         // const xVerify = crypto.createHash('sha256')
-        //     .update(base64EncodedPayload + payEndPoint + process.env.NEXT_PUBLIC_PHONEPE_API_KEY)
+        //     .update(base64EncodedPayload + payEndPoint + 'ZTU1NTMwYWYtZDAwNS00Mzk1LWJiYmUtMzk1Y2U1MjYzNGU3')
         //     .digest('hex') + '###' + 1;
 
+        const xVerify = crypto.createHash('sha256')
+            .update(base64EncodedPayload + payEndPoint + process.env.NEXT_PUBLIC_PHONEPE_API_KEY)
+            .digest('hex') + '###' + 1;
 
-        // const options = {
-        //     // url: `${process.env.NEXT_PUBLIC_PHONEPE_HOST_URL}${payEndPoint}`,
-        //     url: `https://api-preprod.phonepe.com/apis/pg-sandbox${payEndPoint}`,
-        //     headers: {
-        //         accept: "application/json",
-        //         "Content-Type": "application/json",
-        //         "X-VERIFY": xVerify,
-        //     },
-        //     data: {
-        //         request: base64EncodedPayload
-        //     }
-        // }
 
-        return {
-            merchantId: process.env.NEXT_PUBLIC_PHONEPE_MERCHANT_ID,
-            payload: base64EncodedPayload,
-            checkSum: xVerify,
-            transactionId: merchantTransactionId,
-            success: true,
-            redirectUrl
-        };
+        const options = {
+            url: `${process.env.NEXT_PUBLIC_PHONEPE_HOST_URL}${payEndPoint}`,
+            headers: {
+                accept: "application/json",
+                "Content-Type": "application/json",
+                "X-VERIFY": xVerify,
+            },
+            data: {
+                request: base64EncodedPayload
+            }
+        }
+
+        const response = await axios.request(options);
+        const paymentUrl = (response.data.data?.instrumentResponse?.redirectInfo?.url);
+
+        return paymentUrl || null;
+        
+
+       
 
     } catch (error) {
         console.error(error);

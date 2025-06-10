@@ -1,26 +1,16 @@
 import { AuthenticateUser } from "@/lib/authenticateUser";
 import dbConnect from "@/lib/dbConnect";
 import Address from "@/models/Address.models";
-import Order from "@/models/Order.models";
-import Product from "@/models/Product.models";
 import User from "@/models/User.models";
 import axios from "axios";
-
 import { NextResponse } from "next/server";
 
 export async function POST(request) {
-    await dbConnect();
-
-    const user = await AuthenticateUser(request);
-
-    if (!user || !user?._id) {
-        return NextResponse.json({
-            message: "User not found",
-            success: false
-        }, { status: 403 });
-    }
-
     try {
+        await dbConnect();
+        const user = await AuthenticateUser(request);
+        const userId = user?._id;
+
 
         const reqBody = await request.json();
         let {
@@ -30,75 +20,92 @@ export async function POST(request) {
             address,
             isDefault,
             addressType,
-            mobileNumber } = reqBody;
+            mobileNumber,
+        } = reqBody;
 
-            console.log("reqBody is: ", area, name, pincode, mobileNumber, address);
-            
-
-        let city = '';
-        let state = '';
-
+        // Validate required fields
         if (!area || !name || !pincode || !address || !mobileNumber) {
             return NextResponse.json({
-                message: "User details not found",
+                message: "All required fields must be provided",
                 success: false
             }, { status: 200 });
         }
 
-        const pinResponse = await axios.get(
-            `https://api.postalpincode.in/pincode/${pincode}`
-        );
 
-        if (pinResponse.data.at(0).PostOffice.length > 0) {
-            city = pinResponse.data.at(0).PostOffice.at(0).District
-            state = pinResponse.data.at(0).PostOffice.at(0).State
+        let city = '';
+        let state = '';
+
+        try {
+            const pinResponse = await axios.get(
+                `https://api.postalpincode.in/pincode/${pincode}`
+            );
+
+            if (pinResponse.data.at(0).PostOffice.length > 0) {
+                city = pinResponse.data.at(0).PostOffice.at(0).District;
+                state = pinResponse.data.at(0).PostOffice.at(0).State;
+            } else {
+                return NextResponse.json({
+                    message: "Invalid pincode",
+                    success: false
+                }, { status: 200 });
+            }
+        } catch (error) {
+            return NextResponse.json({
+                message: "Error validating pincode",
+                success: false
+            }, { status: 200 });
         }
 
-        if (isDefault)
-            await Address.updateMany(
-                { _id: { $in: user.savedAddresses } }, 
-                { $set: { isDefault: false } } 
-            );
-        
-        
-        if (!user.savedAddresses?.length) isDefault = true
 
+
+        if (userId && isDefault && user.savedAddresses?.length)
+            await Address.updateMany(
+                { _id: { $in: user.savedAddresses } },
+                { $set: { isDefault: false } }
+            );
+
+
+        if (userId &&!user.savedAddresses?.length) isDefault = true
+
+
+
+        // Create new address
         const newAddress = await Address.create({
             area,
             name,
             pincode,
             address,
-            isDefault,
+            isDefault: isDefault || false,
             addressType,
             mobileNumber,
             city,
             state,
-            isDefault
+            userId: userId || null // Store userId if provided, otherwise null
         });
+
         if (!newAddress) {
             return NextResponse.json({
-                message: "Address not added",
-                success: false,
+                message: "Failed to create address",
+                success: false
             }, { status: 200 });
         }
-        
 
-        user.savedAddresses.push(newAddress._id);
-        await user.save({ new: true });
+        if (userId) {
+            user.savedAddresses.push(newAddress._id);
+            await user.save({ new: true });
+        }
 
         return NextResponse.json({
-            message: "New address added",
+            message: "Address added successfully",
             success: true,
             address: newAddress
-        }, { status: 200 })
-
+        }, { status: 200 });
 
     } catch (error) {
-        console.error(error);
+        console.error("Address addition error:", error);
         return NextResponse.json({
-            message: error.message,
+            message: "Internal server error",
             success: false
-        }, { status: 200 })
+        }, { status: 200 });
     }
-
 }

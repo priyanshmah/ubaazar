@@ -29,22 +29,20 @@ import axios from "axios";
 import { FaCircleInfo } from "react-icons/fa6";
 import { IoInformationCircleOutline, IoTicketOutline } from "react-icons/io5";
 import CustomNavbar from "../../../components/ui/CustomNavbar";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
+import BagItems from "@/components/bag/BagItems";
+import { setProducts } from "@/redux/slice/bagSlice";
+import { useDispatch, useSelector } from "react-redux";
+import AddressForm from "./add-address/page";
 
 export default function Bag() {
-  const [bag, setBag] = useState([]);
-  const [total, setTotal] = useState(0);
-  const [allSelected, setAllSelected] = useState(true);
-  const [selectedItems, setSelectedItems] = useState([]);
+  const bag = useSelector((state) => state.bag?.products);
+  const total = useSelector((state) => state.bag?.priceDetails?.subTotal);
+  const price = useSelector((state) => state.bag?.priceDetails);
   const [selectedAddress, setSelectedAddress] = useState({});
-  const [autoDetectedAddress, setAutoDetectedAddress] = useState({
-    formatted_address: "",
-    name: "",
-    mobileNumber: "",
-  });
-  const [checkout, setCheckout] = useState(false);
-  const { setBagItems } = useContext(AuthContext);
+  const [openDrawer, setOpenDrawer] = useState(false);
   const router = useRouter();
+  const dispatch = useDispatch();
 
   useEffect(() => {
     let savedAddresses = JSON.parse(localStorage.getItem("addresses")) || [];
@@ -53,139 +51,28 @@ export default function Bag() {
     let storedBag = localStorage.getItem("bag");
     if (storedBag) {
       let parsedBag = JSON.parse(storedBag);
-
-      setBag(parsedBag);
-      setSelectedItems(parsedBag);
-
-      if (selectedItems) {
-        const totalValue = selectedItems?.reduce(
-          (acc, value) => acc + value.price,
-          0
-        );
-        setTotal(totalValue);
-      }
+      dispatch(setProducts(parsedBag));
     }
   }, []);
 
-  // To detect current location
-  useEffect(() => {
-    if (!selectedAddress) {
-      const fetchLocation = async () => {
-        try {
-          const { latitude, longitude } = await GetCurrentLocation();
-          if (!latitude || !longitude) return null;
-
-          const response = await axios.post(
-            "/api/get-address",
-            JSON.stringify({ latitude, longitude })
-          );
-
-          console.log("response :", response.data);
-
-          if (response.data?.success) {
-            setAutoDetectedAddress((prev) => ({
-              ...prev,
-              formatted_address: response.data?.address?.formatted_address,
-            }));
-          }
-        } catch (error) {
-          console.error("Error while fetching your location :", error);
-          return null;
-        }
-      };
-      fetchLocation();
-    }
-  }, [selectedAddress]);
-
-  useEffect(() => {
-    if (selectedItems) {
-      const totalValue = selectedItems?.reduce(
-        (acc, value) => acc + value.price,
-        0
-      );
-      setTotal(totalValue);
-    }
-  }, [selectedItems]);
-
   useEffect(() => {
     if (bag.length > 0) localStorage.setItem("bag", JSON.stringify(bag));
-    if (selectedItems.length > 0)
-      localStorage.setItem("selectedItems", JSON.stringify(selectedItems));
+  }, [bag]);
 
-    if (bag.length === selectedItems.length) setAllSelected(true);
-    else setAllSelected(false);
-  }, [bag, selectedItems]);
 
-  const handleDelete = (idToBeRemoved) => {
-    console.log("id to be removed: ", idToBeRemoved);
-
-    let updatedBag = bag.filter((value) => value._id !== idToBeRemoved);
-
-    console.log("updated bag is: ", updatedBag);
-
-    if (updatedBag) {
-      setBagItems(updatedBag.length);
-      setBag(updatedBag);
-    }
-
-    setSelectedItems(
-      selectedItems.filter((value) => value._id !== idToBeRemoved)
-    );
-  };
-  const removeItem = (idToBeRemoved) => {
-    let updatedItems = selectedItems.filter(
-      (value) => value._id !== idToBeRemoved
-    );
-    if (updatedItems) setSelectedItems(updatedItems);
-  };
-  const addItem = (idToBeAdded) => {
-    let updatedItems = bag.filter((value) => value._id === idToBeAdded);
-    if (updatedItems) setSelectedItems((prev) => [...prev, ...updatedItems]);
-  };
+  
+  
   const handleCheckout = () => {
-    setCheckout(true);
-
-    if (!selectedAddress && !autoDetectedAddress) {
-      toast.error("Please select shipping address");
+    if (!selectedAddress) {
+      setOpenDrawer(true);
       return;
     }
 
-    if (
-      autoDetectedAddress.formatted_address ||
-      autoDetectedAddress.mobileNumber ||
-      autoDetectedAddress.name
-    ) {
-      if (!autoDetectedAddress.formatted_address) {
-        toast.error("Invalid address");
-        return;
-      }
-      if (!autoDetectedAddress.name) {
-        toast.error("Please enter your name");
-        return;
-      }
-      if (!autoDetectedAddress.mobileNumber) {
-        toast.error("Please enter your mobile number");
-        return;
-      }
-
-      localStorage.setItem(
-        "address",
-        JSON.stringify({ ...autoDetectedAddress })
-      );
-      localStorage.setItem(
-        "addresses",
-        JSON.stringify([{ ...autoDetectedAddress }])
-      );
-    }
-
-    if (selectedAddress)
-      localStorage.setItem("address", JSON.stringify(selectedAddress));
-    localStorage.setItem("selectedItems", JSON.stringify(selectedItems));
     router.push("/bag/pay");
   };
 
   return (
-    <div className="overflow-x-hidden bg-lightBackground text-darkGrayColor">
+    <div className="overflow-x-hidden bg-lightBackground min-h-screen  text-darkGrayColor">
       <CustomNavbar customText={"Shopping Bag"} />
       <div className="flex flex-col">
         {bag?.length === 0 ? (
@@ -213,11 +100,11 @@ export default function Bag() {
             </button>
           </div>
         ) : (
-          <div className="flex flex-col gap-2 py-2 min-h-[80vh] lg:w-1/2">
+          <div className="flex flex-col gap-2 py-2  lg:w-1/2">
             <div className="flex flex-col gap-2 bg-white  p-2">
               <div className="flex flex-row place-content-between items-center text-darkGrayColor font-semibold">
                 <p>Shipping address</p>
-                <Drawer>
+                <Drawer >
                   <DrawerTrigger>
                     <div className="text-pink font-mona text-xs">
                       Change address
@@ -235,87 +122,33 @@ export default function Bag() {
                   </DrawerContent>
                 </Drawer>
               </div>
-              <AddAddressButton />
+              <AddAddressButton isOpen={openDrawer} setIsOpen={setOpenDrawer} />
               {selectedAddress && (
                 <div
-                  className={`border border-pink text-pink rounded-2xl flex flex-row text-left p-4 gap-4 shadow-md `}
+                  className={`border border-pink text-pink rounded-2xl flex flex-row text-left p-4 gap-4`}
                 >
                   <CgRadioChecked size={"1.5rem"} className="text-pink" />
 
-                  {selectedAddress.formatted_address ? (
-                    <div className="text-xs">
-                      <p className="text-darkGrayColor font-semibold text-sm">
-                        {selectedAddress?.name}
-                      </p>
-                      <p>{selectedAddress?.formatted_address}</p>
-                      <p>{selectedAddress?.mobileNumber}</p>
-                    </div>
-                  ) : (
-                    <div className="text-xs">
-                      <p className="text-darkGrayColor font-semibold text-sm">
-                        {selectedAddress?.name}
-                      </p>
-                      <p>
-                        {selectedAddress?.address} , {selectedAddress?.area}
-                      </p>
-                      <p>
-                        {selectedAddress?.city} , {selectedAddress?.state} -{" "}
-                        {selectedAddress?.pinCode}
-                      </p>
-                      <p>{selectedAddress?.mobileNumber}</p>
-                    </div>
-                  )}
+                  <div className="text-xs">
+                    <p className="text-darkGrayColor font-semibold text-sm">
+                      {selectedAddress?.name}
+                    </p>
+                    <p>
+                      {selectedAddress?.address} , {selectedAddress?.area}
+                    </p>
+                    <p>
+                      {selectedAddress?.city} , {selectedAddress?.state} -{" "}
+                      {selectedAddress?.pincode}
+                    </p>
+                    <p>{selectedAddress?.mobileNumber}</p>
+                  </div>
                 </div>
               )}
             </div>
             <div className="flex flex-col bg-white">
               {bag?.map((value, index) => {
-                return (
-                  <div key={index} className="p-2">
-                    <div
-                      key={index}
-                      className="w-full flex flex-row items-center place-content-between"
-                    >
-                      <div className="flex flex-row items-center gap-2 w-[70vw]">
-                        <div className="relative w-1/2 aspect-[3/4]">
-                          <Image
-                            src={value.image}
-                            alt="product image"
-                            fill
-                            className="object-cover"
-                          />
-                        </div>
-
-                        <div className="w-1/2">
-                          <p className="text-sm font-semibold line-clamp-2">
-                            {value.productName}
-                          </p>
-                          <div className="text-xs text-grayColor font-normal">
-                            {value.selectedSize || "Free size"}
-                          </div>
-                          <div className="flex flex-row text-xs items-center bg-lightPink w-fit border border-pink rounded-sm px-1 gap-2 text-pink">
-                            <FiMinus size={15} />
-                            <p className="text-sm text-darkGrayColor font-semibold">
-                              1
-                            </p>
-                            <FiPlus size={15} />
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="flex flex-col items-center justify-center">
-                        <div className="flex flex-row text-darkGrayColor font-semibold leading-none text-lg">
-                          <p>₹{value.price}</p>
-                        </div>
-                        <div className="text-silver line-through font-normal text-sm">
-                          <p>₹{value.mrp}</p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                );
-                })}
-             
+                return <BagItems product={value} key={index} />;
+              })}
             </div>
 
             <div className="flex flex-col items-start place-content-between w-full p-4 fixed bottom-0 left-0 bg-white">
@@ -324,10 +157,10 @@ export default function Bag() {
                 <p className="font-normal text-darkGrayColor">₹{total}</p>
               </div>
               <button
-                onClick={() => router.push("/bag/pay")}
+                onClick={handleCheckout}
                 className="bg-black text-white flex flex-row justify-center items-center  font-semibold w-full text-lg h-full py-2"
               >
-                Place order
+                {selectedAddress ? "Place order" : "Add address"}
               </button>
             </div>
           </div>
@@ -389,14 +222,18 @@ function SavedAddresses({ selectedAddress, setSelectedAddress }) {
   );
 }
 
-function AddAddressButton() {
-  const router = useRouter();
+function AddAddressButton({ isOpen, setIsOpen }) {
   return (
-    <button
-      onClick={() => router.push("/bag/add-address")}
-      className="p-2 font-semibold text-darkGrayColor rounded-full border  border-darkGrayColor text-center w-full text-sm"
-    >
-      + Add new address
-    </button>
+    <Drawer open={isOpen} onOpenChange={setIsOpen}>
+        <div 
+        onClick={() => setIsOpen(true)}
+        className="p-2 flex flex-row gap-1 items-center justify-center font-semibold text-darkGrayColor bg-lightPink rounded-full border  border-darkGrayColor text-center w-full text-sm">
+          <FiPlus size={20} />
+          Add address
+        </div>
+      <DrawerContent className="flex flex-col w-full">
+        <AddressForm />
+      </DrawerContent>
+    </Drawer>
   );
 }
