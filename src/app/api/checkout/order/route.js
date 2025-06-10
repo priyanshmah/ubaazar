@@ -54,7 +54,7 @@ export async function POST(request) {
         const dbProducts = await Product.find({ _id: { $in: productIds } }).lean();
 
         console.log("yahantak aa gya");
-        
+
 
         let totalAmount = 0;
         for (let item of products) {
@@ -220,10 +220,10 @@ export async function POST(request) {
 
 
             if (user && user._id) await User.findByIdAndUpdate(
-                    user._id,
-                    { $push: { previousOrders: newOrder._id } },
-                )
-            
+                user._id,
+                { $push: { previousOrders: newOrder._id } },
+            )
+
 
             const url = await initializePayment(
                 transactionId, newOrder._id, totalAmount
@@ -252,7 +252,7 @@ export async function POST(request) {
 async function initializePayment(merchantTransactionId, orderId, amount) {
     try {
 
-        const payEndPoint = "/checkout/v2/pay"
+        const payEndPoint = "/pg/v1/pay"
         const merchantUserId = uuid();
         const redirectUrl = `https://www.ubaazar.com/bag/pay/payment-details/${orderId}`
 
@@ -276,21 +276,26 @@ async function initializePayment(merchantTransactionId, orderId, amount) {
         //     .update(base64EncodedPayload + payEndPoint + 'ZTU1NTMwYWYtZDAwNS00Mzk1LWJiYmUtMzk1Y2U1MjYzNGU3')
         //     .digest('hex') + '###' + 1;
 
-        const xVerify = crypto.createHash('sha256')
-            .update(base64EncodedPayload + payEndPoint + process.env.NEXT_PUBLIC_PHONEPE_API_KEY)
-            .digest('hex') + '###' + 1;
+        // const xVerify = crypto.createHash('sha256')
+        //     .update(base64EncodedPayload + payEndPoint + process.env.NEXT_PUBLIC_PHONEPE_API_KEY)
+        //     .digest('hex') + '###' + 1;
+
+        const stringToHash = base64EncodedPayload + payEndPoint + process.env.NEXT_PUBLIC_PHONEPE_API_KEY;
+        const hash = crypto.createHash('sha256').update(stringToHash).digest('hex');
+        const xVerify = hash + '###' + 1;
 
 
         const options = {
             url: `${process.env.NEXT_PUBLIC_PHONEPE_HOST_URL}${payEndPoint}`,
+            method: 'post',
             headers: {
                 accept: "application/json",
                 "Content-Type": "application/json",
                 "X-VERIFY": xVerify,
             },
-            data: {
+            data: JSON.stringify({
                 request: base64EncodedPayload
-            }
+            })
         }
 
         const response = await axios.request(options);
