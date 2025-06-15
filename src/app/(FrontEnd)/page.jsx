@@ -27,13 +27,13 @@ export const metadata = {
 };
 
 export default async function Home() {
+
   const posts = await axios.post(
     `https://www.ubaazar.com/api/feed`,
-    JSON.stringify({
-      category: "sarees",
-    })
+    JSON.stringify({category: 'all'})
   );
   const { feed } = posts.data;
+  
 
   return (
     <Suspense fallback={<Loading />}>
@@ -44,7 +44,7 @@ export default async function Home() {
         </div>
         
         <Explore />
-        <Category feed={feed} searchBar={true} storiesSection={true} />
+        <Category feed={feed}/>
       </div>
     </Suspense>
   );

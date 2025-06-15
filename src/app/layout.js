@@ -3,7 +3,7 @@ import "@/styles/globals.css";
 import Navbar from "@/components/ui/navbar";
 import { Provider } from "react-redux";
 import store from "@/redux/store";
-import { Josefin_Sans, Montserrat, Overlock, Solway } from "next/font/google"
+import { Be_Vietnam_Pro, Josefin_Sans, Montserrat, Overlock, Poppins, Solway } from "next/font/google"
 import AuthContext, { AuthProvider } from "@/context/authContext";
 import { Analytics } from '@vercel/analytics/react'
 import NextTopLoader from "nextjs-toploader";
@@ -19,13 +19,23 @@ const josefinSans = Josefin_Sans({
 
 });
 
+const beVietnamPro = Be_Vietnam_Pro({
+  subsets: ['latin', 'vietnamese'],
+  weight: ['200', '300', '400', '500', '600', '700', '800', '900']
+})
+
+const poppins = Poppins({
+  subsets: ['latin', 'latin-ext'],
+  weight: ['200', '300', '400', '500', '600', '700', '800', '900']
+})
+
 
 export default function RootLayout({ children }) {
 
   return (
     <html lang="en" className={`${josefinSans.className}`}>
       <HeadContent />
-      <body className={`${josefinSans.className}`}>
+      <body className={`${poppins.className}`}>
         <NextTopLoader
           showSpinner={false}
           color="#ff6341"

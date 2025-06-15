@@ -53,13 +53,13 @@ const CarouselImages = () => {
           {images?.map((img, idx) => (
             <div
               key={idx}
-              className="flex-[0_0_100%] w-min-full relative aspect-square"
+              className="flex-[0_0_100%] w-min-full relative aspect-[4/5] object-contain"
             >
               <Image
                 src={img}
                 alt={`slide-${idx}`}
                 fill
-                className="object-cover"
+                className="object-center"
               />
             </div>
           ))}

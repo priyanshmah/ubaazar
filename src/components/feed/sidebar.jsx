@@ -22,6 +22,12 @@ import {
 } from "@/components/ui/dialog";
 import { Cross } from "lucide-react";
 import { IoClose } from "react-icons/io5";
+import { IoIosHeart, IoIosHeartEmpty } from "react-icons/io";
+import { TfiPackage } from "react-icons/tfi";
+import { HiOutlineUserCircle } from "react-icons/hi";
+import { CiUser } from "react-icons/ci";
+import { GoPackage } from "react-icons/go";
+
 
 export default function SideBar({ closeDrawer }) {
   const { isLoggedIn, setIsLoggedIn } = useContext(AuthContext);
@@ -41,11 +47,12 @@ export default function SideBar({ closeDrawer }) {
 
 
   return (
-    <div className="h-full flex flex-col bg-lightPink gap-4">
+    <div className="h-full flex flex-col place-content-between gap-4">
+      <div>
       <div 
       onClick={closeDrawer}
-      className="flex bg-black ">
-        <IoClose size={25} className="text-white"/>
+      className="flex bg-black mb-2">
+        <IoClose size={30} strokeWidth={0.5} className="text-white p-1"/>
       </div>
       <div className="text-darkGrayColor text-base flex flex-col gap-4">
         {isLoggedIn ? (
@@ -56,7 +63,7 @@ export default function SideBar({ closeDrawer }) {
             </p>
           </div>
         ) : (
-          <div className="bg-white mx-2">
+          <div className="bg-lightPink mx-2">
             <button
               onClick={handleClick}
               className="rounded-none font-medium text-lg w-full p-2 border border-black text-black"
@@ -79,7 +86,7 @@ export default function SideBar({ closeDrawer }) {
           <div
             onClick={() => {
               closeDrawer();
-              router.push("/");
+              router.push("/collections/ethnic-wear");
             }}
           >
             <p className="py-2 font-semibold border-b border-silver ">
@@ -89,7 +96,7 @@ export default function SideBar({ closeDrawer }) {
           <div
             onClick={() => {
               closeDrawer();
-              router.push("/");
+              router.push("/collections/party-wear");
             }}
           >
             <p className="py-2 font-semibold border-b border-silver ">
@@ -99,7 +106,7 @@ export default function SideBar({ closeDrawer }) {
           <div
             onClick={() => {
               closeDrawer();
-              router.push("/");
+              router.push("/collections/daily-wear");
             }}
           >
             <p className="py-2 font-semibold border-b border-silver ">
@@ -109,7 +116,7 @@ export default function SideBar({ closeDrawer }) {
           <div
             onClick={() => {
               closeDrawer();
-              router.push("/");
+              router.push("/collections/wedding-wear");
             }}
           >
             <p className="py-2 font-semibold border-b border-silver ">
@@ -118,39 +125,48 @@ export default function SideBar({ closeDrawer }) {
           </div>
         </div>
       </div>
+      </div>
 
-      {isLoggedIn && (
-        <div className="flex flex-row gap-4 text-grayColor">
-          <FiLogOut size={"1.5rem"} />
-          <Dialog>
-            <DialogTrigger>
-              <button className="font-semibold text-grayColor">Log out</button>
-            </DialogTrigger>
-            <DialogContent className="p-0 w-4/5">
-              <DialogHeader className="p-4 gap-2">
-                <DialogTitle>Are you absolutely sure?</DialogTitle>
-                <DialogDescription className="font-mona text-xs">
-                  Once you logout you are not able to see your data still do you
-                  want it...
-                </DialogDescription>
-              </DialogHeader>
-              <DialogFooter>
-                <div className="flex flex-row text-lg font-semibold w-full">
-                  <DialogClose className="w-1/2 text-center text-skyBlue p-2 border-t border-lightGrayColor">
-                    Cancel
-                  </DialogClose>
-                  <DialogClose
-                    onClick={handleLogOut}
-                    className="w-1/2 text-center text-red p-2 border-t border-lightGrayColor border-l"
-                  >
-                    Logout
-                  </DialogClose>
-                </div>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
+     
+        <div className="flex flex-col gap-2 p-2 text-sm font-normal text-grayColor">
+          <div
+          className="flex flex-row gap-2 items-center"
+            onClick={() => {
+              closeDrawer();
+              router.push("/user/favourites");
+            }}
+          >
+            <IoIosHeartEmpty size={30} className="text-grayColor p-1 bg-lightBackground rounded-full"/>
+            <p>
+              Favourites
+            </p>
+          </div>
+          <div
+                    className="flex flex-row gap-2 items-center"
+            onClick={() => {
+              closeDrawer();
+              router.push("/user/orders");
+            }}
+          >
+            <GoPackage size={30} className="text-grayColor p-1 bg-lightBackground rounded-full"/>
+            <p>
+              Track Order
+            </p>
+          </div>
+          <div
+                    className="flex flex-row gap-2 items-center"
+            onClick={() => {
+              closeDrawer();
+              router.push("/user/profile");
+            }}
+          >
+            <CiUser size={30} strokeWidth={0.75} className="text-grayColor p-1 bg-lightBackground rounded-full"/>
+            <p>
+              My account
+            </p>
+          </div>
         </div>
-      )}
+      
     </div>
   );
 }

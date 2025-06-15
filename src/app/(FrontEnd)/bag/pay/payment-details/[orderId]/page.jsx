@@ -7,7 +7,7 @@ export default async function Details({ params }) {
 
   try {
     const response = await axios.post(
-      `http://www.ubaazar.com/api/checkout/pay/validate`,
+      `https://www.ubaazar.com/api/checkout/pay/validate`,
       JSON.stringify({ orderId })
     );
     return <OrderDetails response={response.data}/>;

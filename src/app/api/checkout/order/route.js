@@ -12,6 +12,8 @@ import Suits from "@/models/products/Suits&Kurtas.models";
 import Sarees from "@/models/products/Sarees.models";
 import Coupon from "@/models/Coupon.models";
 import BagModels from "@/models/Bag.models";
+import sha256 from "sha256";
+import getPhonepeToken from "@/hooks/phonepe/getPhonepeToken";
 
 
 export async function POST(request) {
@@ -249,61 +251,105 @@ export async function POST(request) {
 }
 
 
-async function initializePayment(merchantTransactionId, orderId, amount) {
+// async function initializePayment(merchantTransactionId, orderId, amount) {
+//     try {
+
+//         const payEndPoint = "/pg/v1/pay"
+//         const merchantUserId = uuid();
+//         const redirectUrl = `https://www.ubaazar.com/bag/pay/payment-details/${orderId}`
+
+//         const payload = {
+//             "merchantId": process.env.NEXT_PUBLIC_PHONEPE_MERCHANT_ID,
+//             "merchantTransactionId": merchantTransactionId,
+//             "merchantUserId": merchantUserId,
+//             "amount": amount * 100,
+//             "redirectUrl": redirectUrl,
+//             "redirectMode": "REDIRECT",
+//             "callbackUrl": redirectUrl,
+//             "paymentInstrument": {
+//                 "type": "PAY_PAGE"
+//             }
+//         }
+
+//         const bufferObj = Buffer.from(JSON.stringify(payload), "utf-8");
+//         const base64EncodedPayload = bufferObj.toString('base64');
+
+//         // const xVerify = crypto.createHash('sha256')
+//         //     .update(base64EncodedPayload + payEndPoint + 'ZTU1NTMwYWYtZDAwNS00Mzk1LWJiYmUtMzk1Y2U1MjYzNGU3')
+//         //     .digest('hex') + '###' + 1;
+
+//         // const xVerify = crypto.createHash('sha256')
+//         //     .update(base64EncodedPayload + payEndPoint + process.env.NEXT_PUBLIC_PHONEPE_API_KEY)
+//         //     .digest('hex') + '###' + 1;
+
+//         const string = base64EncodedPayload + payEndPoint + process.env.NEXT_PUBLIC_PHONEPE_API_KEY;
+//         const sha256_val = sha256(string);
+//         const xVerify = sha256_val + '###' + 1;
+
+
+//         const options = {
+//             url: `${process.env.NEXT_PUBLIC_PHONEPE_HOST_URL}${payEndPoint}`,
+//             method: 'post',
+//             headers: {
+//                 accept: "application/json",
+//                 "Content-Type": "application/json",
+//                 "X-VERIFY": xVerify,
+//             },
+//             data: JSON.stringify({
+//                 request: base64EncodedPayload
+//             })
+//         }
+
+//         const response = await axios.request(options);
+//         const paymentUrl = (response.data.data?.instrumentResponse?.redirectInfo?.url);
+
+//         return paymentUrl || null;
+
+
+
+
+//     } catch (error) {
+//         console.error(error);
+//         return null;
+//     }
+// }
+async function initializePayment(merchantOrderId, orderId, amount) {
     try {
 
-        const payEndPoint = "/pg/v1/pay"
-        const merchantUserId = uuid();
+        const accessToken = await getPhonepeToken();
+        if (!accessToken) return null;
+
+        const payEndPoint = "/checkout/v2/pay"
         const redirectUrl = `https://www.ubaazar.com/bag/pay/payment-details/${orderId}`
 
-        const payload = {
-            "merchantId": process.env.NEXT_PUBLIC_PHONEPE_MERCHANT_ID,
-            "merchantTransactionId": merchantTransactionId,
-            "merchantUserId": merchantUserId,
-            "amount": amount * 100,
-            "redirectUrl": redirectUrl,
-            "redirectMode": "REDIRECT",
-            "callbackUrl": redirectUrl,
-            "paymentInstrument": {
-                "type": "PAY_PAGE"
+        const paymentData = {
+            merchantOrderId,
+            amount: amount * 100,
+            "paymentFlow": {
+                "type": "PG_CHECKOUT",
+                "message": "Payment message used for collect requests",
+                "merchantUrls": {
+                    "redirectUrl": redirectUrl
+                }
             }
-        }
+        };
 
-        const bufferObj = Buffer.from(JSON.stringify(payload), "utf-8");
-        const base64EncodedPayload = bufferObj.toString('base64');
-
-        // const xVerify = crypto.createHash('sha256')
-        //     .update(base64EncodedPayload + payEndPoint + 'ZTU1NTMwYWYtZDAwNS00Mzk1LWJiYmUtMzk1Y2U1MjYzNGU3')
-        //     .digest('hex') + '###' + 1;
-
-        // const xVerify = crypto.createHash('sha256')
-        //     .update(base64EncodedPayload + payEndPoint + process.env.NEXT_PUBLIC_PHONEPE_API_KEY)
-        //     .digest('hex') + '###' + 1;
-
-        const stringToHash = base64EncodedPayload + payEndPoint + process.env.NEXT_PUBLIC_PHONEPE_API_KEY;
-        const hash = crypto.createHash('sha256').update(stringToHash).digest('hex');
-        const xVerify = hash + '###' + 1;
+        // const bufferObj = Buffer.from(JSON.stringify(paymentData), "utf-8");
+        // const base64EncodedPayload = bufferObj.toString('base64');
 
 
-        const options = {
-            url: `${process.env.NEXT_PUBLIC_PHONEPE_HOST_URL}${payEndPoint}`,
-            method: 'post',
-            headers: {
-                accept: "application/json",
-                "Content-Type": "application/json",
-                "X-VERIFY": xVerify,
-            },
-            data: JSON.stringify({
-                request: base64EncodedPayload
-            })
-        }
-
-        const response = await axios.request(options);
-        const paymentUrl = (response.data.data?.instrumentResponse?.redirectInfo?.url);
-
+        const response = await axios.post(
+            `${process.env.PHONEPE_BASE_URL}${payEndPoint}`,
+            paymentData,
+            {
+                headers: {
+                    "Content-Type": "application/json",
+                    'Authorization': `O-Bearer ${accessToken}`
+                }
+            }
+        );
+        const paymentUrl = (response.data.redirectUrl);
         return paymentUrl || null;
-
-
 
 
     } catch (error) {

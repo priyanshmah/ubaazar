@@ -19,17 +19,18 @@ const passion = Passion_One({
 export default function ProductFeed() {
   const [loading, setLoading] = useState(false);
   const pathname = usePathname();
-  const productArray = useSelector((state) => state.productArray);
+  const productArray = useSelector((state) => state.feed?.categorisedProducts);
 
   const router = useRouter();
-
-  console.log("productArray is: ", productArray[0]);
 
   const handleBuyNow = ({ category, slug, id }) => {
     setLoading(true);
     
     router.push(`/${category}/${slug}/${id}`);
   };
+
+  console.log("product array:", productArray);
+  
 
   useEffect(() => {
     setLoading(false);
@@ -38,7 +39,7 @@ export default function ProductFeed() {
   return (
     <div className="w-full">
       {loading && <Loading />}
-      <div className="grid grid-cols-2 gap-1">
+      <div className="grid grid-cols-2 bg-white gap-1">
         {productArray?.map((value, index) => {
           const slug = stringToSlug(value.productName);
           const fullStars = Math.floor(value.rating);
@@ -70,7 +71,7 @@ export default function ProductFeed() {
 
               <div className=" w-full flex flex-col px-1  text-darkGrayColor">
                 <div>
-                  <p className="text-md font-semibold line-clamp-2 leading-none">
+                  <p className="text-md font-semibold line-clamp-2">
                     {value.productName}
                   </p>
                   <div className="flex flex-row place-content-between">
@@ -104,7 +105,7 @@ export default function ProductFeed() {
 
 
               <div className="px-1 mb-2">
-                <button className="bg-white text-black w-full rounded-full text-sm  font-medium p-2 border border-black">
+                <button className="bg-lightPink text-darkGrayColor w-full rounded-full text-sm  font-semibold p-2 border border-darkGrayColor">
                   Add to Bag
                 </button>
               </div>
