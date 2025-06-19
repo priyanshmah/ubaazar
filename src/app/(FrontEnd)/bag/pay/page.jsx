@@ -35,7 +35,7 @@ export default function PaymentPage() {
       
       
       const response = await axios.post(
-        "http://localhost:3000/api/checkout/order",
+        "https://www.ubaazar.com/api/checkout/order",
         JSON.stringify({
           products: updatedProducts,
           addressId,
@@ -44,7 +44,6 @@ export default function PaymentPage() {
         })
       );
       
-      console.log("response aa gya: ", response.data)
       if (response?.data?.url) router.push(response?.data?.url);
       else if (!response?.data?.success) toast.error(response?.data?.message);
       else if (response?.data?.orderId)

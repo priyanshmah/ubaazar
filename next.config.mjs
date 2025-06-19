@@ -33,6 +33,10 @@ const nextConfig = {
                         key: "Access-Control-Allow-Headers",
                         value: "Content-Type, Authorization",
                     },
+                    {
+                        key: "Referrer-Policy",
+                        value: "strict-origin-when-cross-origin",
+                    },
                 ],
             },
         ];
